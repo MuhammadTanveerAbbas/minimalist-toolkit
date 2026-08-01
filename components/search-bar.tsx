@@ -75,17 +75,25 @@ export function SearchBar({ filters, onFiltersChange, allTags, allCategories, se
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-72" align="end">
-            <div className="space-y-4">
+          <PopoverContent className="w-80 p-0" align="end">
+            <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+              <p className="text-sm font-semibold">Filters</p>
+              {hasActiveFilters && (
+                <button onClick={clearFilters} className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                  <X className="h-3 w-3" /> Clear all
+                </button>
+              )}
+            </div>
+            <div className="p-4 space-y-4">
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Language</Label>
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Language</Label>
                 <Select
                   value={filters.language ?? "all"}
                   onValueChange={(v) =>
                     onFiltersChange({ ...filters, language: v === "all" ? undefined : (v as Language) })
                   }
                 >
-                  <SelectTrigger className="h-8 text-sm">
+                  <SelectTrigger className="h-9 text-sm bg-muted/40 border-border/60 focus:ring-1">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-56">
@@ -99,14 +107,14 @@ export function SearchBar({ filters, onFiltersChange, allTags, allCategories, se
 
               {allCategories.length > 0 && (
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Category</Label>
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Category</Label>
                   <Select
                     value={filters.category ?? "all"}
                     onValueChange={(v) =>
                       onFiltersChange({ ...filters, category: v === "all" ? undefined : v })
                     }
                   >
-                    <SelectTrigger className="h-8 text-sm">
+                    <SelectTrigger className="h-9 text-sm bg-muted/40 border-border/60 focus:ring-1">
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
@@ -120,7 +128,7 @@ export function SearchBar({ filters, onFiltersChange, allTags, allCategories, se
               )}
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Visibility</Label>
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Visibility</Label>
                 <Select
                   value={filters.visibility ?? "all"}
                   onValueChange={(v) =>
@@ -130,7 +138,7 @@ export function SearchBar({ filters, onFiltersChange, allTags, allCategories, se
                     })
                   }
                 >
-                  <SelectTrigger className="h-8 text-sm">
+                  <SelectTrigger className="h-9 text-sm bg-muted/40 border-border/60 focus:ring-1">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -142,11 +150,11 @@ export function SearchBar({ filters, onFiltersChange, allTags, allCategories, se
               </div>
 
               {allTags.length > 0 && (
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Tags</Label>
-                  <div className="max-h-28 overflow-y-auto space-y-1.5">
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tags</Label>
+                  <div className="max-h-32 overflow-y-auto rounded-lg border border-border bg-muted/20 p-2 space-y-1">
                     {allTags.map((tag) => (
-                      <div key={tag} className="flex items-center gap-2">
+                      <div key={tag} className="flex items-center gap-2.5 px-1 py-0.5 rounded hover:bg-muted/50 transition-colors">
                         <Checkbox
                           id={`tag-${tag}`}
                           checked={filters.tags?.includes(tag) ?? false}
@@ -156,14 +164,14 @@ export function SearchBar({ filters, onFiltersChange, allTags, allCategories, se
                             onFiltersChange({ ...filters, tags: next.length > 0 ? next : undefined })
                           }}
                         />
-                        <Label htmlFor={`tag-${tag}`} className="cursor-pointer text-sm font-normal">{tag}</Label>
+                        <Label htmlFor={`tag-${tag}`} className="cursor-pointer text-sm font-normal flex-1">#{tag}</Label>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5 px-1 py-1.5 rounded-lg border border-border bg-muted/20">
                 <Checkbox
                   id="regex"
                   checked={filters.useRegex ?? false}
@@ -173,13 +181,6 @@ export function SearchBar({ filters, onFiltersChange, allTags, allCategories, se
                 />
                 <Label htmlFor="regex" className="cursor-pointer text-sm font-normal">Use Regular Expression</Label>
               </div>
-
-              {hasActiveFilters && (
-                <Button variant="outline" onClick={clearFilters} className="w-full gap-2 bg-transparent h-8 text-sm">
-                  <X className="h-3.5 w-3.5" />
-                  Clear All Filters
-                </Button>
-              )}
             </div>
           </PopoverContent>
         </Popover>

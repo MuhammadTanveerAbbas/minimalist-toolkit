@@ -186,7 +186,7 @@ export default function HomePage() {
       </div>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="w-full max-w-4xl max-h-dvh sm:max-h-[92vh] overflow-y-auto sm:rounded-lg rounded-none sm:m-4 m-0">
+        <DialogContent showCloseButton={false} className="w-full max-w-4xl max-h-dvh sm:max-h-[92vh] overflow-y-auto sm:rounded-lg rounded-none sm:m-4 m-0">
           <VisuallyHidden.Root>
             <DialogTitle>{editingSnippet ? "Edit Snippet" : "New Snippet"}</DialogTitle>
           </VisuallyHidden.Root>

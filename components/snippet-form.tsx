@@ -69,27 +69,25 @@ export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: Snipp
 
         {/* Title bar */}
         <div className="px-1 pb-4 border-b border-border">
-          <div className="relative">
-            <input
-              id="title"
-              value={title}
-              onChange={(e) => { setTitle(e.target.value); setTitleError("") }}
-              placeholder="Snippet title..."
-              className="w-full bg-transparent text-xl font-semibold placeholder:text-muted-foreground/40 outline-none border-none focus:ring-0 py-1"
-              autoFocus
-            />
-            {titleError && (
-              <p className="text-xs text-destructive flex items-center gap-1 mt-1">
-                <AlertCircle className="h-3 w-3" />{titleError}
-              </p>
-            )}
-          </div>
+          <input
+            id="title"
+            value={title}
+            onChange={(e) => { setTitle(e.target.value); setTitleError("") }}
+            placeholder="Snippet title..."
+            className="w-full bg-transparent text-xl font-semibold placeholder:text-muted-foreground/30 outline-none border-none focus:ring-0 py-1"
+            autoFocus
+          />
+          {titleError && (
+            <p className="text-xs text-destructive flex items-center gap-1 mt-1">
+              <AlertCircle className="h-3 w-3" />{titleError}
+            </p>
+          )}
           <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add a short description..."
             rows={1}
-            className="mt-2 resize-none bg-transparent dark:bg-transparent border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-0 text-sm text-muted-foreground placeholder:text-muted-foreground/40"
+            className="mt-1.5 resize-none bg-transparent dark:bg-transparent border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-0 text-sm text-muted-foreground placeholder:text-muted-foreground/30"
           />
         </div>
 
@@ -97,13 +95,13 @@ export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: Snipp
         <div className="flex flex-col sm:flex-row gap-0 mt-4">
 
           {/* Left metadata panel */}
-          <div className="sm:w-52 shrink-0 flex flex-col gap-4 sm:border-r border-border sm:pr-5 pr-0 pb-4 sm:pb-0">
+          <div className="sm:w-56 shrink-0 flex flex-col gap-4 sm:border-r border-border sm:pr-5 pr-0 pb-4 sm:pb-0">
 
             {/* Language */}
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Language</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Language</p>
               <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
-                <SelectTrigger className="h-8 text-sm bg-muted/50 border-border">
+                <SelectTrigger className="h-9 text-sm bg-muted/40 border-border/70 focus:ring-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="max-h-64">
@@ -116,16 +114,16 @@ export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: Snipp
 
             {/* Visibility toggle */}
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Visibility</p>
-              <div className="flex rounded-md overflow-hidden border border-border">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Visibility</p>
+              <div className="flex rounded-lg overflow-hidden border border-border bg-muted/20">
                 <button
                   type="button"
                   onClick={() => setVisibility("private")}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs transition-colors",
+                    "flex-1 flex items-center justify-center gap-1.5 py-2 text-xs transition-all duration-150",
                     visibility === "private"
-                      ? "bg-secondary text-secondary-foreground font-medium"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      ? "bg-foreground text-background font-medium"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                   )}
                 >
                   <EyeOff className="h-3 w-3" />
@@ -135,10 +133,10 @@ export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: Snipp
                   type="button"
                   onClick={() => setVisibility("public")}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs transition-colors border-l border-border",
+                    "flex-1 flex items-center justify-center gap-1.5 py-2 text-xs transition-all duration-150 border-l border-border",
                     visibility === "public"
-                      ? "bg-secondary text-secondary-foreground font-medium"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      ? "bg-foreground text-background font-medium"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                   )}
                 >
                   <Eye className="h-3 w-3" />
@@ -149,21 +147,21 @@ export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: Snipp
 
             {/* Category */}
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Category</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Category</p>
               <div className="relative">
                 <Folder className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                 <Input
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   placeholder="e.g. Utilities"
-                  className="h-8 text-sm pl-8 bg-muted/50"
+                  className="h-9 text-sm pl-8 bg-muted/40 border-border/70 focus-visible:ring-1"
                 />
               </div>
             </div>
 
             {/* Tags */}
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Tags</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Tags</p>
               <div className="relative">
                 <Hash className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                 <Input
@@ -171,7 +169,7 @@ export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: Snipp
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddTag() } }}
                   placeholder="Add tag, press Enter"
-                  className="h-8 text-sm pl-8 bg-muted/50"
+                  className="h-9 text-sm pl-8 bg-muted/40 border-border/70 focus-visible:ring-1"
                 />
               </div>
               {tags.length > 0 && (
@@ -235,7 +233,7 @@ export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: Snipp
 
       {snippet && (
         <Dialog open={showVersions} onOpenChange={setShowVersions}>
-          <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogContent showCloseButton={false} className="max-w-3xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Version History</DialogTitle>
             </DialogHeader>

@@ -2,8 +2,8 @@
 
 import type { Snippet } from "@/lib/types"
 import { LANGUAGE_NAMES } from "@/lib/editor-languages"
-import { Button } from "@/components/ui/button"
 import { Edit, Trash2, Eye, EyeOff, Copy } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface SnippetCardProps {
   snippet: Snippet
@@ -14,44 +14,68 @@ interface SnippetCardProps {
 }
 
 export function SnippetCard({ snippet, onEdit, onDelete, onDuplicate, onClick }: SnippetCardProps) {
+  const isPublic = snippet.visibility === "public"
+
   return (
     <div
       onClick={onClick}
       className="group relative flex flex-col gap-3 p-4 rounded-xl border border-border bg-card hover:border-foreground/20 hover:shadow-md transition-all cursor-pointer"
     >
-      {/* Action buttons */}
+      {/* ── Top-right action toolbar ── */}
       <div
-        className="absolute top-3 right-3 flex items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+        className="absolute top-3 right-3 flex items-center gap-px rounded-lg border border-border bg-background/90 backdrop-blur-sm shadow-sm overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <Button size="icon" variant="ghost" className="h-10 w-10 sm:h-8 sm:w-8" onClick={onDuplicate} title="Duplicate">
+        {/* Visibility badge */}
+        <span className={cn(
+          "flex items-center gap-1 px-2 py-1.5 text-[10px] font-semibold border-r border-border",
+          isPublic
+            ? "text-emerald-600 dark:text-emerald-400"
+            : "text-muted-foreground"
+        )}>
+          {isPublic ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+          <span className="hidden sm:inline capitalize">{snippet.visibility}</span>
+        </span>
+
+        {/* Duplicate */}
+        <button
+          onClick={onDuplicate}
+          title="Duplicate"
+          className="flex items-center justify-center px-2 py-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+        >
           <Copy className="h-3.5 w-3.5" />
-        </Button>
-        <Button size="icon" variant="ghost" className="h-10 w-10 sm:h-8 sm:w-8" onClick={onEdit} title="Edit">
+        </button>
+
+        {/* Edit */}
+        <button
+          onClick={onEdit}
+          title="Edit"
+          className="flex items-center justify-center px-2 py-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+        >
           <Edit className="h-3.5 w-3.5" />
-        </Button>
-        <Button size="icon" variant="ghost" className="h-10 w-10 sm:h-8 sm:w-8 hover:text-destructive" onClick={onDelete} title="Delete">
+        </button>
+
+        {/* Delete */}
+        <button
+          onClick={onDelete}
+          title="Delete"
+          className="flex items-center justify-center px-2 py-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+        >
           <Trash2 className="h-3.5 w-3.5" />
-        </Button>
+        </button>
       </div>
 
-      {/* Top: language + visibility */}
-      <div className="flex items-center gap-2">
+      {/* Language */}
+      <div className="flex items-center gap-2 pr-28 sm:pr-36">
         <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
           <span className="h-1.5 w-1.5 rounded-full bg-foreground/40 shrink-0" />
           {LANGUAGE_NAMES[snippet.language]}
         </span>
-        <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground/60">
-          {snippet.visibility === "public"
-            ? <Eye className="h-3 w-3" />
-            : <EyeOff className="h-3 w-3" />
-          }
-        </span>
       </div>
 
       {/* Title + description */}
-      <div className="space-y-1 pr-16">
-        <p className="text-sm font-semibold leading-snug line-clamp-1">{snippet.title}</p>
+      <div className="space-y-1">
+        <p className="text-sm font-semibold leading-snug line-clamp-1 pr-28 sm:pr-36">{snippet.title}</p>
         {snippet.description && (
           <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{snippet.description}</p>
         )}

@@ -6,12 +6,22 @@ import { oneDark } from "@codemirror/theme-one-dark"
 import { githubLight } from "@uiw/codemirror-theme-github"
 import { EditorView } from "@codemirror/view"
 import { bracketMatching } from "@codemirror/language"
+
+const blackOverride = EditorView.theme({
+  "&": { backgroundColor: "#000000 !important" },
+  ".cm-gutters": { backgroundColor: "#000000 !important", borderRight: "1px solid rgba(255,255,255,0.06)" },
+  ".cm-activeLineGutter": { backgroundColor: "#0d0d0d !important" },
+  ".cm-activeLine": { backgroundColor: "#0d0d0d !important" },
+  ".cm-selectionBackground": { backgroundColor: "#1a1a1a !important" },
+  "&.cm-focused .cm-selectionBackground": { backgroundColor: "#1a1a1a !important" },
+})
 import { search, highlightSelectionMatches } from "@codemirror/search"
 import { autocompletion } from "@codemirror/autocomplete"
 import { getLanguageExtension } from "@/lib/editor-languages"
 import type { Language } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Check, Copy } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface CodeEditorProps {
   value: string
@@ -20,6 +30,7 @@ interface CodeEditorProps {
   readOnly?: boolean
   minHeight?: string
   theme?: "dark" | "light"
+  noBorder?: boolean
 }
 
 export function CodeEditor({
@@ -29,6 +40,7 @@ export function CodeEditor({
   readOnly = false,
   minHeight = "400px",
   theme = "dark",
+  noBorder = false,
 }: CodeEditorProps) {
   const [copied, setCopied] = useState(false)
 
@@ -44,6 +56,7 @@ export function CodeEditor({
     highlightSelectionMatches(),
     autocompletion(),
     EditorView.lineWrapping,
+    ...(theme === "dark" ? [blackOverride] : []),
   ]
 
   const languageExtension = getLanguageExtension(language)
@@ -52,7 +65,7 @@ export function CodeEditor({
   }
 
   return (
-    <div className="relative rounded-lg overflow-hidden border border-border">
+    <div className={cn("relative overflow-hidden", !noBorder && "rounded-lg border border-border")}>
       <div className="absolute top-2 right-2 z-10">
         <Button size="sm" variant="secondary" onClick={handleCopy} className="h-8 gap-2">
           {copied ? (

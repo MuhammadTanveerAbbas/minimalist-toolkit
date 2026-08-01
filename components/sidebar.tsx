@@ -4,8 +4,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ChevronDown, Tag, Folder, LayoutGrid, Eye, EyeOff, Menu, Code2 } from "lucide-react"
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { ChevronDown, Tag, Folder, LayoutGrid, Eye, EyeOff, Menu, Code2, SlidersHorizontal } from "lucide-react"
 import type { Language, SnippetFilters } from "@/lib/types"
 import { LANGUAGE_NAMES } from "@/lib/editor-languages"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -45,19 +45,21 @@ function NavItem({
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-sm transition-colors group",
+        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-150 group",
         active
-          ? "bg-secondary text-secondary-foreground font-medium"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+          ? "bg-foreground text-background font-medium shadow-sm"
+          : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
       )}
     >
-      <span className="flex items-center gap-2">
-        <Icon className="h-3.5 w-3.5 shrink-0" />
-        {label}
+      <span className="flex items-center gap-2.5">
+        <Icon className={cn("h-3.5 w-3.5 shrink-0", active ? "text-background" : "")} />
+        <span className="truncate">{label}</span>
       </span>
       <span className={cn(
-        "text-xs tabular-nums px-1.5 py-0.5 rounded",
-        active ? "bg-background/40 text-secondary-foreground" : "text-muted-foreground"
+        "text-[11px] tabular-nums px-1.5 py-0.5 rounded-md font-medium shrink-0",
+        active
+          ? "bg-background/20 text-background"
+          : "bg-muted text-muted-foreground group-hover:bg-muted/80"
       )}>
         {count}
       </span>
@@ -67,9 +69,50 @@ function NavItem({
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="px-2.5 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-      {children}
-    </p>
+    <div className="flex items-center gap-2 px-3 pt-4 pb-1.5">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">{children}</p>
+      <div className="flex-1 h-px bg-border/60" />
+    </div>
+  )
+}
+
+function FilterChip({
+  label,
+  count,
+  active,
+  dot,
+  onClick,
+}: {
+  label: string
+  count: number
+  active: boolean
+  dot?: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition-all duration-150 group",
+        active
+          ? "bg-secondary text-secondary-foreground font-medium"
+          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+      )}
+    >
+      <span className="flex items-center gap-2 truncate">
+        {dot && (
+          <span className={cn(
+            "h-1.5 w-1.5 rounded-full shrink-0 transition-colors",
+            active ? "bg-foreground" : "bg-muted-foreground/40"
+          )} />
+        )}
+        <span className="truncate">{label}</span>
+      </span>
+      <span className={cn(
+        "tabular-nums shrink-0 ml-2 text-[11px]",
+        active ? "text-secondary-foreground" : "text-muted-foreground/60"
+      )}>{count}</span>
+    </button>
   )
 }
 
@@ -82,14 +125,30 @@ function SidebarInner({ allTags, allCategories, filters, onFiltersChange, snippe
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
 
+  const hasActiveFilter = !!filters.language || !!filters.category || (filters.tags && filters.tags.length > 0) || !!filters.visibility
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="px-4 py-3 border-b border-border">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Browse</p>
+    <div className="flex flex-col h-full bg-sidebar">
+      {/* Header */}
+      <div className="px-4 py-3.5 border-b border-border flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Filters</p>
+        </div>
+        {hasActiveFilter && (
+          <button
+            onClick={() => onFiltersChange({ search: filters.search })}
+            className="text-[10px] text-muted-foreground hover:text-foreground transition-colors px-1.5 py-0.5 rounded hover:bg-muted/50"
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       <ScrollArea className="flex-1">
         <div className="px-2 py-2 space-y-0.5">
+          {/* View section */}
+          <SectionLabel>View</SectionLabel>
           <NavItem
             icon={LayoutGrid}
             label="All Snippets"
@@ -116,37 +175,26 @@ function SidebarInner({ allTags, allCategories, filters, onFiltersChange, snippe
             <>
               <SectionLabel>Languages</SectionLabel>
               <Collapsible open={languagesOpen} onOpenChange={setLanguagesOpen}>
-                <CollapsibleTrigger className="w-full flex items-center justify-between px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                <CollapsibleTrigger className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/40 group">
                   <span className="flex items-center gap-2">
                     <Code2 className="h-3 w-3" />
-                    {languagesOpen ? "Hide" : "Show all"}
+                    <span className="font-medium">{topLanguages.length} languages</span>
                   </span>
-                  <ChevronDown className={cn("h-3 w-3 transition-transform", !languagesOpen && "-rotate-90")} />
+                  <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", !languagesOpen && "-rotate-90")} />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-0.5 mt-0.5">
                   {topLanguages.map(([lang, count]) => (
-                    <button
+                    <FilterChip
                       key={lang}
+                      label={LANGUAGE_NAMES[lang as Language]}
+                      count={count}
+                      active={filters.language === lang}
+                      dot
                       onClick={() => onFiltersChange({
                         ...filters,
                         language: filters.language === lang ? undefined : (lang as Language),
                       })}
-                      className={cn(
-                        "w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-colors",
-                        filters.language === lang
-                          ? "bg-secondary text-secondary-foreground font-medium"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                      )}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className={cn(
-                          "h-1.5 w-1.5 rounded-full shrink-0",
-                          filters.language === lang ? "bg-foreground" : "bg-muted-foreground/50"
-                        )} />
-                        {LANGUAGE_NAMES[lang as Language]}
-                      </span>
-                      <span className="tabular-nums text-muted-foreground">{count}</span>
-                    </button>
+                    />
                   ))}
                 </CollapsibleContent>
               </Collapsible>
@@ -157,33 +205,25 @@ function SidebarInner({ allTags, allCategories, filters, onFiltersChange, snippe
             <>
               <SectionLabel>Categories</SectionLabel>
               <Collapsible open={categoriesOpen} onOpenChange={setCategoriesOpen}>
-                <CollapsibleTrigger className="w-full flex items-center justify-between px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                <CollapsibleTrigger className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/40">
                   <span className="flex items-center gap-2">
                     <Folder className="h-3 w-3" />
-                    {categoriesOpen ? "Hide" : "Show all"}
+                    <span className="font-medium">{allCategories.length} categories</span>
                   </span>
-                  <ChevronDown className={cn("h-3 w-3 transition-transform", !categoriesOpen && "-rotate-90")} />
+                  <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", !categoriesOpen && "-rotate-90")} />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-0.5 mt-0.5">
                   {allCategories.map((category) => (
-                    <button
+                    <FilterChip
                       key={category}
+                      label={category}
+                      count={snippetCounts.byCategory[category] ?? 0}
+                      active={filters.category === category}
                       onClick={() => onFiltersChange({
                         ...filters,
                         category: filters.category === category ? undefined : category,
                       })}
-                      className={cn(
-                        "w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-colors",
-                        filters.category === category
-                          ? "bg-secondary text-secondary-foreground font-medium"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                      )}
-                    >
-                      <span className="truncate">{category}</span>
-                      <span className="tabular-nums text-muted-foreground shrink-0 ml-2">
-                        {snippetCounts.byCategory[category] ?? 0}
-                      </span>
-                    </button>
+                    />
                   ))}
                 </CollapsibleContent>
               </Collapsible>
@@ -194,43 +234,44 @@ function SidebarInner({ allTags, allCategories, filters, onFiltersChange, snippe
             <>
               <SectionLabel>Tags</SectionLabel>
               <Collapsible open={tagsOpen} onOpenChange={setTagsOpen}>
-                <CollapsibleTrigger className="w-full flex items-center justify-between px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                <CollapsibleTrigger className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/40">
                   <span className="flex items-center gap-2">
                     <Tag className="h-3 w-3" />
-                    {tagsOpen ? "Hide" : "Show all"}
+                    <span className="font-medium">{allTags.length} tags</span>
                   </span>
-                  <ChevronDown className={cn("h-3 w-3 transition-transform", !tagsOpen && "-rotate-90")} />
+                  <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", !tagsOpen && "-rotate-90")} />
                 </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-0.5 mt-0.5">
-                  {allTags.slice(0, 20).map((tag) => {
-                    const isSelected = filters.tags?.includes(tag)
-                    return (
-                      <button
-                        key={tag}
-                        onClick={() => {
-                          const current = filters.tags ?? []
-                          const next = isSelected ? current.filter((t) => t !== tag) : [...current, tag]
-                          onFiltersChange({ ...filters, tags: next.length > 0 ? next : undefined })
-                        }}
-                        className={cn(
-                          "w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-colors",
-                          isSelected
-                            ? "bg-secondary text-secondary-foreground font-medium"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                        )}
-                      >
-                        <span className="truncate">#{tag}</span>
-                        <span className="tabular-nums text-muted-foreground shrink-0 ml-2">
-                          {snippetCounts.byTag[tag] ?? 0}
-                        </span>
-                      </button>
-                    )
-                  })}
-                  {allTags.length > 20 && (
-                    <p className="text-xs text-muted-foreground/50 text-center py-1">
-                      +{allTags.length - 20} more
-                    </p>
-                  )}
+                <CollapsibleContent className="mt-1.5">
+                  <div className="flex flex-wrap gap-1.5 px-2 pb-2">
+                    {allTags.slice(0, 20).map((tag) => {
+                      const isSelected = filters.tags?.includes(tag)
+                      return (
+                        <button
+                          key={tag}
+                          onClick={() => {
+                            const current = filters.tags ?? []
+                            const next = isSelected ? current.filter((t) => t !== tag) : [...current, tag]
+                            onFiltersChange({ ...filters, tags: next.length > 0 ? next : undefined })
+                          }}
+                          className={cn(
+                            "inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium transition-all duration-150 border",
+                            isSelected
+                              ? "bg-foreground text-background border-foreground"
+                              : "bg-muted/50 text-muted-foreground border-border hover:border-foreground/30 hover:text-foreground hover:bg-muted"
+                          )}
+                        >
+                          #{tag}
+                          <span className={cn(
+                            "ml-1.5 text-[10px]",
+                            isSelected ? "text-background/70" : "text-muted-foreground/60"
+                          )}>{snippetCounts.byTag[tag] ?? 0}</span>
+                        </button>
+                      )
+                    })}
+                    {allTags.length > 20 && (
+                      <span className="text-[11px] text-muted-foreground/50 px-1 py-1">+{allTags.length - 20} more</span>
+                    )}
+                  </div>
                 </CollapsibleContent>
               </Collapsible>
             </>
@@ -251,13 +292,16 @@ export function Sidebar(props: SidebarProps) {
           <Button
             variant="secondary"
             size="icon"
-            className="fixed bottom-4 left-4 z-20 h-10 w-10 rounded-full shadow-lg border border-border"
+            className="fixed bottom-5 left-4 z-20 h-11 w-11 rounded-full shadow-lg border border-border bg-background hover:bg-muted"
           >
             <Menu className="h-5 w-5" />
             <span className="sr-only">Open filters</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-60">
+        <SheetContent side="left" className="p-0 w-64 flex flex-col">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Filters</SheetTitle>
+          </SheetHeader>
           <SidebarInner {...props} />
         </SheetContent>
       </Sheet>
@@ -265,7 +309,7 @@ export function Sidebar(props: SidebarProps) {
   }
 
   return (
-    <aside className="w-52 border-r border-border flex flex-col h-full shrink-0 bg-background">
+    <aside className="w-56 border-r border-border flex flex-col h-full shrink-0">
       <SidebarInner {...props} />
     </aside>
   )

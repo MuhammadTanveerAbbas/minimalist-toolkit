@@ -97,20 +97,21 @@ export function ExportImportDialog({ onExportJSON, onImportJSON, onExportGist }:
             <span className="hidden sm:inline">Export / Import</span>
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-xl w-[calc(100vw-2rem)] max-h-[90dvh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent showCloseButton={false} className="max-w-lg w-[calc(100vw-2rem)] max-h-[90dvh] overflow-y-auto p-0">
+          <DialogHeader className="px-5 pt-5 pb-4 border-b border-border">
             <DialogTitle>Export &amp; Import</DialogTitle>
             <DialogDescription>Back up your snippets or restore from a previous export.</DialogDescription>
           </DialogHeader>
 
-          <Tabs defaultValue="export" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 h-auto">
-              <TabsTrigger value="export" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Export</TabsTrigger>
-              <TabsTrigger value="import" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Import</TabsTrigger>
-              <TabsTrigger value="gist" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Gist</TabsTrigger>
+          <Tabs defaultValue="export" className="w-full gap-0">
+            <TabsList className="grid w-full grid-cols-3 h-10 rounded-none border-b border-border bg-muted/30 px-0">
+              <TabsTrigger value="export" className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent text-sm h-full">Export</TabsTrigger>
+              <TabsTrigger value="import" className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent text-sm h-full">Import</TabsTrigger>
+              <TabsTrigger value="gist" className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent text-sm h-full">Gist</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="export" className="space-y-4 pt-2">
+            <div className="p-5">
+            <TabsContent value="export" className="space-y-4 mt-0">
               <p className="text-sm text-muted-foreground">
                 Download all snippets as a JSON file, including metadata, tags, and version history.
               </p>
@@ -120,26 +121,26 @@ export function ExportImportDialog({ onExportJSON, onImportJSON, onExportGist }:
               </Button>
             </TabsContent>
 
-            <TabsContent value="import" className="space-y-4 pt-2">
+            <TabsContent value="import" className="space-y-4 mt-0">
               <p className="text-sm text-muted-foreground">
                 Import snippets from a JSON file. Duplicates are automatically assigned new IDs.
               </p>
               <div className="space-y-1.5">
-                <Label>Upload File</Label>
-                <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="w-full gap-2">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Upload File</Label>
+                <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="w-full gap-2 bg-muted/30 hover:bg-muted/60">
                   <Upload className="h-4 w-4" />
                   Choose JSON File
                 </Button>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="import-text">Or Paste JSON</Label>
+                <Label htmlFor="import-text" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Or Paste JSON</Label>
                 <Textarea
                   id="import-text"
                   value={importText}
                   onChange={(e) => setImportText(e.target.value)}
                   placeholder='[{"title": "My snippet", ...}]'
-                  rows={8}
-                  className="font-mono text-xs"
+                  rows={7}
+                  className="font-mono text-xs bg-muted/30 border-border/70 focus-visible:ring-1 resize-none"
                 />
               </div>
               {importResult && (
@@ -154,7 +155,7 @@ export function ExportImportDialog({ onExportJSON, onImportJSON, onExportGist }:
               </Button>
             </TabsContent>
 
-            <TabsContent value="gist" className="space-y-4 pt-2">
+            <TabsContent value="gist" className="space-y-4 mt-0">
               <p className="text-sm text-muted-foreground">
                 Generate a GitHub Gist-compatible payload. Copy the JSON and paste it when creating a new Gist.
               </p>
@@ -165,7 +166,7 @@ export function ExportImportDialog({ onExportJSON, onImportJSON, onExportGist }:
                 </Button>
               ) : (
                 <>
-                  <Textarea value={gistJson} readOnly rows={10} className="font-mono text-xs" />
+                  <Textarea value={gistJson} readOnly rows={10} className="font-mono text-xs bg-muted/30 border-border/70 resize-none" />
                   <div className="flex gap-2">
                     <Button onClick={handleCopyGist} className="flex-1 gap-2">
                       {gistCopied ? <Check className="h-4 w-4" /> : <FileJson className="h-4 w-4" />}
@@ -174,7 +175,7 @@ export function ExportImportDialog({ onExportJSON, onImportJSON, onExportGist }:
                     <Button
                       variant="outline"
                       onClick={() => window.open("https://gist.github.com/new", "_blank")}
-                      className="flex-1 gap-2"
+                      className="flex-1 gap-2 bg-muted/30"
                     >
                       <Github className="h-4 w-4" />
                       Open GitHub Gist
@@ -183,6 +184,7 @@ export function ExportImportDialog({ onExportJSON, onImportJSON, onExportGist }:
                 </>
               )}
             </TabsContent>
+            </div>
           </Tabs>
         </DialogContent>
       </Dialog>
