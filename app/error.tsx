@@ -16,16 +16,16 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="h-screen flex items-center justify-center bg-background">
-      <div className="text-center space-y-4 max-w-sm">
-        <div className="h-12 w-12 rounded-xl bg-destructive/10 flex items-center justify-center mx-auto">
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4 py-8">
+      <div className="w-full max-w-sm space-y-4 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-card">
           <AlertCircle className="h-6 w-6 text-destructive" />
         </div>
-        <h1 className="text-lg font-semibold">Something went wrong</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-lg font-semibold tracking-tight">Something went wrong</h1>
+        <p className="text-sm leading-6 text-muted-foreground">
           An unexpected error occurred. Please try again.
         </p>
-        <Button onClick={reset} variant="secondary">
+        <Button onClick={reset} variant="secondary" className="min-h-11 px-4">
           Try again
         </Button>
       </div>

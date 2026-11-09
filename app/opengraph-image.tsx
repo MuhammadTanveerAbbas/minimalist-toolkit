@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
 
-export const alt = 'Snippet Manager - Developer Code Library'
+export const alt = 'Minimalist Toolkit - Snippets, Mockify, PromptCraft'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -26,12 +26,8 @@ export default function Image() {
         <div
           style={{
             position: 'absolute',
-            top: '-50%',
-            left: '-50%',
-            width: '200%',
-            height: '200%',
-            background:
-              'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 60%)',
+            inset: 0,
+            border: '1px solid #27272a',
           }}
         />
 
@@ -71,25 +67,24 @@ export default function Image() {
           >
             <span
               style={{
-                fontSize: '64px',
+                fontSize: '58px',
                 fontWeight: 700,
                 color: 'white',
                 letterSpacing: '-1px',
                 lineHeight: 1.1,
               }}
             >
-              Snippet Manager
+              Minimalist Toolkit
             </span>
             <span
               style={{
-                fontSize: '24px',
+                fontSize: '22px',
                 color: '#a1a1aa',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                marginTop: '4px',
+                letterSpacing: '0.04em',
+                marginTop: '6px',
               }}
             >
-              Developer Code Library
+              Snippets, Mockify, PromptCraft
             </span>
           </div>
         </div>
@@ -105,16 +100,17 @@ export default function Image() {
             border: '1px solid rgba(255,255,255,0.08)',
           }}
         >
-          {['Syntax Highlighting', 'Tags & Search', 'Version History', 'Keyboard Shortcuts'].map(
+          {['Snippet Manager', 'Mockify', 'PromptCraft', 'One account'].map(
             (tag) => (
               <span
                 key={tag}
                 style={{
                   fontSize: '16px',
                   color: '#d4d4d8',
-                  padding: '4px 12px',
-                  background: 'rgba(255,255,255,0.06)',
+                  padding: '6px 12px',
+                  background: '#18181b',
                   borderRadius: '6px',
+                  border: '1px solid #27272a',
                 }}
               >
                 {tag}
@@ -131,14 +127,14 @@ export default function Image() {
             right: '60px',
             display: 'flex',
             justifyContent: 'center',
-            gap: '32px',
+            gap: '24px',
             fontSize: '14px',
-            color: '#52525b',
+            color: '#71717a',
           }}
         >
-          <span>⌘K Quick Search</span>
-          <span>⌘N New Snippet</span>
-          <span>⌘S Save</span>
+          <span>Code snippets</span>
+          <span>Image prompts</span>
+          <span>Prompt workflows</span>
         </div>
       </div>
     ),

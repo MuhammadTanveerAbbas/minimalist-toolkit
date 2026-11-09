@@ -1,0 +1,22 @@
+import type { MetadataRoute } from "next"
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "Minimalist Toolkit",
+    short_name: "Minimalist Toolkit",
+    description:
+      "Minimalist Toolkit combines Snippet Manager, Mockify, and PromptCraft in one authenticated workspace.",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#0a0a0a",
+    theme_color: "#0a0a0a",
+    icons: [
+      {
+        src: "/icon.svg",
+        sizes: "any",
+        type: "image/svg+xml",
+        purpose: "any",
+      },
+    ],
+  }
+}

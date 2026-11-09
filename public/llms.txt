@@ -1,0 +1,24 @@
+# Minimalist Toolkit
+
+Minimalist Toolkit is a web workspace that combines multiple productivity tools in one place.
+
+## Public pages
+- / : Product overview and features
+- /login : Sign in
+- /signup : Create an account
+
+## Workspace tools (after sign-in)
+- /app : Dashboard and quick access
+- /app/snippets : Save, search, and organize reusable code
+- /app/categories : Browse snippet categories
+- /app/mockify : Generate visual mockups from text prompts
+- /app/promptcraft : Draft and improve prompts
+- /app/chat : AI chat for quick help
+- /app/settings : Account and appearance preferences
+
+## Notes
+- Each tool has its own workflow and page.
+- Some features may require additional service configuration.
+- User workspace data is intended to remain private to the signed-in account.
+
+Made by Tanveer: https://muhammadtanveerabbas.vercel.app

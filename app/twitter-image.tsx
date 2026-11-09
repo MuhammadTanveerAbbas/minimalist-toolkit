@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
 
-export const alt = 'Snippet Manager - Developer Code Library'
+export const alt = 'Minimalist Toolkit - Snippets, Mockify, PromptCraft'
 export const size = { width: 1200, height: 600 }
 export const contentType = 'image/png'
 
@@ -23,17 +23,7 @@ export default function Image() {
           overflow: 'hidden',
         }}
       >
-        <div
-          style={{
-            position: 'absolute',
-            top: '-50%',
-            left: '-50%',
-            width: '200%',
-            height: '200%',
-            background:
-              'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 60%)',
-          }}
-        />
+        <div style={{ position: 'absolute', inset: 0, border: '1px solid #27272a' }} />
 
         <div
           style={{
@@ -59,25 +49,23 @@ export default function Image() {
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span
               style={{
-                fontSize: '56px',
+                fontSize: '52px',
                 fontWeight: 700,
                 color: 'white',
                 letterSpacing: '-1px',
                 lineHeight: 1.1,
               }}
             >
-              Snippet Manager
+              Minimalist Toolkit
             </span>
             <span
               style={{
                 fontSize: '20px',
                 color: '#a1a1aa',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                marginTop: '2px',
+                marginTop: '4px',
               }}
             >
-              Developer Code Library
+              Snippets, Mockify, PromptCraft
             </span>
           </div>
         </div>
@@ -89,14 +77,15 @@ export default function Image() {
             marginTop: '28px',
           }}
         >
-          {['⌘K Search', '⌘N New', '⌘S Save'].map((tag) => (
+          {['Snippet Manager', 'Mockify', 'PromptCraft'].map((tag) => (
             <span
               key={tag}
               style={{
                 fontSize: '14px',
-                color: '#71717a',
-                padding: '4px 10px',
-                background: 'rgba(255,255,255,0.05)',
+                color: '#d4d4d8',
+                padding: '6px 10px',
+                background: '#18181b',
+                border: '1px solid #27272a',
                 borderRadius: '6px',
               }}
             >

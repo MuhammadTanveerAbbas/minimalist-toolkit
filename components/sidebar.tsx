@@ -292,7 +292,7 @@ export function Sidebar(props: SidebarProps) {
           <Button
             variant="secondary"
             size="icon"
-            className="fixed bottom-5 left-4 z-20 h-11 w-11 rounded-full shadow-lg border border-border bg-background hover:bg-muted"
+            className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-4 z-20 h-11 w-11 rounded-full border border-border bg-background hover:bg-muted md:bottom-5"
           >
             <Menu className="h-5 w-5" />
             <span className="sr-only">Open filters</span>

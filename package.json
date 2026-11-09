@@ -1,10 +1,10 @@
 {
-  "name": "snippet-manager",
+  "name": "minimalist-toolkit",
   "version": "1.1.0",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/MuhammadTanveerAbbas/minimalist-snippet-manager.git"
+    "url": "https://github.com/MuhammadTanveerAbbas/minimalist-toolkit.git"
   },
   "scripts": {
     "dev": "next dev",

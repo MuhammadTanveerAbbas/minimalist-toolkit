@@ -133,7 +133,7 @@ export function SnippetViewer({
                 "px-5 py-2.5 border-b text-xs",
                 isDark ? "border-white/8 text-white/40" : "border-black/8 text-gray-400"
               )}>
-                <span className="mr-2 opacity-40">//</span>
+                <span className="mr-2 opacity-40">{"//"}</span>
                 {snippet.description}
               </div>
             )}

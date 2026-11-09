@@ -9,35 +9,72 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://minimalist-snippet-manager.vercel.app'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://minimalist-toolkit.vercel.app"
+const siteName = "Minimalist Toolkit"
+const siteDescription =
+  "Minimalist Toolkit brings Snippet Manager, Mockify, PromptCraft, and AI chat into one clean workspace."
 
 export const metadata: Metadata = {
-  title: "Snippet Manager - Developer Code Library",
-  description:
-    "A powerful code snippet manager with syntax highlighting, tagging, version history, and advanced search for developers.",
   metadataBase: new URL(siteUrl),
+  title: {
+    default: `${siteName} - Snippets, Mockify, PromptCraft`,
+    template: `%s | ${siteName}`,
+  },
+  description: siteDescription,
+  applicationName: siteName,
+  keywords: [
+    "Minimalist Toolkit",
+    "snippet manager",
+    "code snippets",
+    "Mockify",
+    "image prompt generator",
+    "PromptCraft",
+    "prompt engineering",
+    "developer tools",
+    "AI workspace",
+    "Next.js",
+  ],
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: ["/icon.svg"],
+    apple: ["/icon.svg"],
   },
+  manifest: "/manifest.webmanifest",
   openGraph: {
     type: "website",
     url: siteUrl,
-    siteName: "Snippet Manager",
-    title: "Snippet Manager - Developer Code Library",
-    description:
-      "A powerful code snippet manager with syntax highlighting, tagging, version history, and advanced search for developers.",
+    siteName,
+    title: `${siteName} - Snippets, Mockify, PromptCraft`,
+    description: siteDescription,
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Snippet Manager - Developer Code Library",
-    description:
-      "A powerful code snippet manager with syntax highlighting, tagging, version history, and advanced search for developers.",
+    title: `${siteName} - Snippets, Mockify, PromptCraft`,
+    description: siteDescription,
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  category: "technology",
 }
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
   width: "device-width",
   initialScale: 1,
 }

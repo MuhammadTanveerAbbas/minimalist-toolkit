@@ -10,19 +10,20 @@ export default function GlobalError({
   reset: () => void
 }) {
   return (
-    <html>
+    <html lang="en">
       <body>
-        <div className="h-screen flex items-center justify-center bg-background">
-          <div className="text-center space-y-4 max-w-sm">
-            <h1 className="text-lg font-semibold">Critical error</h1>
-            <p className="text-sm text-muted-foreground">
-              A critical error occurred. Please refresh the page.
+        <div className="flex min-h-dvh items-center justify-center bg-background px-4 py-8 text-foreground">
+          <div className="w-full max-w-sm space-y-4 text-center">
+            <h1 className="text-lg font-semibold tracking-tight">Something went wrong</h1>
+            <p className="text-sm leading-6 text-muted-foreground">
+              The app ran into a problem. Please refresh and try again.
             </p>
             <button
+              type="button"
               onClick={() => reset()}
-              className="px-4 py-2 rounded-lg bg-secondary text-secondary-foreground text-sm font-medium"
+              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-foreground px-4 text-sm font-medium text-background"
             >
-              Refresh
+              Try again
             </button>
           </div>
         </div>
