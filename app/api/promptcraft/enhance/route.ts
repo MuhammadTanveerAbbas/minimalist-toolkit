@@ -1,4 +1,6 @@
+import type { NextRequest } from "next/server"
 import { groqChatCompletion } from "@/lib/promptcraft/groq"
+import { requireUser } from "@/lib/security/api-guard"
 
 export const maxDuration = 30
 
@@ -15,7 +17,10 @@ Enhancement principles:
 - Preserve the original intent - improve execution, not direction
 - If the prompt lacks a clear output format, add one`
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const guard = await requireUser(req, { limit: 30, windowMs: 60_000 })
+  if (guard instanceof Response) return guard
+
   let body: unknown
   try {
     body = await req.json()

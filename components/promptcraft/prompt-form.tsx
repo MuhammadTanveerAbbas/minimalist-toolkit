@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Sparkles, Loader2, Link2, X, CheckCircle, AlertCircle, MessageSquare, Sparkle, Gem, Zap as ZapIcon, MousePointer2, Bot } from "lucide-react"
+import { Sparkles, Loader2, Link2, X, CheckCircle, AlertCircle, MessageSquare, Sparkle, Gem, Zap as ZapIcon, MousePointer2, Bot, LayoutTemplate } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const CATEGORIES = [
@@ -37,6 +37,49 @@ const PLATFORMS: { id: string; label: string; Icon: React.ComponentType<{ classN
   { id: "Mistral",     label: "Mistral",     Icon: ZapIcon },
   { id: "Cursor",      label: "Cursor",      Icon: MousePointer2 },
   { id: "Grok",       label: "Grok",        Icon: Bot },
+]
+
+export interface PromptTemplate {
+  label: string
+  topic: string
+  tone: string
+  category: string
+  platform: string
+}
+
+/**
+ * Ready-made starting points. Each one fills every field so the user can
+ * generate straight away, then tune it.
+ */
+const TEMPLATES: PromptTemplate[] = [
+  {
+    label: "SaaS onboarding email",
+    topic: "Write a welcome onboarding email for a new user of our SaaS analytics product",
+    tone: "Persuasive",
+    category: "Marketing",
+    platform: "ChatGPT",
+  },
+  {
+    label: "Technical documentation",
+    topic: "Write reference documentation for a public REST API endpoint, including auth, request and response examples",
+    tone: "Technical",
+    category: "Code & Dev",
+    platform: "Claude",
+  },
+  {
+    label: "Ad creative for a launch",
+    topic: "Create three ad variations for a product launch, one per channel, with headline, body and call to action",
+    tone: "Persuasive",
+    category: "Marketing",
+    platform: "Gemini",
+  },
+  {
+    label: "Bug report for an LLM",
+    topic: "Write a precise bug report for an LLM integration, with reproducible steps, expected output and actual output",
+    tone: "Technical",
+    category: "Code & Dev",
+    platform: "Cursor",
+  },
 ]
 
 export interface GenerateParams {
@@ -88,6 +131,13 @@ export function PromptForm({ onGenerate, isLoading }: PromptFormProps) {
   const [scrapeStatus, setScrapeStatus] = useState<ScrapeStatus>("idle")
   const [scrapeError, setScrapeError] = useState("")
   const [scrapedSource, setScrapedSource] = useState("")
+
+  const applyTemplate = (template: PromptTemplate) => {
+    setTopic(template.topic)
+    setTone(template.tone)
+    setCategory(template.category)
+    setPlatform(template.platform)
+  }
 
   const handleScrape = async () => {
     const trimmedUrl = urlInput.trim()
@@ -171,6 +221,30 @@ export function PromptForm({ onGenerate, isLoading }: PromptFormProps) {
 
       {/* Scrollable fields */}
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 py-4 sm:gap-5 sm:px-6 sm:py-5">
+
+        {/* Templates */}
+        <div className="flex flex-col gap-2">
+          <FieldLabel>
+            <LayoutTemplate className="h-3.5 w-3.5 text-muted-foreground/50" aria-hidden="true" />
+            Start from a template
+          </FieldLabel>
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Prompt templates">
+            {TEMPLATES.map((template) => (
+              <button
+                key={template.label}
+                type="button"
+                onClick={() => applyTemplate(template)}
+                className="rounded-lg border border-border/70 bg-secondary/40 px-3 py-2 text-xs font-medium text-muted-foreground transition-all hover:border-border hover:bg-secondary hover:text-foreground min-h-11"
+              >
+                {template.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-[11px] text-muted-foreground/50">
+            A template fills the topic, tone, category and platform. Edit anything before
+            generating.
+          </p>
+        </div>
 
         {/* Topic */}
         <div className="flex flex-col gap-2">
@@ -315,9 +389,9 @@ export function PromptForm({ onGenerate, isLoading }: PromptFormProps) {
           </div>
 
           {scrapeStatus === "success" && (
-            <div className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-2">
+            <div className="flex items-center justify-between rounded-lg border border-success/25 bg-success/[0.07] px-3 py-2">
               <div className="flex items-center gap-2 text-xs text-foreground/80">
-                <CheckCircle className="h-3.5 w-3.5 shrink-0 text-emerald-400" aria-hidden="true" />
+                <CheckCircle className="h-3.5 w-3.5 shrink-0 text-success" aria-hidden="true" />
                 Scraped <span className="font-medium text-foreground">{scrapedSource}</span> - added to context
               </div>
               <button

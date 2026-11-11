@@ -1,13 +1,20 @@
-import { Code2 } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function Loading() {
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
-      <div className="space-y-3 text-center">
-        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card animate-pulse">
-          <Code2 className="h-5 w-5 text-muted-foreground" />
-        </div>
-        <p className="text-sm text-muted-foreground">Loading...</p>
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-full max-w-md" />
+      </div>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-[104px]" />
+        ))}
+      </div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+        <Skeleton className="h-72 lg:col-span-2" />
+        <Skeleton className="h-72" />
       </div>
     </div>
   )

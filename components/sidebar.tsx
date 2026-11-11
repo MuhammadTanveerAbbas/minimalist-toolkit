@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { ChevronDown, Tag, Folder, LayoutGrid, Eye, EyeOff, Menu, Code2, SlidersHorizontal } from "lucide-react"
+import { ChevronDown, Tag, Folder, LayoutGrid, Eye, EyeOff, Menu, Code2, SlidersHorizontal, X } from "lucide-react"
 import type { Language, SnippetFilters } from "@/lib/types"
 import { LANGUAGE_NAMES } from "@/lib/editor-languages"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -43,24 +43,26 @@ function NavItem({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={cn(
-        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-150 group",
+        "group flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-all duration-150",
         active
-          ? "bg-foreground text-background font-medium shadow-sm"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+          ? "bg-foreground font-medium text-background shadow-sm"
+          : "text-muted-foreground hover:bg-accent hover:text-foreground"
       )}
     >
       <span className="flex items-center gap-2.5">
-        <Icon className={cn("h-3.5 w-3.5 shrink-0", active ? "text-background" : "")} />
+        <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
         <span className="truncate">{label}</span>
       </span>
-      <span className={cn(
-        "text-[11px] tabular-nums px-1.5 py-0.5 rounded-md font-medium shrink-0",
-        active
-          ? "bg-background/20 text-background"
-          : "bg-muted text-muted-foreground group-hover:bg-muted/80"
-      )}>
+      <span
+        className={cn(
+          "shrink-0 rounded-md px-1.5 py-0.5 text-[11px] font-medium tabular-nums",
+          active ? "bg-background/20 text-background" : "bg-muted text-muted-foreground"
+        )}
+      >
         {count}
       </span>
     </button>
@@ -69,9 +71,9 @@ function NavItem({
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-2 px-3 pt-4 pb-1.5">
-      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">{children}</p>
-      <div className="flex-1 h-px bg-border/60" />
+    <div className="flex items-center gap-2 px-3 pb-1.5 pt-4">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">{children}</p>
+      <div className="h-px flex-1 bg-border/60" aria-hidden="true" />
     </div>
   )
 }
@@ -91,27 +93,36 @@ function FilterChip({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={cn(
-        "w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition-all duration-150 group",
+        "group flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs transition-all duration-150",
         active
-          ? "bg-secondary text-secondary-foreground font-medium"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+          ? "bg-secondary font-medium text-secondary-foreground"
+          : "text-muted-foreground hover:bg-accent hover:text-foreground"
       )}
     >
       <span className="flex items-center gap-2 truncate">
-        {dot && (
-          <span className={cn(
-            "h-1.5 w-1.5 rounded-full shrink-0 transition-colors",
-            active ? "bg-foreground" : "bg-muted-foreground/40"
-          )} />
-        )}
+        {dot ? (
+          <span
+            className={cn(
+              "h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
+              active ? "bg-foreground" : "bg-muted-foreground/40"
+            )}
+            aria-hidden="true"
+          />
+        ) : null}
         <span className="truncate">{label}</span>
       </span>
-      <span className={cn(
-        "tabular-nums shrink-0 ml-2 text-[11px]",
-        active ? "text-secondary-foreground" : "text-muted-foreground/60"
-      )}>{count}</span>
+      <span
+        className={cn(
+          "ml-2 shrink-0 text-[11px] tabular-nums",
+          active ? "text-secondary-foreground" : "text-muted-foreground/60"
+        )}
+      >
+        {count}
+      </span>
     </button>
   )
 }
@@ -125,33 +136,33 @@ function SidebarInner({ allTags, allCategories, filters, onFiltersChange, snippe
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
 
-  const hasActiveFilter = !!filters.language || !!filters.category || (filters.tags && filters.tags.length > 0) || !!filters.visibility
+  const hasActiveFilter =
+    !!filters.language || !!filters.category || (filters.tags && filters.tags.length > 0) || !!filters.visibility
 
   return (
-    <div className="flex flex-col h-full bg-sidebar">
-      {/* Header */}
-      <div className="px-4 py-3.5 border-b border-border flex items-center justify-between">
+    <div className="flex h-full flex-col bg-sidebar">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
-          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Filters</p>
+          <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Filters</p>
         </div>
-        {hasActiveFilter && (
+        {hasActiveFilter ? (
           <button
+            type="button"
             onClick={() => onFiltersChange({ search: filters.search })}
-            className="text-[10px] text-muted-foreground hover:text-foreground transition-colors px-1.5 py-0.5 rounded hover:bg-muted/50"
+            className="rounded px-1.5 py-0.5 text-[10px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             Clear
           </button>
-        )}
+        ) : null}
       </div>
 
       <ScrollArea className="flex-1">
-        <div className="px-2 py-2 space-y-0.5">
-          {/* View section */}
+        <div className="space-y-0.5 px-2 py-2">
           <SectionLabel>View</SectionLabel>
           <NavItem
             icon={LayoutGrid}
-            label="All Snippets"
+            label="All snippets"
             count={snippetCounts.total}
             active={!filters.visibility}
             onClick={() => onFiltersChange({ ...filters, visibility: undefined })}
@@ -171,111 +182,129 @@ function SidebarInner({ allTags, allCategories, filters, onFiltersChange, snippe
             onClick={() => onFiltersChange({ ...filters, visibility: "private" })}
           />
 
-          {topLanguages.length > 0 && (
+          {topLanguages.length > 0 ? (
             <>
               <SectionLabel>Languages</SectionLabel>
               <Collapsible open={languagesOpen} onOpenChange={setLanguagesOpen}>
-                <CollapsibleTrigger className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/40 group">
+                <CollapsibleTrigger className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                   <span className="flex items-center gap-2">
-                    <Code2 className="h-3 w-3" />
+                    <Code2 className="h-3 w-3" aria-hidden="true" />
                     <span className="font-medium">{topLanguages.length} languages</span>
                   </span>
-                  <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", !languagesOpen && "-rotate-90")} />
+                  <ChevronDown
+                    className={cn("h-3 w-3 transition-transform duration-200", !languagesOpen && "-rotate-90")}
+                    aria-hidden="true"
+                  />
                 </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-0.5 mt-0.5">
+                <CollapsibleContent className="mt-0.5 space-y-0.5">
                   {topLanguages.map(([lang, count]) => (
                     <FilterChip
                       key={lang}
-                      label={LANGUAGE_NAMES[lang as Language]}
+                      label={LANGUAGE_NAMES[lang as Language] ?? lang}
                       count={count}
                       active={filters.language === lang}
                       dot
-                      onClick={() => onFiltersChange({
-                        ...filters,
-                        language: filters.language === lang ? undefined : (lang as Language),
-                      })}
+                      onClick={() =>
+                        onFiltersChange({
+                          ...filters,
+                          language: filters.language === lang ? undefined : (lang as Language),
+                        })
+                      }
                     />
                   ))}
                 </CollapsibleContent>
               </Collapsible>
             </>
-          )}
+          ) : null}
 
-          {allCategories.length > 0 && (
+          {allCategories.length > 0 ? (
             <>
               <SectionLabel>Categories</SectionLabel>
               <Collapsible open={categoriesOpen} onOpenChange={setCategoriesOpen}>
-                <CollapsibleTrigger className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/40">
+                <CollapsibleTrigger className="flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                   <span className="flex items-center gap-2">
-                    <Folder className="h-3 w-3" />
+                    <Folder className="h-3 w-3" aria-hidden="true" />
                     <span className="font-medium">{allCategories.length} categories</span>
                   </span>
-                  <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", !categoriesOpen && "-rotate-90")} />
+                  <ChevronDown
+                    className={cn("h-3 w-3 transition-transform duration-200", !categoriesOpen && "-rotate-90")}
+                    aria-hidden="true"
+                  />
                 </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-0.5 mt-0.5">
+                <CollapsibleContent className="mt-0.5 space-y-0.5">
                   {allCategories.map((category) => (
                     <FilterChip
                       key={category}
                       label={category}
                       count={snippetCounts.byCategory[category] ?? 0}
                       active={filters.category === category}
-                      onClick={() => onFiltersChange({
-                        ...filters,
-                        category: filters.category === category ? undefined : category,
-                      })}
+                      onClick={() =>
+                        onFiltersChange({
+                          ...filters,
+                          category: filters.category === category ? undefined : category,
+                        })
+                      }
                     />
                   ))}
                 </CollapsibleContent>
               </Collapsible>
             </>
-          )}
+          ) : null}
 
-          {allTags.length > 0 && (
+          {allTags.length > 0 ? (
             <>
               <SectionLabel>Tags</SectionLabel>
               <Collapsible open={tagsOpen} onOpenChange={setTagsOpen}>
-                <CollapsibleTrigger className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/40">
+                <CollapsibleTrigger className="flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                   <span className="flex items-center gap-2">
-                    <Tag className="h-3 w-3" />
+                    <Tag className="h-3 w-3" aria-hidden="true" />
                     <span className="font-medium">{allTags.length} tags</span>
                   </span>
-                  <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", !tagsOpen && "-rotate-90")} />
+                  <ChevronDown
+                    className={cn("h-3 w-3 transition-transform duration-200", !tagsOpen && "-rotate-90")}
+                    aria-hidden="true"
+                  />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="mt-1.5">
                   <div className="flex flex-wrap gap-1.5 px-2 pb-2">
-                    {allTags.slice(0, 20).map((tag) => {
+                    {allTags.slice(0, 24).map((tag) => {
                       const isSelected = filters.tags?.includes(tag)
                       return (
                         <button
                           key={tag}
+                          type="button"
                           onClick={() => {
                             const current = filters.tags ?? []
-                            const next = isSelected ? current.filter((t) => t !== tag) : [...current, tag]
+                            const next = isSelected
+                              ? current.filter((t) => t !== tag)
+                              : [...current, tag]
                             onFiltersChange({ ...filters, tags: next.length > 0 ? next : undefined })
                           }}
+                          aria-pressed={isSelected}
                           className={cn(
-                            "inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium transition-all duration-150 border",
+                            "inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-medium transition-all duration-150",
                             isSelected
-                              ? "bg-foreground text-background border-foreground"
-                              : "bg-muted/50 text-muted-foreground border-border hover:border-foreground/30 hover:text-foreground hover:bg-muted"
+                              ? "border-foreground bg-foreground text-background"
+                              : "border-border bg-muted/50 text-muted-foreground hover:border-foreground/30 hover:bg-muted hover:text-foreground"
                           )}
                         >
                           #{tag}
-                          <span className={cn(
-                            "ml-1.5 text-[10px]",
-                            isSelected ? "text-background/70" : "text-muted-foreground/60"
-                          )}>{snippetCounts.byTag[tag] ?? 0}</span>
+                          <span className={cn("ml-1.5 text-[10px]", isSelected ? "text-background/70" : "text-muted-foreground/60")}>
+                            {snippetCounts.byTag[tag] ?? 0}
+                          </span>
                         </button>
                       )
                     })}
-                    {allTags.length > 20 && (
-                      <span className="text-[11px] text-muted-foreground/50 px-1 py-1">+{allTags.length - 20} more</span>
-                    )}
+                    {allTags.length > 24 ? (
+                      <span className="px-1 py-1 text-[11px] text-muted-foreground/60">
+                        +{allTags.length - 24} more
+                      </span>
+                    ) : null}
                   </div>
                 </CollapsibleContent>
               </Collapsible>
             </>
-          )}
+          ) : null}
         </div>
       </ScrollArea>
     </div>
@@ -292,13 +321,13 @@ export function Sidebar(props: SidebarProps) {
           <Button
             variant="secondary"
             size="icon"
-            className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-4 z-20 h-11 w-11 rounded-full border border-border bg-background hover:bg-muted md:bottom-5"
+            className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-4 z-20 h-11 w-11 rounded-full border border-border bg-card shadow-sm hover:bg-accent md:bottom-5"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-5 w-5" aria-hidden="true" />
             <span className="sr-only">Open filters</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-64 flex flex-col">
+        <SheetContent side="left" className="flex w-72 flex-col p-0">
           <SheetHeader className="sr-only">
             <SheetTitle>Filters</SheetTitle>
           </SheetHeader>
@@ -309,7 +338,7 @@ export function Sidebar(props: SidebarProps) {
   }
 
   return (
-    <aside className="w-56 border-r border-border flex flex-col h-full shrink-0">
+    <aside className="flex h-full w-56 shrink-0 flex-col border-r border-border">
       <SidebarInner {...props} />
     </aside>
   )

@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { X, Save, Clock, AlertCircle, Eye, EyeOff, Tag, Folder, Hash } from "lucide-react"
+import { X, Save, Clock, AlertCircle, Eye, EyeOff, Tag, Folder, Hash, Sparkles } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 
@@ -19,10 +19,9 @@ interface SnippetFormProps {
   snippet?: Snippet
   onSave: (data: Omit<Snippet, "id" | "createdAt" | "updatedAt" | "versions">) => void | Promise<void>
   onCancel: () => void
-  theme?: "dark" | "light"
 }
 
-export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: SnippetFormProps) {
+export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
   const [title, setTitle] = useState(snippet?.title ?? "")
   const [description, setDescription] = useState(snippet?.description ?? "")
   const [code, setCode] = useState(snippet?.code ?? "")
@@ -47,6 +46,14 @@ export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: Snipp
 
   const handleRemoveTag = (tag: string) => setTags(tags.filter((t) => t !== tag))
 
+  const applyStarter = () => {
+    setTitle("Fetch with timeout")
+    setDescription("Abort a fetch after a deadline and surface a useful error.")
+    setLanguage("typescript")
+    setCode(`export async function fetchWithTimeout(\n  url: string,\n  timeoutMs = 5_000\n): Promise<Response> {\n  const controller = new AbortController()\n  const timer = setTimeout(() => controller.abort(), timeoutMs)\n\n  try {\n    return await fetch(url, { signal: controller.signal })\n  } finally {\n    clearTimeout(timer)\n  }\n}`)
+    setTitleError("")
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) { setTitleError("Title is required."); return }
@@ -69,25 +76,41 @@ export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: Snipp
 
         {/* Title bar */}
         <div className="px-1 pb-4 border-b border-border">
-          <input
-            id="title"
-            value={title}
-            onChange={(e) => { setTitle(e.target.value); setTitleError("") }}
-            placeholder="Snippet title..."
-            className="w-full bg-transparent text-xl font-semibold placeholder:text-muted-foreground/30 outline-none border-none focus:ring-0 py-1"
-            autoFocus
-          />
+          <div className="flex items-start gap-3">
+            <input
+              id="title"
+              value={title}
+              onChange={(e) => { setTitle(e.target.value); setTitleError("") }}
+              placeholder="Snippet title..."
+              aria-label="Snippet title"
+              aria-invalid={!!titleError}
+              className="w-full min-w-0 bg-transparent text-xl font-semibold placeholder:text-muted-foreground/30 outline-none border-none focus:ring-0 py-1"
+              autoFocus
+            />
+            {!snippet ? (
+              <button
+                type="button"
+                onClick={applyStarter}
+                className="mt-1 inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <Sparkles className="h-3 w-3" aria-hidden="true" />
+                Use starter
+              </button>
+            ) : null}
+          </div>
           {titleError && (
-            <p className="text-xs text-destructive flex items-center gap-1 mt-1">
-              <AlertCircle className="h-3 w-3" />{titleError}
+            <p className="mt-1 flex items-center gap-1 text-xs text-destructive">
+              <AlertCircle className="h-3 w-3" aria-hidden="true" />
+              {titleError}
             </p>
           )}
           <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add a short description..."
+            aria-label="Snippet description"
             rows={1}
-            className="mt-1.5 resize-none bg-transparent dark:bg-transparent border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-0 text-sm text-muted-foreground placeholder:text-muted-foreground/30"
+            className="mt-1.5 resize-none bg-transparent border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-0 text-sm text-muted-foreground placeholder:text-muted-foreground/30"
           />
         </div>
 
@@ -208,7 +231,7 @@ export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: Snipp
               <Badge variant="outline" className="text-xs h-5">{LANGUAGE_NAMES[language]}</Badge>
             </div>
             <div className="rounded-lg overflow-hidden border border-border">
-              <CodeEditor value={code} onChange={setCode} language={language} theme={theme} minHeight="320px" />
+              <CodeEditor value={code} onChange={setCode} language={language} minHeight="320px" />
             </div>
             {!code.trim() && (
               <p className="text-xs text-muted-foreground/60">Code is required to save.</p>
@@ -246,7 +269,7 @@ export function SnippetForm({ snippet, onSave, onCancel, theme = "dark" }: Snipp
                       Restore
                     </Button>
                   </div>
-                  <CodeEditor value={version.code} onChange={() => {}} language={language} readOnly minHeight="150px" theme={theme} />
+                  <CodeEditor value={version.code} onChange={() => {}} language={language} readOnly minHeight="150px" />
                 </div>
               ))}
             </div>

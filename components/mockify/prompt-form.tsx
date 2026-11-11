@@ -9,6 +9,9 @@ import {
   RectangleVertical,
   Maximize2,
   Monitor,
+  Lock,
+  Unlock,
+  Dices,
   type LucideIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -16,12 +19,42 @@ import { ImageModel, MODEL_OPTIONS, QUALITY_SUPPORT, SIZE_OPTIONS, SIZE_SUPPORT,
 
 const MAX_CHARS = 1000
 
-const EXAMPLE_PROMPTS = [
-  "Professional product photo of wireless headphones on clean white background, studio lighting",
-  "Modern smartwatch displaying fitness dashboard, centered composition, high detail",
-  "Premium skincare serum bottle with elegant packaging, full product shot, soft shadows",
-  "Sleek electric scooter in urban setting, complete vehicle visible, photorealistic",
-  "Designer sneakers with multiple colorways, product showcase, professional photography",
+interface PromptPreset {
+  label: string
+  prompt: string
+}
+
+/**
+ * Concrete starters. Each one is a complete prompt with a subject, a
+ * composition, a light source and a style, so the user edits a working
+ * prompt instead of a fragment.
+ */
+const PROMPT_PRESETS: PromptPreset[] = [
+  {
+    label: "SaaS landing hero",
+    prompt:
+      "Wide hero banner for a B2B analytics dashboard: a clean product interface mockup floating at a slight angle, soft off-white background, screen-lit rim lighting from the left, generous negative space on the left for headline copy, photorealistic 3D render, high detail, full frame, no cropping",
+  },
+  {
+    label: "Mobile app icon",
+    prompt:
+      "Single mobile app icon centered on a flat square canvas: a rounded-square glyph of a lightning bolt inside a circle, electric blue and warm orange flat colors, soft studio light from the top left, crisp vector-like edges, no text, generous padding, centered composition",
+  },
+  {
+    label: "Product shot on marble",
+    prompt:
+      "Studio product photograph of an unbranded matte black portable speaker standing on a pale marble slab, three-quarter camera angle, soft diffused overhead lighting with gentle reflections, shallow depth of field, editorial product photography, full object visible, no cropping",
+  },
+  {
+    label: "Isometric illustration",
+    prompt:
+      "Isometric cutaway illustration of a small warehouse automation system: conveyor belt, robotic arm and stacked crates, 45-degree top-down view, soft ambient occlusion, muted blue and warm grey palette, clean vector style, plain white background, full scene in frame",
+  },
+  {
+    label: "Editorial portrait",
+    prompt:
+      "Editorial portrait of a confident software engineer in her thirties, natural window light from camera left, shallow depth of field, neutral studio background, subtle film grain, muted color grade, waist-up framing, looking slightly off camera, realistic skin tones",
+  },
 ]
 
 interface PromptFormProps {
@@ -33,6 +66,11 @@ interface PromptFormProps {
   onModelChange: (model: ImageModel) => void
   onQualityChange: (quality: Quality) => void
   onSizeChange: (size: SizeValue) => void
+  seedLocked: boolean
+  seedValue: number
+  onSeedLockToggle: () => void
+  onSeedChange: (seed: number) => void
+  onRandomSeed: () => void
 }
 
 export function PromptForm({
@@ -44,6 +82,11 @@ export function PromptForm({
   onModelChange,
   onQualityChange,
   onSizeChange,
+  seedLocked,
+  seedValue,
+  onSeedLockToggle,
+  onSeedChange,
+  onRandomSeed,
 }: PromptFormProps) {
   const [prompt, setPrompt] = useState("")
   const [promptError, setPromptError] = useState<string | null>(null)
@@ -73,9 +116,42 @@ export function PromptForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      {/* Prompt presets */}
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
+          Prompt presets
+        </span>
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Prompt presets">
+          {PROMPT_PRESETS.map((preset) => (
+            <button
+              key={preset.label}
+              type="button"
+              onClick={() => {
+                setPrompt(preset.prompt)
+                setPromptError(null)
+              }}
+              className={cn(
+                "min-h-9 rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground",
+                "hover:border-ring hover:text-foreground transition-colors font-mono",
+                prompt === preset.prompt && "border-ring text-foreground"
+              )}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground/70">
+          Presets fill the box with a complete prompt. Edit it before generating.
+        </p>
+      </div>
+
       {/* Prompt Textarea */}
       <div className="relative">
+        <label htmlFor="mockify-prompt" className="sr-only">
+          Image prompt
+        </label>
         <textarea
+          id="mockify-prompt"
           value={prompt}
           onChange={(e) => {
             if (e.target.value.length <= MAX_CHARS) setPrompt(e.target.value)
@@ -101,10 +177,14 @@ export function PromptForm({
       {/* Model + Quality + Size selectors */}
       <div className="flex flex-wrap gap-3">
         <div className="flex flex-col gap-1 flex-1 min-w-[180px]">
-          <label className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
+          <label
+            htmlFor="mockify-model"
+            className="text-xs font-mono text-muted-foreground uppercase tracking-widest"
+          >
             Model
           </label>
           <select
+            id="mockify-model"
             value={model}
             onChange={(e) => onModelChange(e.target.value as ImageModel)}
               className={cn(
@@ -113,7 +193,7 @@ export function PromptForm({
                 "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 transition-colors"
               )}
             >
-              {MODEL_OPTIONS.map((opt) => (
+            {MODEL_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
@@ -128,10 +208,14 @@ export function PromptForm({
 
         {qualityOptions && (
           <div className="flex flex-col gap-1 min-w-[140px]">
-            <label className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
+            <label
+              htmlFor="mockify-quality"
+              className="text-xs font-mono text-muted-foreground uppercase tracking-widest"
+            >
               Quality
             </label>
             <select
+              id="mockify-quality"
               value={quality}
               onChange={(e) => onQualityChange(e.target.value as Quality)}
               className={cn(
@@ -153,10 +237,17 @@ export function PromptForm({
       {/* Size/Aspect Ratio selector */}
       {sizeOptions && (
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
+          <span
+            id="mockify-size-label"
+            className="text-xs font-mono text-muted-foreground uppercase tracking-widest"
+          >
             Size & Aspect Ratio
-          </label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          </span>
+          <div
+            className="grid grid-cols-2 sm:grid-cols-4 gap-2"
+            role="group"
+            aria-labelledby="mockify-size-label"
+          >
             {SIZE_OPTIONS.filter(opt => sizeOptions.includes(opt.value)).map((opt) => {
               const IconComponent = iconMap[opt.icon]
               return (
@@ -164,6 +255,7 @@ export function PromptForm({
                   key={opt.value}
                   type="button"
                   onClick={() => onSizeChange(opt.value)}
+                  aria-pressed={size === opt.value}
                   className={cn(
                     "flex min-h-11 flex-col items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 transition-all",
                     size === opt.value
@@ -171,7 +263,7 @@ export function PromptForm({
                       : "border-border bg-muted text-muted-foreground hover:border-ring/50 hover:text-foreground"
                   )}
                 >
-                  <IconComponent className="h-5 w-5" />
+                  <IconComponent className="h-5 w-5" aria-hidden="true" />
                   <span className="text-xs font-medium">{opt.label}</span>
                   <span className="text-[10px] font-mono text-muted-foreground">{opt.ratio}</span>
                 </button>
@@ -184,21 +276,70 @@ export function PromptForm({
         </div>
       )}
 
-      {/* Example chips */}
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-        {EXAMPLE_PROMPTS.map((ex) => (
+      {/* Seed control */}
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span
+            id="mockify-seed-label"
+            className="text-xs font-mono text-muted-foreground uppercase tracking-widest"
+          >
+            Seed
+          </span>
           <button
-            key={ex}
             type="button"
-            onClick={() => setPrompt(ex)}
+            onClick={onSeedLockToggle}
+            aria-pressed={seedLocked}
             className={cn(
-              "shrink-0 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground",
-              "hover:border-ring hover:text-foreground transition-colors font-mono"
+              "inline-flex min-h-9 items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-mono transition-colors",
+              seedLocked
+                ? "border-ring bg-accent/10 text-foreground"
+                : "border-border text-muted-foreground hover:text-foreground"
             )}
           >
-            {ex.length > 36 ? ex.slice(0, 36) + "..." : ex}
+            {seedLocked ? (
+              <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+            ) : (
+              <Unlock className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
+            {seedLocked ? "Locked" : "Unlocked"}
           </button>
-        ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            id="mockify-seed"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            max={999999999}
+            step={1}
+            value={seedValue}
+            disabled={!seedLocked}
+            onChange={(e) => {
+              const next = Number(e.target.value)
+              if (Number.isFinite(next)) onSeedChange(next)
+            }}
+            aria-labelledby="mockify-seed-label"
+            className={cn(
+              "numeric-input w-full rounded-lg border border-border bg-muted px-3 py-2 font-mono text-sm text-foreground",
+              "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 transition-colors",
+              !seedLocked && "opacity-50"
+            )}
+          />
+          <button
+            type="button"
+            onClick={onRandomSeed}
+            aria-label="Pick a random seed"
+            title="Pick a random seed"
+            className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Dices className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+        <p className="text-xs text-muted-foreground/70 font-mono">
+          {seedLocked
+            ? "Same prompt and seed reproduce the same image."
+            : "Unlocked: every generation uses a new random seed."}
+        </p>
       </div>
 
       {/* Submit */}
@@ -214,12 +355,12 @@ export function PromptForm({
       >
         {isLoading ? (
           <>
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
             Generating...
           </>
         ) : (
           <>
-            <Sparkles className="h-4 w-4" />
+            <Sparkles className="h-4 w-4" aria-hidden="true" />
             Generate Image
           </>
         )}

@@ -8,6 +8,23 @@ export interface GenerateImageOptions {
   model?: ImageModel
   quality?: Quality
   size?: SizeValue
+  /** Fixed seed for reproducible output. Omit for a random seed. */
+  seed?: number
+}
+
+/** Upper bound accepted by the upstream service for the seed parameter */
+export const MAX_SEED = 999_999_999
+
+/** Normalises a user supplied seed, or returns null when it is not usable */
+export function normalizeSeed(value: unknown): number | null {
+  const n = typeof value === "number" ? value : Number(value)
+  if (!Number.isFinite(n)) return null
+  return Math.min(MAX_SEED, Math.max(0, Math.round(n)))
+}
+
+/** Random seed used when the caller does not pin one */
+export function randomSeed(): number {
+  return Math.floor(Math.random() * (MAX_SEED + 1))
 }
 
 /** Known-good model used as the first fallback when the requested model fails */
@@ -238,7 +255,8 @@ export async function generateImage(prompt: string, options: GenerateImageOption
 
   const model = options.model ?? "auto"
   const size = options.size ?? "square"
-  const seed = Math.floor(Math.random() * 1_000_000_000)
+  // A pinned seed makes the same prompt reproducible; otherwise use a random one.
+  const seed = normalizeSeed(options.seed) ?? randomSeed()
   const enhancedPrompt = enhancePrompt(prompt, size)
 
   // Fallback chain: requested model -> flux -> turbo

@@ -1,12 +1,26 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Download, Copy, Check, Maximize2, X, ZoomIn, ZoomOut } from "lucide-react"
+import {
+  Download,
+  Copy,
+  Check,
+  Maximize2,
+  X,
+  ZoomIn,
+  ZoomOut,
+  RefreshCw,
+  Loader2,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
+import { buildImageFilename } from "@/lib/mockify/filename"
 
 interface MockupResultProps {
   imageUrl: string
   prompt: string
+  seed?: number | null
+  onNewVariation?: () => void
+  isGenerating?: boolean
 }
 
 // Lifted outside component so React doesn't remount it on every render
@@ -46,7 +60,13 @@ function ImageFrame({
   )
 }
 
-export function MockupResult({ imageUrl, prompt }: MockupResultProps) {
+export function MockupResult({
+  imageUrl,
+  prompt,
+  seed,
+  onNewVariation,
+  isGenerating = false,
+}: MockupResultProps) {
   const [copied, setCopied] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
   const [zoomed, setZoomed] = useState(false)
@@ -70,7 +90,7 @@ export function MockupResult({ imageUrl, prompt }: MockupResultProps) {
   const handleDownload = () => {
     const link = document.createElement("a")
     link.href = imageUrl
-    link.download = `mockify-${Date.now()}.png`
+    link.download = buildImageFilename(prompt)
     link.target = "_blank"
     link.click()
   }
@@ -86,12 +106,28 @@ export function MockupResult({ imageUrl, prompt }: MockupResultProps) {
       <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Action row */}
         <div className="flex items-center justify-end gap-2 flex-wrap">
+          {onNewVariation && (
+            <button
+              type="button"
+              onClick={onNewVariation}
+              disabled={isGenerating}
+              className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors font-mono disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isGenerating ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+              ) : (
+                <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+              )}
+              <span className="hidden sm:inline">New variation</span>
+              <span className="sm:hidden">Variation</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={handleCopyPrompt}
             className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors font-mono"
           >
-            {copied ? <Check className="h-3.5 w-3.5 text-accent" /> : <Copy className="h-3.5 w-3.5" />}
+            {copied ? <Check className="h-3.5 w-3.5 text-accent" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
             <span className="hidden sm:inline">{copied ? "Copied" : "Copy prompt"}</span>
             <span className="sm:hidden">{copied ? "Copied" : "Copy"}</span>
           </button>
@@ -100,7 +136,7 @@ export function MockupResult({ imageUrl, prompt }: MockupResultProps) {
             onClick={() => setFullscreen(true)}
             className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors font-mono"
           >
-            <Maximize2 className="h-3.5 w-3.5" />
+            <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
             <span className="hidden sm:inline">Fullscreen</span>
           </button>
           <button
@@ -108,7 +144,7 @@ export function MockupResult({ imageUrl, prompt }: MockupResultProps) {
             onClick={handleDownload}
             className="flex min-h-11 items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-3 py-2 text-xs font-medium hover:opacity-90 transition-opacity"
           >
-            <Download className="h-3.5 w-3.5" />
+            <Download className="h-3.5 w-3.5" aria-hidden="true" />
             Download
           </button>
         </div>
@@ -117,10 +153,17 @@ export function MockupResult({ imageUrl, prompt }: MockupResultProps) {
           <ImageFrame imageUrl={imageUrl} prompt={prompt} />
         </div>
 
-        <p className="text-xs font-mono text-muted-foreground leading-relaxed">
-          <span className="text-accent mr-1">›</span>
-          {prompt}
-        </p>
+        <div className="flex flex-col gap-1">
+          <p className="text-xs font-mono text-muted-foreground leading-relaxed wrap-break-word">
+            <span className="text-accent mr-1">›</span>
+            {prompt}
+          </p>
+          {seed != null && (
+            <p className="text-[10px] font-mono text-muted-foreground/60">
+              seed {seed}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Fullscreen lightbox */}
@@ -136,7 +179,7 @@ export function MockupResult({ imageUrl, prompt }: MockupResultProps) {
               onClick={() => setZoomed((z) => !z)}
               className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors font-mono"
             >
-              {zoomed ? <ZoomOut className="h-3.5 w-3.5" /> : <ZoomIn className="h-3.5 w-3.5" />}
+              {zoomed ? <ZoomOut className="h-3.5 w-3.5" aria-hidden="true" /> : <ZoomIn className="h-3.5 w-3.5" aria-hidden="true" />}
               {zoomed ? "Zoom out" : "Zoom in"}
             </button>
             <button
@@ -144,7 +187,7 @@ export function MockupResult({ imageUrl, prompt }: MockupResultProps) {
               onClick={handleDownload}
               className="flex min-h-11 items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-3 py-2 text-xs font-medium hover:opacity-90 transition-opacity"
             >
-              <Download className="h-3.5 w-3.5" />
+              <Download className="h-3.5 w-3.5" aria-hidden="true" />
               Download
             </button>
             <button
@@ -152,8 +195,9 @@ export function MockupResult({ imageUrl, prompt }: MockupResultProps) {
               onClick={() => { setFullscreen(false); setZoomed(false) }}
               className="flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border p-2 text-muted-foreground hover:text-foreground hover:border-ring transition-colors"
               title="Close (Esc)"
+              aria-label="Close fullscreen view"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
 

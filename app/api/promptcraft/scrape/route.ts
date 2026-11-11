@@ -1,3 +1,8 @@
+import type { NextRequest } from "next/server"
+import { lookup } from "node:dns/promises"
+import { isIP } from "node:net"
+import { requireUser } from "@/lib/security/api-guard"
+
 export const maxDuration = 30
 
 const BLOCKED_HOSTS = new Set([
@@ -7,14 +12,68 @@ const BLOCKED_HOSTS = new Set([
   "::1",
   "169.254.169.254",
   "metadata.google.internal",
+  "metadata.google.com",
 ])
 
+const MAX_REDIRECTS = 3
+
 function isBlockedHost(hostname: string): boolean {
-  if (BLOCKED_HOSTS.has(hostname)) return true
-  if (/^10\./.test(hostname)) return true
-  if (/^192\.168\./.test(hostname)) return true
-  if (/^172\.(1[6-9]|2\d|3[01])\./.test(hostname)) return true
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, "")
+  if (BLOCKED_HOSTS.has(host)) return true
+  if (host.endsWith(".localhost") || host.endsWith(".internal") || host.endsWith(".local")) return true
+
+  const version = isIP(host)
+  if (version === 4) {
+    const parts = host.split(".").map(Number)
+    const [a, b] = parts
+    if (a === 10) return true
+    if (a === 127) return true
+    if (a === 0) return true
+    if (a === 169 && b === 254) return true
+    if (a === 172 && b >= 16 && b <= 31) return true
+    if (a === 192 && b === 168) return true
+    if (a === 100 && b >= 64 && b <= 127) return true
+    if (a >= 224) return true
+  }
+  if (version === 6) {
+    if (host === "::1" || host === "::") return true
+    // Unique local (fc00::/7) and link local (fe80::/10)
+    if (/^f[cd][0-9a-f]{2}:/.test(host)) return true
+    if (/^fe[89ab][0-9a-f]:/.test(host)) return true
+    // IPv4 mapped addresses inherit the IPv4 rules
+    const mapped = host.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/)
+    if (mapped) return isBlockedHost(mapped[1])
+  }
   return false
+}
+
+/**
+ * Resolves the hostname and rejects it if any address it maps to is in a
+ * private, loopback or link-local range. This blocks DNS rebinding and
+ * hostnames that point at internal infrastructure.
+ */
+async function resolvesToPrivateAddress(hostname: string): Promise<boolean> {
+  try {
+    const addresses = await lookup(hostname, { all: true })
+    if (addresses.length === 0) return true
+    return addresses.some((entry) => isBlockedHost(entry.address))
+  } catch {
+    // Unresolvable host: treat as blocked rather than forwarding blindly.
+    return true
+  }
+}
+
+async function assertSafeUrl(candidate: URL): Promise<string | null> {
+  if (!["http:", "https:"].includes(candidate.protocol)) {
+    return "Only HTTP and HTTPS URLs are supported"
+  }
+  if (isBlockedHost(candidate.hostname)) {
+    return "This URL is not allowed"
+  }
+  if (await resolvesToPrivateAddress(candidate.hostname)) {
+    return "This URL is not allowed"
+  }
+  return null
 }
 
 function extractTitle(html: string): string {
@@ -107,7 +166,10 @@ function extractMainContent(html: string): string {
   return content
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const guard = await requireUser(req, { limit: 20, windowMs: 60_000 })
+  if (guard instanceof Response) return guard
+
   let body: unknown
   try {
     body = await req.json()
@@ -128,26 +190,53 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid URL format" }, { status: 400 })
   }
 
-  if (!["http:", "https:"].includes(parsedUrl.protocol)) {
-    return Response.json({ error: "Only HTTP and HTTPS URLs are supported" }, { status: 400 })
-  }
-
-  if (isBlockedHost(parsedUrl.hostname)) {
-    return Response.json({ error: "This URL is not allowed" }, { status: 403 })
+  const blocked = await assertSafeUrl(parsedUrl)
+  if (blocked) {
+    return Response.json({ error: blocked }, { status: 403 })
   }
 
   try {
-    const response = await fetch(parsedUrl.toString(), {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Cache-Control": "no-cache",
-        Pragma: "no-cache",
-      },
-      signal: AbortSignal.timeout(15_000),
-    })
+    // Follow redirects manually so each hop is re-validated. A redirect to
+    // an internal address must not bypass the checks above.
+    let target = parsedUrl
+    let response: Response | null = null
+
+    for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+      response = await fetch(target.toString(), {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.9",
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+        },
+        redirect: "manual",
+        signal: AbortSignal.timeout(15_000),
+      })
+
+      if (response.status >= 300 && response.status < 400) {
+        const location = response.headers.get("location")
+        if (!location) break
+        let nextTarget: URL
+        try {
+          nextTarget = new URL(location, target)
+        } catch {
+          return Response.json({ error: "The page redirected to an invalid address" }, { status: 422 })
+        }
+        const redirectBlocked = await assertSafeUrl(nextTarget)
+        if (redirectBlocked) {
+          return Response.json({ error: "This URL is not allowed" }, { status: 403 })
+        }
+        target = nextTarget
+        continue
+      }
+      break
+    }
+
+    if (!response) {
+      return Response.json({ error: "Failed to fetch the URL" }, { status: 422 })
+    }
 
     if (!response.ok) {
       if (response.status === 403 || response.status === 401) {

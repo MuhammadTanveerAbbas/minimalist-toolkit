@@ -3,16 +3,9 @@
 import { useState, useMemo } from "react"
 import { Clock, Copy, Check, ChevronRight, Trash2, Search, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import type { HistoryItem } from "@/lib/promptcraft/history"
 
-export interface HistoryItem {
-  id: string
-  topic: string
-  category: string
-  tone: string
-  platform: string
-  output: string
-  timestamp: Date
-}
+export type { HistoryItem }
 
 interface PromptHistoryProps {
   items: HistoryItem[]

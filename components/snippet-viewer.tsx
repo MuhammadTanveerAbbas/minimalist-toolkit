@@ -28,7 +28,7 @@ export function SnippetViewer({
   onEdit,
   onDelete,
   onDuplicate,
-  theme = "dark",
+  theme = "light",
 }: SnippetViewerProps) {
   if (!snippet) return null
 
@@ -144,7 +144,6 @@ export function SnippetViewer({
                 language={snippet.language}
                 readOnly
                 minHeight="380px"
-                theme={theme}
                 noBorder
               />
             </div>

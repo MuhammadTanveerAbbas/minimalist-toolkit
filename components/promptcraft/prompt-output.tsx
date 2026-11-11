@@ -10,6 +10,8 @@ import {
   AlertCircle,
   Download,
 } from "lucide-react";
+import { PromptQualityChecklist } from "@/components/promptcraft/quality-checklist";
+import { SaveAsSnippetButton } from "@/components/promptcraft/save-as-snippet";
 
 interface PromptOutputProps {
   output: string;
@@ -19,6 +21,10 @@ interface PromptOutputProps {
   onEnhance: () => void;
   onRegenerate: () => void;
   canRegenerate: boolean;
+  /** Topic of the prompt that produced `output`, used for snippet metadata. */
+  topic?: string;
+  /** Platform of the prompt that produced `output`, used for snippet tags. */
+  platform?: string;
 }
 
 // ── Parser ───────────────────────────────────────────────────────────────────
@@ -195,6 +201,8 @@ export function PromptOutput({
   onEnhance,
   onRegenerate,
   canRegenerate,
+  topic,
+  platform,
 }: PromptOutputProps) {
   const [copied, setCopied] = useState(false);
 
@@ -261,6 +269,9 @@ export function PromptOutput({
               <Download className="h-3 w-3" />
               <span className="hidden sm:inline">Save</span>
             </ActionButton>
+            <SaveAsSnippetButton
+              source={{ topic: topic ?? "", output, platform }}
+            />
             <ActionButton onClick={handleCopy} title="Copy to clipboard">
               {copied ? (
                 <>
@@ -315,7 +326,10 @@ export function PromptOutput({
 
         {output && (
           <div className="h-full overflow-y-auto p-4 sm:p-6">
-            <StructuredOutput text={output} isStreaming={isStreaming} />
+            <div className="flex flex-col gap-4">
+              <StructuredOutput text={output} isStreaming={isStreaming} />
+              {!isActive && <PromptQualityChecklist text={output} />}
+            </div>
           </div>
         )}
       </div>
@@ -379,13 +393,23 @@ function EmptyState() {
       <div className="flex flex-col gap-1">
         <p className="text-sm font-medium text-foreground">Ready to generate</p>
         <p className="max-w-xs text-xs leading-relaxed text-muted-foreground/60">
-          Fill in the form and click{" "}
-          <span className="font-medium text-foreground/70">
-            Generate Prompt
-          </span>{" "}
-          to get started.
+          PromptCraft turns a goal into a production-ready prompt for your chosen
+          model, then checks the result for a role, a task, constraints and an
+          output format.
         </p>
       </div>
+      <button
+        type="button"
+        onClick={() => {
+          const el = document.getElementById("topic") as HTMLInputElement | null;
+          el?.focus();
+          el?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }}
+        className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border/70 bg-secondary/40 px-3.5 py-2 text-xs font-medium text-muted-foreground transition-all hover:border-border hover:bg-secondary hover:text-foreground"
+      >
+        <WandIcon />
+        Describe your goal
+      </button>
     </div>
   );
 }

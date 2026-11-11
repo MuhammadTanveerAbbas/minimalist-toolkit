@@ -2,15 +2,23 @@ import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-function getSafeNextPath(next: string | null, origin: string) {
-  if (!next || !next.startsWith("/")) return "/app"
-  if (next.startsWith("//")) return "/app"
+/**
+ * Restricts a redirect target to a path inside this application.
+ * Rejects absolute URLs, protocol-relative URLs and backslash variants.
+ */
+function getSafeNextPath(next: string | null, origin: string): string {
+  if (!next) return "/app/dashboard"
+  const trimmed = next.trim()
+  if (!trimmed.startsWith("/")) return "/app/dashboard"
+  if (trimmed.startsWith("//") || trimmed.startsWith("/\\")) return "/app/dashboard"
+  if (trimmed.includes("\\")) return "/app/dashboard"
   try {
-    const url = new URL(next, origin)
-    if (url.origin !== origin) return "/app"
-    return `${url.pathname}${url.search}${url.hash}` || "/app"
+    const url = new URL(trimmed, origin)
+    if (url.origin !== origin) return "/app/dashboard"
+    const path = `${url.pathname}${url.search}${url.hash}`
+    return path || "/app/dashboard"
   } catch {
-    return "/app"
+    return "/app/dashboard"
   }
 }
 
@@ -20,6 +28,8 @@ export async function GET(request: NextRequest) {
   const next = requestUrl.searchParams.get("next")
   const error = requestUrl.searchParams.get("error")
   const errorDescription = requestUrl.searchParams.get("error_description")
+
+  const safeNext = getSafeNextPath(next, requestUrl.origin)
 
   if (error) {
     const msg = encodeURIComponent(errorDescription ?? error)
@@ -34,7 +44,16 @@ export async function GET(request: NextRequest) {
       const msg = encodeURIComponent(exchangeError.message)
       return NextResponse.redirect(`${requestUrl.origin}/login?error=${msg}`)
     }
+
+    // Only continue to a protected path when a session was actually
+    // established. Otherwise fall back to the dashboard.
+    const { data } = await supabase.auth.getUser()
+    if (!data?.user) {
+      return NextResponse.redirect(`${requestUrl.origin}/login?error=${encodeURIComponent("Sign-in could not be completed. Please try again.")}`)
+    }
+  } else {
+    return NextResponse.redirect(`${requestUrl.origin}/login`)
   }
 
-  return NextResponse.redirect(`${requestUrl.origin}${getSafeNextPath(next, requestUrl.origin)}`)
+  return NextResponse.redirect(`${requestUrl.origin}${safeNext}`)
 }

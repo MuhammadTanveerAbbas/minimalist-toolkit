@@ -1,21 +1,26 @@
 "use client"
 
-import { useState, useRef, useCallback } from "react"
+import { useState, useCallback } from "react"
 import { PromptForm, type GenerateParams } from "@/components/promptcraft/prompt-form"
 import { PromptOutput } from "@/components/promptcraft/prompt-output"
 import { PromptHistory, type HistoryItem } from "@/components/promptcraft/prompt-history"
-import { Clock, X } from "lucide-react"
+import { usePromptCraftHistory } from "@/lib/promptcraft/history"
+import { Clock, X, Cloud, CloudOff } from "lucide-react"
 
 export function PromptCraftTool() {
   const [output, setOutput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isEnhancing, setIsEnhancing] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [history, setHistory] = useState<HistoryItem[]>([])
   const [showHistory, setShowHistory] = useState(false)
   const [canRegenerate, setCanRegenerate] = useState(false)
 
-  const lastParams = useRef<GenerateParams | null>(null)
+  // The parameters of the last generation. Held in state rather than a ref
+  // because the values are shown in the output panel during render.
+  const [lastParams, setLastParams] = useState<GenerateParams | null>(null)
+
+  const history = usePromptCraftHistory()
+  const { items, add, remove, clear, isLoading: isHistoryLoading, mode } = history
 
   const readStream = useCallback(
     async (
@@ -100,31 +105,28 @@ export function PromptCraftTool() {
 
   const handleGenerate = useCallback(
     async (params: GenerateParams) => {
-      lastParams.current = params
+      setLastParams(params)
       await readStream("/api/promptcraft/generate", params as unknown as Record<string, string>, setIsLoading, true, (text) => {
         if (!text) return
         setCanRegenerate(true)
-        setHistory((prev) => [
-          {
-            id: crypto.randomUUID(),
-            topic: params.topic,
-            category: params.category,
-            tone: params.tone,
-            platform: params.platform,
-            output: text,
-            timestamp: new Date(),
-          },
-          ...prev.slice(0, 19),
-        ])
+        void add({
+          id: crypto.randomUUID(),
+          topic: params.topic,
+          category: params.category,
+          tone: params.tone,
+          platform: params.platform,
+          output: text,
+          timestamp: new Date(),
+        })
       })
     },
-    [readStream]
+    [readStream, add]
   )
 
   const handleRegenerate = useCallback(() => {
-    if (!lastParams.current) return
-    handleGenerate(lastParams.current)
-  }, [handleGenerate])
+    if (!lastParams) return
+    void handleGenerate(lastParams)
+  }, [handleGenerate, lastParams])
 
   const handleEnhance = useCallback(async () => {
     if (!output) return
@@ -134,16 +136,17 @@ export function PromptCraftTool() {
   const handleSelectHistory = useCallback((item: HistoryItem) => {
     setOutput(item.output)
     setError(null)
+    setCanRegenerate(true)
     setShowHistory(false)
   }, [])
 
   const handleDeleteHistory = useCallback((id: string) => {
-    setHistory((prev) => prev.filter((i) => i.id !== id))
-  }, [])
+    void remove(id)
+  }, [remove])
 
   const handleClearHistory = useCallback(() => {
-    setHistory([])
-  }, [])
+    void clear()
+  }, [clear])
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
@@ -162,8 +165,8 @@ export function PromptCraftTool() {
         >
           {showHistory ? <X className="h-4 w-4" aria-hidden="true" /> : <Clock className="h-4 w-4" aria-hidden="true" />}
           <span>{showHistory ? "Close" : "History"}</span>
-          {!showHistory && history.length > 0 ? (
-            <span className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] text-foreground">{history.length}</span>
+          {!showHistory && items.length > 0 ? (
+            <span className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] text-foreground">{items.length}</span>
           ) : null}
         </button>
       </div>
@@ -174,19 +177,38 @@ export function PromptCraftTool() {
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-sm font-semibold">History</h2>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  {history.length} prompt{history.length !== 1 ? "s" : ""} in this session
+                <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                  {mode === "database" ? (
+                    <>
+                      <Cloud className="h-3 w-3" aria-hidden="true" />
+                      {items.length} prompt{items.length !== 1 ? "s" : ""} saved to your account
+                    </>
+                  ) : (
+                    <>
+                      <CloudOff className="h-3 w-3" aria-hidden="true" />
+                      {items.length} prompt{items.length !== 1 ? "s" : ""} saved in this browser
+                    </>
+                  )}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowHistory(false)}
-                className="h-9 rounded-lg border border-border px-3 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
+                className="h-9 shrink-0 rounded-lg border border-border px-3 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
               >
                 Back
               </button>
             </div>
-            <PromptHistory items={history} onSelect={handleSelectHistory} onDelete={handleDeleteHistory} onClearAll={handleClearHistory} />
+            {isHistoryLoading ? (
+              <HistorySkeleton />
+            ) : (
+              <PromptHistory
+                items={items}
+                onSelect={handleSelectHistory}
+                onDelete={handleDeleteHistory}
+                onClearAll={handleClearHistory}
+              />
+            )}
           </div>
         </div>
       ) : (
@@ -203,10 +225,26 @@ export function PromptCraftTool() {
               onEnhance={handleEnhance}
               onRegenerate={handleRegenerate}
               canRegenerate={canRegenerate}
+              topic={lastParams?.topic}
+              platform={lastParams?.platform}
             />
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function HistorySkeleton() {
+  return (
+    <div className="flex flex-col gap-2.5" role="status" aria-label="Loading history">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4">
+          <div className="h-3 w-1/2 animate-shimmer rounded bg-muted" />
+          <div className="h-2.5 w-full animate-shimmer rounded bg-muted" />
+          <div className="h-2.5 w-1/3 animate-shimmer rounded bg-muted" />
+        </div>
+      ))}
     </div>
   )
 }

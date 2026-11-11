@@ -1,7 +1,9 @@
 import type { NextRequest } from "next/server"
+import { requireUser } from "@/lib/security/api-guard"
 
 const UPSTREAM_TIMEOUT_MS = 90_000
 const ALLOWED_MODELS = new Set(["flux", "turbo"])
+const MAX_PROMPT_LENGTH = 2000
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
@@ -13,6 +15,9 @@ function clamp(value: number, min: number, max: number): number {
  * so generation is routed through this server-side endpoint instead.
  */
 export async function POST(req: NextRequest) {
+  const guard = await requireUser(req, { limit: 20, windowMs: 60_000 })
+  if (guard instanceof Response) return guard
+
   let body: { prompt?: unknown; model?: unknown; width?: unknown; height?: unknown; seed?: unknown }
   try {
     body = await req.json()
@@ -23,6 +28,12 @@ export async function POST(req: NextRequest) {
   const prompt = typeof body.prompt === "string" ? body.prompt.trim() : ""
   if (!prompt) {
     return Response.json({ error: "Prompt is required." }, { status: 400 })
+  }
+  if (prompt.length > MAX_PROMPT_LENGTH) {
+    return Response.json(
+      { error: `Prompt must be ${MAX_PROMPT_LENGTH} characters or fewer.` },
+      { status: 400 }
+    )
   }
 
   const model = typeof body.model === "string" && ALLOWED_MODELS.has(body.model) ? body.model : "flux"

@@ -1,5 +1,12 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
+import { clientIdentifier, rateLimit } from "@/lib/security/rate-limit"
+
+/** Routes that require a signed-in user. */
+const PROTECTED_PREFIX = "/app"
+
+/** API routes that must stay reachable without a session. */
+const PUBLIC_API_PREFIXES = ["/api/keep-alive", "/api/cron"]
 
 function hasSupabaseConfig() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -13,30 +20,66 @@ function authDisabledForTest() {
   return process.env.DISABLE_AUTH_FOR_TEST === "true"
 }
 
-// Kept in sync with middleware.ts for projects that may reference this file.
+/**
+ * Server-side request guard.
+ *
+ * Decides redirects for authenticated and unauthenticated visitors before
+ * any page renders, so protected content is never sent to the browser for a
+ * signed-out visitor.
+ */
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
-  const { pathname } = request.nextUrl
+  const { pathname, search } = request.nextUrl
+
+  // The auth callback and keep-alive cron are never guarded.
+  if (PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+    return supabaseResponse
+  }
 
   if (authDisabledForTest()) {
     return supabaseResponse
   }
 
   if (!hasSupabaseConfig()) {
-    if (pathname.startsWith("/app")) {
+    if (pathname.startsWith(PROTECTED_PREFIX)) {
       const url = request.nextUrl.clone()
       url.pathname = "/login"
+      url.search = ""
       url.searchParams.set("next", pathname)
-      url.searchParams.set("error", "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (see .env.example), then restart the dev server.")
+      url.searchParams.set(
+        "error",
+        "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (see .env.example), then restart the dev server."
+      )
       return NextResponse.redirect(url)
     }
-    if (pathname.startsWith("/api/") && pathname !== "/api/keep-alive" && !pathname.startsWith("/api/cron")) {
+    if (pathname.startsWith("/api/")) {
       return NextResponse.json(
-        { error: "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY." },
+        {
+          error:
+            "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+        },
         { status: 503 }
       )
     }
     return supabaseResponse
+  }
+
+  // Rate limit the authentication endpoints to slow automated abuse.
+  if (pathname === "/auth/callback" || pathname === "/login" || pathname === "/signup") {
+    const limit = rateLimit(`auth:${clientIdentifier(request)}`, 30, 60_000)
+    if (!limit.ok) {
+      if (pathname.startsWith("/api/")) {
+        return NextResponse.json(
+          { error: "Too many attempts. Please wait a moment and try again." },
+          { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+        )
+      }
+      const url = request.nextUrl.clone()
+      url.pathname = "/login"
+      url.search = ""
+      url.searchParams.set("error", "Too many sign-in attempts. Please wait a minute and try again.")
+      return NextResponse.redirect(url)
+    }
   }
 
   const supabase = createServerClient(
@@ -62,25 +105,28 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  const isProtected = pathname === PROTECTED_PREFIX || pathname.startsWith(`${PROTECTED_PREFIX}/`)
+  const isApi = pathname.startsWith("/api/")
+
   if (!user) {
-    if (pathname.startsWith("/app")) {
+    if (isProtected) {
       const url = request.nextUrl.clone()
       url.pathname = "/login"
-      url.searchParams.set("next", pathname)
+      url.search = ""
+      url.searchParams.set("next", `${pathname}${search}`)
       return NextResponse.redirect(url)
     }
-    if (pathname.startsWith("/api/") && pathname !== "/api/keep-alive" && !pathname.startsWith("/api/cron")) {
+    if (isApi) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-  }
-
-  if (user && (pathname === "/login" || pathname === "/signup")) {
-    return NextResponse.redirect(new URL("/app", request.url))
+    return supabaseResponse
   }
 
   return supabaseResponse
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.svg|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|icon.svg|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|webmanifest)$).*)",
+  ],
 }

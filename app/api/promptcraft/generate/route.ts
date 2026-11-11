@@ -1,4 +1,6 @@
+import type { NextRequest } from "next/server"
 import { groqChatCompletion } from "@/lib/promptcraft/groq"
+import { requireUser } from "@/lib/security/api-guard"
 
 export const maxDuration = 30
 
@@ -55,7 +57,10 @@ function validateInput(
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const guard = await requireUser(req, { limit: 30, windowMs: 60_000 })
+  if (guard instanceof Response) return guard
+
   let body: unknown
   try {
     body = await req.json()

@@ -1,24 +1,29 @@
 # Minimalist Toolkit
 
-Minimalist Toolkit is a web workspace that combines multiple productivity tools in one place.
+Minimalist Toolkit is a web workspace that combines six focused productivity tools under one account.
 
 ## Public pages
-- / : Product overview and features
+- / : Product overview, workflow showcase, use cases, security and FAQ
 - /login : Sign in
 - /signup : Create an account
+- /forgot-password : Account recovery guidance
 
 ## Workspace tools (after sign-in)
-- /app : Dashboard and quick access
+- /app/dashboard : Workspace overview and analytics
 - /app/snippets : Save, search, and organize reusable code
-- /app/categories : Browse snippet categories
+- /app/categories : Browse snippet categories and their distribution
 - /app/mockify : Generate visual mockups from text prompts
-- /app/promptcraft : Draft and improve prompts
+- /app/promptcraft : Draft and improve prompts for a specific model
+- /app/quotes : Client quotes and invoices, convertible from quote to invoice
+- /app/prioritizer : Weighted feature scoring with rank fragility analysis
 - /app/chat : AI chat for quick help
-- /app/settings : Account and appearance preferences
+- /app/profile : Account overview and library stats
+- /app/settings : Account, appearance, privacy and tool preferences
 
 ## Notes
 - Each tool has its own workflow and page.
-- Some features may require additional service configuration.
-- User workspace data is intended to remain private to the signed-in account.
+- Snippets, Quotes and Prioritizer are deterministic and work without an AI key.
+- Mockify, PromptCraft and AI Chat depend on the relevant server configuration.
+- User workspace data is private to the signed-in account, enforced by database row-level security.
 
 Made by Tanveer: https://muhammadtanveerabbas.vercel.app

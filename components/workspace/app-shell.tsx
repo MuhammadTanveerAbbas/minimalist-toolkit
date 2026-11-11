@@ -4,54 +4,19 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import {
-  Code2,
-  ImageIcon,
-  Sparkles,
-  Settings,
+  ChevronDown,
+  Command,
+  ExternalLink,
   LogOut,
-  BarChart3,
-  FolderOpen,
-  MessageSquareText,
   PanelLeftClose,
   PanelLeftOpen,
+  Settings,
+  User,
 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { useTheme } from "@/hooks/use-theme"
+import { useSidebarCollapsed, useSidebarCollapsedSetter } from "@/hooks/use-sidebar-collapsed"
+import { NAV_GROUPS, SETTINGS_NAV_ITEM } from "@/lib/navigation"
 import { cn } from "@/lib/utils"
-
-type NavItem = { href: string; label: string; icon: React.ElementType; exact?: boolean }
-type NavGroup = { label: string; items: NavItem[] }
-
-const navGroups: NavGroup[] = [
-  {
-    label: "Workspace",
-    items: [
-      { href: "/app", label: "Dashboard", icon: BarChart3, exact: true },
-      { href: "/app/categories", label: "Categories", icon: FolderOpen },
-      { href: "/app/chat", label: "AI chat", icon: MessageSquareText },
-    ],
-  },
-  {
-    label: "Tools",
-    items: [
-      { href: "/app/snippets", label: "Snippets", icon: Code2 },
-      { href: "/app/mockify", label: "Mockify", icon: ImageIcon },
-      { href: "/app/promptcraft", label: "PromptCraft", icon: Sparkles },
-    ],
-  },
-]
-
-const settingsItem: NavItem = { href: "/app/settings", label: "Settings", icon: Settings }
-const allNavItems = [...navGroups.flatMap((g) => g.items), settingsItem]
-
-const mobileNavItems: NavItem[] = [
-  { href: "/app", label: "Home", icon: BarChart3, exact: true },
-  { href: "/app/snippets", label: "Snippets", icon: Code2 },
-  { href: "/app/mockify", label: "Mockify", icon: ImageIcon },
-  { href: "/app/chat", label: "Chat", icon: MessageSquareText },
-  settingsItem,
-]
 
 function isActivePath(pathname: string, href: string, exact?: boolean) {
   return exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`)
@@ -59,88 +24,181 @@ function isActivePath(pathname: string, href: string, exact?: boolean) {
 
 function DesktopNav({ pathname, collapsed }: { pathname: string; collapsed: boolean }) {
   return (
-    <nav className="flex flex-col gap-4" aria-label="Workspace navigation">
-      {navGroups.map((group, groupIndex) => (
+    <nav className="flex flex-col gap-5" aria-label="Workspace navigation">
+      {NAV_GROUPS.map((group, groupIndex) => (
         <div key={group.label}>
           {!collapsed ? (
-            <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/80">
+            <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
               {group.label}
             </p>
           ) : groupIndex > 0 ? (
-            <div className="mx-auto mb-1.5 h-px w-8 bg-border" aria-hidden="true" />
+            <div className="mx-auto mb-2 h-px w-7 bg-border" aria-hidden="true" />
           ) : null}
-          <div className="flex flex-col gap-1">
+          <ul className="flex flex-col gap-0.5">
             {group.items.map((item) => {
               const Icon = item.icon
               const active = isActivePath(pathname, item.href, item.exact)
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  title={collapsed ? item.label : undefined}
-                  className={cn(
-                    "flex min-h-10 items-center rounded-lg text-sm transition-colors duration-150",
-                    collapsed ? "mx-2 justify-center px-0" : "gap-2.5 px-3",
-                    active
-                      ? "bg-foreground text-background"
-                      : "text-foreground/80 hover:bg-muted/60 hover:text-foreground"
-                  )}
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  {!collapsed ? <span className="truncate">{item.label}</span> : <span className="sr-only">{item.label}</span>}
-                </Link>
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    title={collapsed ? item.label : undefined}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "flex min-h-9 items-center rounded-lg text-sm transition-colors duration-150",
+                      collapsed ? "mx-2 justify-center px-0" : "gap-2.5 px-3",
+                      active
+                        ? "bg-foreground font-medium text-background"
+                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    {!collapsed ? (
+                      <span className="truncate">{item.label}</span>
+                    ) : (
+                      <span className="sr-only">{item.label}</span>
+                    )}
+                  </Link>
+                </li>
               )
             })}
-          </div>
+          </ul>
         </div>
       ))}
     </nav>
   )
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
+function AccountMenu({ email, collapsed }: { email: string | null; collapsed: boolean }) {
+  const [open, setOpen] = useState(false)
   const router = useRouter()
-  const { theme, toggleTheme } = useTheme()
-  const [email, setEmail] = useState<string | null>(null)
-  const [collapsed, setCollapsed] = useState(false)
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("workspace-sidebar-collapsed") === "1"
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate persisted UI preference once on mount
-      setCollapsed(saved)
-    } catch {}
-  }, [])
-
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }: { data: { user: { email?: string | null } | null } | null }) =>
-      setEmail(data?.user?.email ?? null)
-    )
-  }, [])
-
-  const toggleCollapsed = () => {
-    setCollapsed((v) => {
-      const next = !v
-      try {
-        localStorage.setItem("workspace-sidebar-collapsed", next ? "1" : "0")
-      } catch {}
-      return next
-    })
-  }
 
   const signOut = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
+    setOpen(false)
     router.push("/login")
     router.refresh()
   }
 
-  const currentLabel =
-    allNavItems.find((i) => isActivePath(pathname, i.href, i.exact))?.label ?? "Workspace"
+  const initial = email?.charAt(0).toUpperCase() ?? "?"
 
-  const settingsActive = isActivePath(pathname, settingsItem.href)
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className={cn(
+          "flex w-full items-center gap-2.5 rounded-lg text-sm transition-colors duration-150 hover:bg-accent",
+          collapsed ? "mx-2 justify-center px-0 py-2" : "px-2 py-2"
+        )}
+      >
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-[11px] font-semibold text-brand-foreground">
+          {initial}
+        </span>
+        {!collapsed ? (
+          <>
+            <span className="min-w-0 flex-1 truncate text-left text-xs text-muted-foreground">
+              {email ?? "Signed in"}
+            </span>
+            <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+          </>
+        ) : (
+          <span className="sr-only">Account menu</span>
+        )}
+      </button>
+
+      {open ? (
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 z-10 cursor-default"
+            aria-label="Close account menu"
+            onClick={() => setOpen(false)}
+          />
+          <div
+            role="menu"
+            className={cn(
+              "absolute bottom-full z-20 mb-2 w-56 overflow-hidden rounded-xl border border-border bg-popover shadow-lg",
+              collapsed ? "left-0" : "left-0 right-0"
+            )}
+          >
+            <div className="border-b border-border px-3 py-2.5">
+              <p className="truncate text-xs font-medium">Account</p>
+              <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{email ?? "Not available"}</p>
+            </div>
+            <div className="p-1">
+              <Link
+                href="/app/profile"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="flex min-h-9 items-center gap-2.5 rounded-md px-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <User className="h-3.5 w-3.5" aria-hidden="true" />
+                Profile
+              </Link>
+              <Link
+                href="/app/settings"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="flex min-h-9 items-center gap-2.5 rounded-md px-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <Settings className="h-3.5 w-3.5" aria-hidden="true" />
+                Settings
+              </Link>
+              <Link
+                href="/"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="flex min-h-9 items-center gap-2.5 rounded-md px-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                Marketing site
+              </Link>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={signOut}
+                className="flex min-h-9 w-full items-center gap-2.5 rounded-md px-2.5 text-sm text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+              >
+                <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
+                Sign out
+              </button>
+            </div>
+          </div>
+        </>
+      ) : null}
+    </div>
+  )
+}
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const [email, setEmail] = useState<string | null>(null)
+  const collapsed = useSidebarCollapsed()
+  const setCollapsed = useSidebarCollapsedSetter()
+
+  useEffect(() => {
+    let active = true
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }: { data: { user?: { email?: string | null } | null } | null }) => {
+      if (active) setEmail(data?.user?.email ?? null)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed)
+  }
+
+  const allItems = NAV_GROUPS.flatMap((g) => g.items)
+  const currentLabel =
+    allItems.find((i) => isActivePath(pathname, i.href, i.exact))?.label ?? "Workspace"
+  const settingsActive = isActivePath(pathname, SETTINGS_NAV_ITEM.href)
 
   return (
     <div className="min-h-dvh bg-background text-foreground md:h-dvh md:overflow-hidden">
@@ -148,116 +206,128 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <aside
           className={cn(
             "hidden h-full shrink-0 flex-col border-r border-border bg-sidebar transition-[width] duration-200 ease-out md:sticky md:top-0 md:flex",
-            collapsed ? "w-[72px]" : "w-64"
+            collapsed ? "w-[60px]" : "w-60"
           )}
         >
-          <div className={cn("flex h-14 items-center border-b border-border", collapsed ? "justify-center px-2" : "gap-2 px-4")}>
+          <div
+            className={cn(
+              "flex h-14 shrink-0 items-center border-b border-border",
+              collapsed ? "justify-center px-2" : "gap-2.5 px-4"
+            )}
+          >
             <Link
-              href="/app"
-              className={cn("flex items-center font-semibold tracking-tight text-foreground transition-opacity duration-150 hover:opacity-80", collapsed ? "justify-center" : "gap-2")}
+              href="/app/dashboard"
+              className={cn(
+                "flex items-center font-semibold tracking-tight transition-opacity duration-150 hover:opacity-80",
+                collapsed ? "justify-center" : "gap-2.5"
+              )}
               title="Minimalist Toolkit"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-background">
-                <Code2 className="h-4 w-4" />
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-foreground text-background">
+                <Command className="h-3.5 w-3.5" aria-hidden="true" />
               </span>
-              {!collapsed ? <span className="truncate">Minimalist Toolkit</span> : <span className="sr-only">Minimalist Toolkit</span>}
+              {!collapsed ? <span className="truncate text-sm">Minimalist Toolkit</span> : null}
             </Link>
           </div>
 
-          <div className={cn("min-h-0 flex-1 overflow-y-auto overflow-x-hidden", collapsed ? "p-2" : "p-3")}>
+          <div
+            className={cn(
+              "min-h-0 flex-1 overflow-y-auto overflow-x-hidden",
+              collapsed ? "px-0 py-3" : "px-3 py-4"
+            )}
+          >
             <DesktopNav pathname={pathname} collapsed={collapsed} />
           </div>
 
-          <div className={cn("shrink-0 border-t border-border bg-sidebar", collapsed ? "p-2" : "p-3")}>
-            {!collapsed && email ? (
-              <p className="truncate px-2 pb-2 text-xs text-muted-foreground" title={email}>
-                {email}
-              </p>
-            ) : null}
-
-            <button
-              type="button"
-              onClick={signOut}
-              title={collapsed ? "Sign out" : undefined}
-              className={cn(
-                "flex min-h-10 w-full items-center rounded-lg text-sm text-muted-foreground transition-colors duration-150 hover:bg-muted/60 hover:text-foreground",
-                collapsed ? "mx-2 justify-center px-0" : "gap-2.5 px-3"
-              )}
-            >
-              <LogOut className="h-4 w-4 shrink-0" />
-              {!collapsed ? <span>Sign out</span> : <span className="sr-only">Sign out</span>}
-            </button>
-
+          <div
+            className={cn(
+              "shrink-0 space-y-1 border-t border-border bg-sidebar",
+              collapsed ? "px-0 py-2" : "px-2 py-2.5"
+            )}
+          >
+            <AccountMenu email={email} collapsed={collapsed} />
             <Link
-              href={settingsItem.href}
+              href={SETTINGS_NAV_ITEM.href}
               title={collapsed ? "Settings" : undefined}
+              aria-current={settingsActive ? "page" : undefined}
               className={cn(
-                "mt-1 flex min-h-10 w-full items-center rounded-lg text-sm transition-colors duration-150",
+                "flex min-h-9 items-center rounded-lg text-sm transition-colors duration-150",
                 collapsed ? "mx-2 justify-center px-0" : "gap-2.5 px-3",
                 settingsActive
-                  ? "bg-foreground text-background"
-                  : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                  ? "bg-foreground font-medium text-background"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
               )}
             >
-              <Settings className="h-4 w-4 shrink-0" />
+              <Settings className="h-4 w-4 shrink-0" aria-hidden="true" />
               {!collapsed ? <span>Settings</span> : <span className="sr-only">Settings</span>}
             </Link>
-
             <button
               type="button"
               onClick={toggleCollapsed}
               title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               className={cn(
-                "mt-1 flex min-h-10 w-full items-center rounded-lg text-sm text-muted-foreground transition-colors duration-150 hover:bg-muted/60 hover:text-foreground",
+                "flex min-h-9 w-full items-center rounded-lg text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground",
                 collapsed ? "mx-2 justify-center px-0" : "gap-2.5 px-3"
               )}
             >
-              {collapsed ? <PanelLeftOpen className="h-4 w-4 shrink-0" /> : <PanelLeftClose className="h-4 w-4 shrink-0" />}
-              {!collapsed ? <span>Collapse sidebar</span> : <span className="sr-only">Expand sidebar</span>}
+              {collapsed ? (
+                <PanelLeftOpen className="h-4 w-4 shrink-0" aria-hidden="true" />
+              ) : (
+                <PanelLeftClose className="h-4 w-4 shrink-0" aria-hidden="true" />
+              )}
+              {!collapsed ? <span>Collapse</span> : <span className="sr-only">Collapse sidebar</span>}
             </button>
           </div>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col md:min-h-0">
-          <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-3 sm:px-5">
+          <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-background/90 px-3 backdrop-blur sm:px-5">
             <div className="flex min-w-0 items-center gap-2">
-              <Link href="/app" className="flex items-center gap-2 font-semibold tracking-tight md:hidden">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card">
-                  <Code2 className="h-4 w-4" />
+              <Link href="/app/dashboard" className="flex items-center gap-2 md:hidden">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-foreground text-background">
+                  <Command className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
+                <span className="sr-only">Minimalist Toolkit</span>
               </Link>
-              <p className="truncate text-sm font-medium text-foreground">{currentLabel}</p>
+              <p className="truncate text-sm font-medium">{currentLabel}</p>
             </div>
             <div className="flex items-center gap-1">
-              <ThemeToggle theme={theme} onToggle={toggleTheme} />
+              <span className="hidden text-xs text-muted-foreground sm:inline">Private workspace</span>
             </div>
           </header>
 
-          <main className="min-w-0 flex-1 bg-background pb-[calc(4.5rem+env(safe-area-inset-bottom))] text-foreground md:overflow-y-auto md:pb-6">
+          <main className="min-w-0 flex-1 bg-background pb-[calc(4rem+env(safe-area-inset-bottom))] text-foreground md:overflow-y-auto md:pb-6">
             {children}
           </main>
         </div>
       </div>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-2 pb-[env(safe-area-inset-bottom)] md:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
         aria-label="Mobile navigation"
       >
-        <div className="mx-auto grid max-w-lg grid-cols-5 gap-1 py-1.5">
-          {mobileNavItems.map((item) => {
+        <div className="mx-auto grid max-w-lg grid-cols-5 gap-1 px-2 py-1.5">
+          {[
+            { href: "/app/dashboard", label: "Home", icon: NAV_GROUPS[0].items[0].icon, exact: true },
+            { href: "/app/snippets", label: "Snippets", icon: NAV_GROUPS[1].items[0].icon },
+            { href: "/app/quotes", label: "Quotes", icon: NAV_GROUPS[1].items[3].icon },
+            { href: "/app/prioritizer", label: "Prioritize", icon: NAV_GROUPS[1].items[4].icon },
+            { href: "/app/chat", label: "Chat", icon: NAV_GROUPS[0].items[2].icon },
+          ].map((item) => {
             const Icon = item.icon
             const active = isActivePath(pathname, item.href, item.exact)
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex min-h-12 flex-col items-center justify-center gap-1 rounded-lg px-1 py-1.5 text-[11px] font-medium transition-colors duration-150",
                   active ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <Icon className="h-4 w-4 shrink-0" />
+                <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                 <span className="max-w-full truncate">{item.label}</span>
               </Link>
             )

@@ -1,13 +1,12 @@
 "use client"
 
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useMemo } from "react"
 import type { Snippet } from "@/lib/types"
 import { useSnippets } from "@/hooks/use-snippets"
-import { useTheme } from "@/hooks/use-theme"
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
 import { getSnippetCounts } from "@/lib/snippet-stats"
 import { Sidebar } from "@/components/sidebar"
-import { SearchBar } from "@/components/search-bar"
+import { SearchBar, type SnippetSort } from "@/components/search-bar"
 import { SnippetList } from "@/components/snippet-list"
 import { SnippetForm } from "@/components/snippet-form"
 import { SnippetViewer } from "@/components/snippet-viewer"
@@ -24,13 +23,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { Plus, Code2 } from "lucide-react"
+import { Plus, Code2, Check } from "lucide-react"
 import { ExportImportDialog } from "@/components/export-import-dialog"
 import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export function SnippetWorkspace() {
-  const { theme } = useTheme()
-
   const {
     snippets,
     allSnippets,
@@ -52,6 +50,8 @@ export function SnippetWorkspace() {
   const [editingSnippet, setEditingSnippet] = useState<Snippet | null>(null)
   const [viewingSnippet, setViewingSnippet] = useState<Snippet | null>(null)
   const [deletingSnippetId, setDeletingSnippetId] = useState<string | null>(null)
+  const [sort, setSort] = useState<SnippetSort>("updated")
+  const [copiedId, setCopiedId] = useState<string | null>(null)
   const searchInputRef = useRef<HTMLInputElement | null>(null)
 
   const snippetCounts = getSnippetCounts(allSnippets)
@@ -62,6 +62,20 @@ export function SnippetWorkspace() {
     !!filters.category ||
     (filters.tags && filters.tags.length > 0) ||
     !!filters.visibility
+
+  const sortedSnippets = useMemo(() => {
+    const list = [...snippets]
+    switch (sort) {
+      case "created":
+        return list.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))
+      case "title":
+        return list.sort((a, b) => a.title.localeCompare(b.title))
+      case "lines":
+        return list.sort((a, b) => b.code.split("\n").length - a.code.split("\n").length)
+      default:
+        return list.sort((a, b) => +new Date(b.updatedAt) - +new Date(a.updatedAt))
+    }
+  }, [snippets, sort])
 
   const handleNewSnippet = useCallback(() => {
     setEditingSnippet(null)
@@ -103,6 +117,16 @@ export function SnippetWorkspace() {
     },
     [duplicateSnippet]
   )
+
+  const handleCopySnippet = useCallback(async (snippet: Snippet) => {
+    try {
+      await navigator.clipboard.writeText(snippet.code)
+      setCopiedId(snippet.id)
+      window.setTimeout(() => setCopiedId(null), 1800)
+    } catch {
+      // Clipboard access can be denied. The viewer still allows manual copy.
+    }
+  }, [])
 
   useKeyboardShortcuts([
     { key: "n", ctrl: true, description: "Create new snippet", handler: () => handleNewSnippet() },
@@ -161,25 +185,53 @@ export function SnippetWorkspace() {
 
         <div className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-7xl space-y-5 p-4 pb-24 sm:p-6 md:pb-6">
-            <SearchBar
-              filters={filters}
-              onFiltersChange={setFilters}
-              allTags={allTags}
-              allCategories={allCategories}
-              searchInputRef={searchInputRef}
-            />
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <SearchBar
+                filters={filters}
+                onFiltersChange={setFilters}
+                allTags={allTags}
+                allCategories={allCategories}
+                searchInputRef={searchInputRef}
+                sort={sort}
+                onSortChange={setSort}
+              />
+            </div>
 
-            <p className="text-xs text-muted-foreground">
-              {snippets.length} snippet{snippets.length !== 1 ? "s" : ""}
-              {hasFilters ? " matching filters" : ""}
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs text-muted-foreground">
+                {sortedSnippets.length} snippet{sortedSnippets.length !== 1 ? "s" : ""}
+                {hasFilters ? " matching filters" : ""}
+                {copiedId ? (
+                  <span className="ml-2 inline-flex items-center gap-1 text-success">
+                    <Check className="h-3 w-3" aria-hidden="true" />
+                    Code copied
+                  </span>
+                ) : null}
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Sort</span>
+                <Select value={sort} onValueChange={(v) => setSort(v as SnippetSort)}>
+                  <SelectTrigger className="h-8 w-auto gap-2 border-border bg-card text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="updated">Recently updated</SelectItem>
+                    <SelectItem value="created">Recently created</SelectItem>
+                    <SelectItem value="title">Title (A to Z)</SelectItem>
+                    <SelectItem value="lines">Longest first</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
             <SnippetList
-              snippets={snippets}
+              snippets={sortedSnippets}
               onEdit={handleEditSnippet}
               onDelete={(id) => setDeletingSnippetId(id)}
               onDuplicate={handleDuplicateSnippet}
+              onCopy={handleCopySnippet}
               onView={(snippet) => setViewingSnippet(snippet)}
+              onCreate={handleNewSnippet}
               hasFilters={hasFilters}
             />
           </div>
@@ -201,7 +253,6 @@ export function SnippetWorkspace() {
               setFormOpen(false)
               setEditingSnippet(null)
             }}
-            theme={theme}
           />
         </DialogContent>
       </Dialog>
@@ -215,7 +266,6 @@ export function SnippetWorkspace() {
         onEdit={() => viewingSnippet && handleEditSnippet(viewingSnippet)}
         onDelete={() => viewingSnippet && setDeletingSnippetId(viewingSnippet.id)}
         onDuplicate={() => viewingSnippet && handleDuplicateSnippet(viewingSnippet.id)}
-        theme={theme}
       />
 
       <AlertDialog
