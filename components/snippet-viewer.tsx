@@ -18,7 +18,6 @@ interface SnippetViewerProps {
   onEdit: () => void
   onDelete: () => void
   onDuplicate: () => void
-  theme?: "dark" | "light"
 }
 
 export function SnippetViewer({
@@ -28,19 +27,15 @@ export function SnippetViewer({
   onEdit,
   onDelete,
   onDuplicate,
-  theme = "light",
 }: SnippetViewerProps) {
   if (!snippet) return null
 
   const lang = LANGUAGE_NAMES[snippet.language]
-  const isDark = theme === "dark"
 
-  const bg = isDark ? "bg-black" : "bg-white"
-  const border = isDark ? "border-white/8" : "border-black/10"
-  const textPrimary = isDark ? "text-white" : "text-gray-900"
-  const textMuted = isDark ? "text-white/40" : "text-gray-400"
-  const textSub = isDark ? "text-white/60" : "text-gray-500"
-  const surfaceHover = isDark ? "hover:bg-white/6" : "hover:bg-black/5"
+  const border = "border-border"
+  const textPrimary = "text-foreground"
+  const textMuted = "text-muted-foreground"
+  const textSub = "text-foreground/70"
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -52,11 +47,9 @@ export function SnippetViewer({
           "sm:rounded-2xl rounded-none",
           "fixed top-0 left-0 sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2",
           "translate-x-0 translate-y-0",
-          "flex flex-col border",
-          bg, border,
-          isDark
-            ? "shadow-[0_40px_100px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.06)]"
-            : "shadow-2xl"
+          "flex flex-col border bg-card",
+          border,
+          "shadow-2xl"
         )}
       >
         <VisuallyHidden.Root>
@@ -64,10 +57,7 @@ export function SnippetViewer({
         </VisuallyHidden.Root>
 
         {/* ── Title bar ── */}
-        <div className={cn(
-          "flex items-center gap-3 px-4 py-3 shrink-0 border-b",
-          isDark ? "border-white/8" : "border-black/8"
-        )}>
+        <div className="flex items-center gap-3 px-4 py-3 shrink-0 border-b border-border">
           {/* Breadcrumb */}
           <div className={cn("flex items-center gap-1.5 text-xs min-w-0 flex-1", textMuted)}>
             <FileCode2 className="h-3.5 w-3.5 shrink-0" />
@@ -78,20 +68,14 @@ export function SnippetViewer({
 
           {/* Actions */}
           <div className="flex items-center gap-0.5 shrink-0">
-            <TitleBtn icon={Copy} label="Duplicate" onClick={onDuplicate} isDark={isDark} />
-            <TitleBtn icon={Edit} label="Edit" onClick={onEdit} isDark={isDark} />
-            <TitleBtn icon={Trash2} label="Delete" onClick={onDelete} isDark={isDark} danger />
-            <div className={cn("w-px h-4 mx-1.5", isDark ? "bg-white/10" : "bg-black/10")} />
+            <TitleBtn icon={Copy} label="Duplicate" onClick={onDuplicate} />
+            <TitleBtn icon={Edit} label="Edit" onClick={onEdit} />
+            <TitleBtn icon={Trash2} label="Delete" onClick={onDelete} danger />
+            <div className="w-px h-4 mx-1.5 bg-border" />
             <button
               onClick={() => onOpenChange(false)}
               aria-label="Close"
-              className={cn(
-                "flex items-center justify-center h-7 w-7 rounded-lg transition-all duration-150",
-                "sm:h-7 sm:w-7",
-                isDark
-                  ? "text-white/30 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/10"
-                  : "text-gray-400 hover:text-gray-700 hover:bg-black/6 border border-transparent hover:border-black/10"
-              )}
+              className="flex items-center justify-center h-7 w-7 rounded-lg text-muted-foreground transition-all duration-150 hover:bg-accent hover:text-foreground border border-transparent hover:border-border"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -99,25 +83,14 @@ export function SnippetViewer({
         </div>
 
         {/* ── Tab bar ── */}
-        <div className={cn(
-          "flex items-end shrink-0 border-b px-3 overflow-x-auto",
-          isDark ? "border-white/8" : "border-black/8"
-        )}>
+        <div className="flex items-end shrink-0 border-b border-border px-3 overflow-x-auto">
           {/* Active tab */}
-          <div className={cn(
-            "flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg -mb-px border-t border-l border-r shrink-0",
-            isDark
-              ? "bg-black border-white/10 text-white"
-              : "bg-white border-black/10 text-gray-800"
-          )}>
-            <FileCode2 className={cn("h-3.5 w-3.5 shrink-0", isDark ? "text-blue-400" : "text-blue-500")} />
+          <div className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg -mb-px border-t border-l border-r border-border bg-card text-foreground shrink-0">
+            <FileCode2 className="h-3.5 w-3.5 shrink-0 text-chart-2" />
             <span className="truncate max-w-[140px] sm:max-w-[220px]">
               {snippet.title.toLowerCase().replace(/\s+/g, "-")}.{getExt(snippet.language)}
             </span>
-            <span className={cn(
-              "text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0",
-              isDark ? "bg-blue-500/15 text-blue-400" : "bg-blue-50 text-blue-600"
-            )}>
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0 bg-surface-2 text-muted-foreground">
               {lang}
             </span>
           </div>
@@ -129,10 +102,7 @@ export function SnippetViewer({
           {/* Code */}
           <div className="flex-1 overflow-auto min-w-0 flex flex-col">
             {snippet.description && (
-              <div className={cn(
-                "px-5 py-2.5 border-b text-xs",
-                isDark ? "border-white/8 text-white/40" : "border-black/8 text-gray-400"
-              )}>
+              <div className="px-5 py-2.5 border-b border-border text-xs text-muted-foreground">
                 <span className="mr-2 opacity-40">{"//"}</span>
                 {snippet.description}
               </div>
@@ -150,11 +120,8 @@ export function SnippetViewer({
           </div>
 
           {/* ── Right panel (desktop only) ── */}
-          <div className={cn(
-            "w-56 shrink-0 border-l overflow-y-auto hidden lg:flex flex-col",
-            isDark ? "border-white/8" : "border-black/8"
-          )}>
-            <div className={cn("px-4 py-3 border-b", isDark ? "border-white/8" : "border-black/8")}>
+          <div className="w-56 shrink-0 border-l border-border overflow-y-auto hidden lg:flex flex-col">
+            <div className="px-4 py-3 border-b border-border">
               <p className={cn("text-[10px] font-bold uppercase tracking-[0.15em]", textMuted)}>Details</p>
             </div>
 
@@ -164,8 +131,8 @@ export function SnippetViewer({
                 <span className={cn(
                   "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold",
                   snippet.visibility === "public"
-                    ? isDark ? "bg-emerald-500/10 text-emerald-400" : "bg-green-50 text-green-600"
-                    : isDark ? "bg-white/6 text-white/40" : "bg-gray-100 text-gray-500"
+                    ? "bg-success/10 text-success"
+                    : "bg-muted text-muted-foreground"
                 )}>
                   {snippet.visibility === "public"
                     ? <><Eye className="h-3 w-3" />Public</>
@@ -181,16 +148,13 @@ export function SnippetViewer({
               )}
 
               <Detail label="Language" icon={FileCode2} textMuted={textMuted}>
-                <span className={cn(
-                  "inline-flex px-2.5 py-1 rounded-full text-xs font-semibold",
-                  isDark ? "bg-blue-500/10 text-blue-400" : "bg-blue-50 text-blue-600"
-                )}>
+                <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-chart-2/10 text-chart-2">
                   {lang}
                 </span>
               </Detail>
 
               {/* Stats grid */}
-              <div className={cn("border-t pt-4", isDark ? "border-white/8" : "border-black/8")}>
+              <div className="border-t border-border pt-4">
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { label: "Lines", value: snippet.code.split("\n").length },
@@ -198,10 +162,7 @@ export function SnippetViewer({
                     { label: "Versions", value: snippet.versions.length },
                     { label: "Tags", value: snippet.tags.length },
                   ].map(({ label, value }) => (
-                    <div key={label} className={cn(
-                      "rounded-xl px-3 py-2.5 text-center border",
-                      isDark ? "bg-white/4 border-white/8" : "bg-gray-50 border-black/8"
-                    )}>
+                    <div key={label} className="rounded-xl px-3 py-2.5 text-center border border-border bg-surface-2">
                       <p className={cn("text-base font-bold tabular-nums", textPrimary)}>{value}</p>
                       <p className={cn("text-[10px] mt-0.5 uppercase tracking-wider", textMuted)}>{label}</p>
                     </div>
@@ -210,7 +171,7 @@ export function SnippetViewer({
               </div>
 
               {/* Dates */}
-              <div className={cn("border-t pt-4 space-y-3", isDark ? "border-white/8" : "border-black/8")}>
+              <div className="border-t border-border pt-4 space-y-3">
                 <Detail label="Created" icon={Calendar} textMuted={textMuted}>
                   <span className={cn("text-xs", textSub)}>
                     {new Date(snippet.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
@@ -225,16 +186,13 @@ export function SnippetViewer({
 
               {/* Tags */}
               {snippet.tags.length > 0 && (
-                <div className={cn("border-t pt-4 space-y-2.5", isDark ? "border-white/8" : "border-black/8")}>
+                <div className="border-t border-border pt-4 space-y-2.5">
                   <div className={cn("flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em]", textMuted)}>
                     <Tag className="h-3 w-3" />Tags
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {snippet.tags.map((tag) => (
-                      <span key={tag} className={cn(
-                        "text-[11px] px-2 py-0.5 rounded-full font-medium border",
-                        isDark ? "bg-white/4 border-white/10 text-white/60" : "bg-gray-100 border-gray-200 text-gray-600"
-                      )}>
+                      <span key={tag} className="text-[11px] px-2 py-0.5 rounded-full font-medium border border-border bg-surface-2 text-muted-foreground">
                         #{tag}
                       </span>
                     ))}
@@ -246,15 +204,12 @@ export function SnippetViewer({
         </div>
 
         {/* ── Mobile meta strip ── */}
-        <div className={cn(
-          "flex items-center gap-3 px-4 py-2.5 border-t overflow-x-auto shrink-0 lg:hidden",
-          isDark ? "border-white/8" : "border-black/8"
-        )}>
+        <div className="flex items-center gap-3 px-4 py-2.5 border-t border-border overflow-x-auto shrink-0 lg:hidden">
           <span className={cn(
             "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold shrink-0",
             snippet.visibility === "public"
-              ? isDark ? "bg-emerald-500/10 text-emerald-400" : "bg-green-50 text-green-600"
-              : isDark ? "bg-white/6 text-white/40" : "bg-gray-100 text-gray-500"
+              ? "bg-success/10 text-success"
+              : "bg-muted text-muted-foreground"
           )}>
             {snippet.visibility === "public" ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
             {snippet.visibility}
@@ -266,20 +221,14 @@ export function SnippetViewer({
           )}
           <span className={cn("text-[11px] shrink-0", textMuted)}>{snippet.code.split("\n").length} lines</span>
           {snippet.tags.slice(0, 3).map(tag => (
-            <span key={tag} className={cn(
-              "text-[11px] px-2 py-0.5 rounded-full border shrink-0",
-              isDark ? "bg-white/4 border-white/10 text-white/50" : "bg-gray-100 border-gray-200 text-gray-500"
-            )}>#{tag}</span>
+            <span key={tag} className="text-[11px] px-2 py-0.5 rounded-full border border-border bg-surface-2 text-muted-foreground shrink-0">#{tag}</span>
           ))}
         </div>
 
         {/* ── Status bar ── */}
-        <div className={cn(
-          "flex items-center justify-between px-5 py-1.5 shrink-0 border-t text-[11px]",
-          isDark ? "border-white/8 text-white/60" : "border-black/8 text-gray-900"
-        )}>
+        <div className="flex items-center justify-between px-5 py-1.5 shrink-0 border-t border-border text-[11px] text-foreground/70">
           <div className="flex items-center gap-3">
-            <span className={cn("font-semibold", isDark ? "text-blue-400" : "text-blue-500")}>{lang}</span>
+            <span className="font-semibold text-chart-2">{lang}</span>
             <span>{snippet.code.split("\n").length} lines</span>
             <span className="hidden sm:inline">{snippet.code.length} chars</span>
           </div>
@@ -288,9 +237,7 @@ export function SnippetViewer({
             <span>LF</span>
             <span className={cn(
               "font-medium",
-              snippet.visibility === "public"
-                ? isDark ? "text-emerald-400" : "text-green-500"
-                : ""
+              snippet.visibility === "public" ? "text-success" : ""
             )}>
               {snippet.visibility}
             </span>
@@ -302,9 +249,9 @@ export function SnippetViewer({
 }
 
 function TitleBtn({
-  icon: Icon, label, onClick, isDark, danger,
+  icon: Icon, label, onClick, danger,
 }: {
-  icon: React.ElementType; label: string; onClick: () => void; isDark: boolean; danger?: boolean
+  icon: React.ElementType; label: string; onClick: () => void; danger?: boolean
 }) {
   return (
     <button
@@ -312,8 +259,8 @@ function TitleBtn({
       className={cn(
         "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 focus:outline-none",
         danger
-          ? isDark ? "text-red-400/60 hover:text-red-400 hover:bg-red-400/10" : "text-red-400 hover:text-red-600 hover:bg-red-50"
-          : isDark ? "text-white/40 hover:text-white hover:bg-white/8" : "text-gray-400 hover:text-gray-700 hover:bg-black/5"
+          ? "text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+          : "text-muted-foreground hover:text-foreground hover:bg-accent"
       )}
     >
       <Icon className="h-3.5 w-3.5" />

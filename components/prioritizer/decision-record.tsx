@@ -46,7 +46,7 @@ export function DecisionRecord({ markdown, projectName, csv }: DecisionRecordPro
           <button
             type="button"
             onClick={copy}
-            className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium transition-colors hover:bg-accent"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium transition-colors hover:bg-accent md:min-h-10"
           >
             {copied ? (
               <Check className="h-4 w-4 text-success" aria-hidden="true" />
@@ -60,7 +60,7 @@ export function DecisionRecord({ markdown, projectName, csv }: DecisionRecordPro
             onClick={() =>
               downloadFile(`${slug || "priorities"}.md`, markdown, "text/markdown")
             }
-            className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium transition-colors hover:bg-accent"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium transition-colors hover:bg-accent md:min-h-10"
           >
             <Download className="h-4 w-4" aria-hidden="true" />
             Markdown
@@ -68,7 +68,7 @@ export function DecisionRecord({ markdown, projectName, csv }: DecisionRecordPro
           <button
             type="button"
             onClick={() => downloadFile(`${slug || "priorities"}.csv`, csv, "text/csv")}
-            className="inline-flex min-h-10 items-center gap-1.5 rounded-lg bg-foreground px-3 text-sm font-medium text-background transition-opacity hover:opacity-90"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-foreground px-3 text-sm font-medium text-background transition-opacity hover:opacity-90 md:min-h-10"
           >
             <FileText className="h-4 w-4" aria-hidden="true" />
             CSV
@@ -78,10 +78,10 @@ export function DecisionRecord({ markdown, projectName, csv }: DecisionRecordPro
 
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="flex items-center justify-between gap-3 border-b border-border bg-surface-2 px-4 py-2.5">
-          <p className="font-mono text-[11px] text-muted-foreground">
+          <p className="min-w-0 break-words font-mono text-[11px] text-muted-foreground">
             {projectName || "Roadmap priorities"}.md
           </p>
-          <span className="text-[11px] text-muted-foreground">
+          <span className="shrink-0 text-[11px] text-muted-foreground">
             {markdown.split("\n").length} lines
           </span>
         </div>

@@ -1,16 +1,12 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="32" height="32" rx="8" fill="#0f0f0f"/>
+<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Matches the in-app navbar logo: the Command mark on a rounded dark tile -->
+  <rect width="24" height="24" rx="6" fill="#0F0F0F" />
 
-  <!-- Signal accent -->
-  <rect x="6" y="6" width="4" height="4" rx="1.2" fill="#FF3C00"/>
-
-  <!-- Prompt chevron -->
-  <path d="M7 16.5L11 19.5L7 22.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
-
-  <!-- Cursor block -->
-  <rect x="15" y="17" width="10" height="2.5" rx="1.25" fill="white" opacity="0.85"/>
-
-  <!-- Second faint line -->
-  <rect x="15" y="21.5" width="6" height="2" rx="1" fill="white" opacity="0.3"/>
+  <path
+    d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"
+    stroke="#FDFBF8"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
 </svg>

@@ -28,12 +28,16 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
   return (
     <ReactLenis
       root
+      autoRaf
       options={{
         lerp: 0.09,
         wheelMultiplier: 1,
         touchMultiplier: 1.4,
         smoothWheel: true,
         anchors: true,
+        allowNestedScroll: true,
+        stopInertiaOnNavigate: true,
+        respectReducedMotion: true,
       }}
     >
       {children}

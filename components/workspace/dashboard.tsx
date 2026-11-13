@@ -10,12 +10,15 @@ import {
   ImageIcon,
   Tag,
   TrendingUp,
+  User,
 } from "lucide-react"
 import { useSnippets } from "@/hooks/use-snippets"
+import { useUserProfile } from "@/hooks/use-user-profile"
 import { getSnippetCounts } from "@/lib/snippet-stats"
 import { LANGUAGE_NAMES } from "@/lib/editor-languages"
 import { BarChart, CHART_COLORS, DonutChart } from "@/components/charts"
 import { Skeleton } from "@/components/ui/skeleton"
+import { UserAvatar } from "@/components/workspace/user-avatar"
 import { TOOLS } from "@/lib/navigation"
 import type { Language } from "@/lib/types"
 
@@ -80,6 +83,7 @@ export function Dashboard() {
   const { allSnippets, allCategories, allTags, isLoaded } = useSnippets()
   const mockifyCount = useLocalHistoryCount("mockify_history")
   const promptcraftCount = useLocalHistoryCount("promptcraft_history")
+  const { name, email, avatarUrl, initials } = useUserProfile()
 
   const counts = useMemo(() => getSnippetCounts(allSnippets), [allSnippets])
 
@@ -132,11 +136,23 @@ export function Dashboard() {
   return (
     <div className={CONTAINER}>
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Dashboard</h1>
-          <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Your workspace at a glance. Every number below comes from the data stored in your account.
-          </p>
+        <div className="flex min-w-0 items-center gap-3.5">
+          <UserAvatar
+            src={avatarUrl}
+            name={name ?? "Signed in"}
+            initials={initials}
+            size={48}
+            className="hidden rounded-2xl sm:flex"
+          />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium text-muted-foreground">
+              {name ? `Welcome back, ${name.split(" ")[0]}` : "Welcome back"}
+            </p>
+            <h1 className="mt-0.5 text-2xl font-semibold tracking-tight sm:text-3xl">Dashboard</h1>
+            <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground">
+              Your workspace at a glance. Every number below comes from the data stored in your account.
+            </p>
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           {TOOLS.slice(0, 3).map((tool) => (
@@ -152,8 +168,35 @@ export function Dashboard() {
         </div>
       </div>
 
+      {/* Account */}
+      <section className="mt-6 flex flex-col items-start gap-4 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:p-5">
+        <UserAvatar
+          src={avatarUrl}
+          name={name ?? "Signed in"}
+          initials={initials}
+          size={56}
+          className="rounded-2xl"
+        />
+        <div className="min-w-0 flex-1">
+          <h2 className="break-words text-base font-semibold tracking-tight">
+            {name ?? "Your Google account"}
+          </h2>
+          <p className="mt-0.5 break-all text-sm text-muted-foreground">
+            {email ?? "Signed in with Google"}
+          </p>
+        </div>
+        <Link
+          href="/app/profile"
+          className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium transition-colors hover:bg-accent"
+        >
+          <User className="h-3.5 w-3.5" aria-hidden="true" />
+          <span className="hidden sm:inline">Manage profile</span>
+          <span className="sm:hidden">Profile</span>
+        </Link>
+      </section>
+
       {/* Stats */}
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {isLoaded ? (
           <>
             <StatCard label="Snippets" value={counts.total} icon={Code2} hint="Saved in your library" />

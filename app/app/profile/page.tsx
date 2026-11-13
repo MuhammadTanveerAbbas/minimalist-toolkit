@@ -1,38 +1,24 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import { ArrowRight, Code2, Command, FileText, ShieldCheck, Tag, Target } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
 import { useSnippets } from "@/hooks/use-snippets"
+import { useUserProfile } from "@/hooks/use-user-profile"
 import { getSnippetCounts } from "@/lib/snippet-stats"
 import { LANGUAGE_NAMES } from "@/lib/editor-languages"
 import { BarChart, CHART_COLORS } from "@/components/charts"
 import { Skeleton } from "@/components/ui/skeleton"
+import { UserAvatar } from "@/components/workspace/user-avatar"
 import type { Language } from "@/lib/types"
 
 const CONTAINER = "mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8"
 
 export default function ProfilePage() {
-  const [email, setEmail] = useState<string | null>(null)
-  const [createdAt, setCreatedAt] = useState<string | null>(null)
+  const { name, email, avatarUrl, initials, createdAt } = useUserProfile()
   const { allSnippets, allCategories, allTags, isLoaded } = useSnippets()
 
-  useEffect(() => {
-    let active = true
-    createClient()
-      .auth.getUser()
-      .then(
-        ({ data }: { data: { user?: { email?: string | null; created_at?: string } | null } | null }) => {
-          if (!active) return
-          setEmail(data?.user?.email ?? null)
-          setCreatedAt(data?.user?.created_at ?? null)
-        }
-      )
-    return () => {
-      active = false
-    }
-  }, [])
+  const displayName = name ?? "Your Google account"
 
   const counts = useMemo(() => getSnippetCounts(allSnippets), [allSnippets])
 
@@ -49,15 +35,6 @@ export default function ProfilePage() {
     [counts.byLanguage]
   )
 
-  const initials =
-    email
-      ?.split("@")[0]
-      .split(/[._-]/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase())
-      .join("") ?? "?"
-
   return (
     <div className={CONTAINER}>
       <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Profile</h1>
@@ -67,12 +44,17 @@ export default function ProfilePage() {
 
       {/* Identity */}
       <section className="mt-6 rounded-xl border border-border bg-card p-5 sm:p-6">
-        <div className="flex flex-wrap items-center gap-4">
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand text-lg font-semibold text-brand-foreground">
-            {initials}
-          </span>
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+          <UserAvatar
+            src={avatarUrl}
+            name={displayName}
+            initials={initials}
+            size={56}
+            className="rounded-2xl"
+          />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-lg font-semibold tracking-tight">{email ?? "Signed in"}</p>
+            <p className="break-words text-lg font-semibold tracking-tight">{displayName}</p>
+            <p className="mt-0.5 break-all text-sm text-muted-foreground">{email ?? "Signed in"}</p>
             <p className="mt-0.5 text-sm text-muted-foreground">
               {createdAt
                 ? `Member since ${new Date(createdAt).toLocaleDateString(undefined, {
@@ -84,7 +66,7 @@ export default function ProfilePage() {
           </div>
           <Link
             href="/app/settings"
-            className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-border px-3 text-sm font-medium transition-colors hover:bg-accent"
+            className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg border border-border px-3 text-sm font-medium transition-colors hover:bg-accent"
           >
             Settings
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

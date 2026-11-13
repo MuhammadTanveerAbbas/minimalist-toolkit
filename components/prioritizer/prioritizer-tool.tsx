@@ -238,7 +238,7 @@ export function PrioritizerTool() {
             )}
             {mode === "database" ? "Saved to your account" : mode === "local" ? "Saved in this browser" : "Loading"}
           </span>
-          <Button type="button" variant="outline" size="sm" onClick={handleNew} className="gap-1.5">
+          <Button type="button" variant="outline" size="sm" onClick={handleNew} className="h-11 gap-1.5 md:h-8">
             <Plus className="h-4 w-4" aria-hidden="true" />
             New project
           </Button>
@@ -247,7 +247,7 @@ export function PrioritizerTool() {
             size="sm"
             onClick={handleSave}
             disabled={isLoading}
-            className="gap-1.5"
+            className="h-11 gap-1.5 md:h-8"
           >
             <Save className="h-4 w-4" aria-hidden="true" />
             {savedFlash ? "Saved" : "Save"}
@@ -285,7 +285,10 @@ export function PrioritizerTool() {
               setDirty(false)
             }}
           >
-            <SelectTrigger id="project-picker" className="h-9 w-auto min-w-[200px] text-sm">
+            <SelectTrigger
+              id="project-picker"
+              className="data-[size=default]:h-11 w-full min-w-0 text-sm md:data-[size=default]:h-9 md:w-auto md:min-w-[200px]"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -302,7 +305,7 @@ export function PrioritizerTool() {
               type="button"
               onClick={() => setDeletingDocId(selectedDocId)}
               aria-label="Delete this project"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-destructive/40 hover:text-destructive"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-destructive/40 hover:text-destructive md:h-9 md:w-9"
             >
               <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
@@ -329,7 +332,7 @@ export function PrioritizerTool() {
                   setDirty(true)
                 }}
                 placeholder={DEFAULT_PROJECT_TITLE}
-                className="h-9 text-sm"
+                className="h-11 text-base md:h-9 md:text-sm"
               />
             </div>
           </section>
@@ -361,7 +364,7 @@ export function PrioritizerTool() {
                 ? "Nothing scored yet."
                 : `${project.items.length} scored.`}
             </p>
-            <Button type="button" variant="outline" size="sm" onClick={addItem} className="mt-3 gap-1.5">
+            <Button type="button" variant="outline" size="sm" onClick={addItem} className="mt-3 h-11 gap-1.5 md:h-8">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Add feature
             </Button>
@@ -383,7 +386,7 @@ export function PrioritizerTool() {
                 aria-selected={tab === item.id}
                 onClick={() => setTab(item.id)}
                 className={cn(
-                  "min-h-9 flex-1 rounded-md px-3 text-xs font-medium transition-colors",
+                  "min-h-11 min-w-0 flex-1 rounded-md px-2 text-xs font-medium transition-colors md:min-h-9 md:px-3",
                   tab === item.id
                     ? "bg-foreground text-background"
                     : "text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -411,7 +414,7 @@ export function PrioritizerTool() {
                     Score each option against the model you chose. Once there are two or more features,
                     the ranking and the fragility check become meaningful.
                   </p>
-                  <Button type="button" onClick={addItem} size="sm" className="mt-5 gap-1.5">
+                  <Button type="button" onClick={addItem} size="sm" className="mt-5 h-11 gap-1.5 md:h-8">
                     <Plus className="h-4 w-4" aria-hidden="true" />
                     Add feature
                   </Button>

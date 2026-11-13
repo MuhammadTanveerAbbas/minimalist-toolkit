@@ -325,7 +325,7 @@ export function QuotesTool() {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
         <aside className="order-1 lg:col-start-1 lg:row-start-1">
-          <div className="flex h-[520px] flex-col overflow-hidden rounded-xl border border-border bg-card lg:h-[calc(100dvh-11rem)] lg:max-h-[900px]">
+          <div className="flex h-[70dvh] max-h-[520px] flex-col overflow-hidden rounded-xl border border-border bg-card lg:h-[calc(100dvh-11rem)] lg:max-h-[900px]">
             <QuoteList
               entries={entries}
               loading={mode === "loading"}

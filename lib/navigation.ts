@@ -130,25 +130,70 @@ export function getTool(id: string): ToolDefinition | undefined {
   return TOOLS.find((tool) => tool.id === id)
 }
 
-export const NAV_GROUPS: { label: string; items: { href: string; label: string; icon: LucideIcon; exact?: boolean }[] }[] = [
+export interface NavItem {
+  href: string
+  label: string
+  icon: LucideIcon
+  /** Match the path exactly instead of by prefix. */
+  exact?: boolean
+}
+
+export interface NavCategory {
+  id: string
+  label: string
+  items: NavItem[]
+}
+
+/**
+ * The workspace sidebar is organised into functional categories so a new
+ * tool has an obvious home instead of joining one long flat list.
+ */
+export const NAV_CATEGORIES: NavCategory[] = [
   {
-    label: "Workspace",
+    id: "overview",
+    label: "Overview",
     items: [
       { href: "/app/dashboard", label: "Dashboard", icon: BarChart3, exact: true },
       { href: "/app/categories", label: "Categories", icon: ListChecks },
-      { href: "/app/chat", label: "AI Chat", icon: MessageSquareText },
     ],
   },
   {
-    label: "Tools",
+    id: "create",
+    label: "Create",
     items: [
       { href: "/app/snippets", label: "Snippets", icon: Code2 },
       { href: "/app/mockify", label: "Mockify", icon: ImageIcon },
       { href: "/app/promptcraft", label: "PromptCraft", icon: Sparkles },
+    ],
+  },
+  {
+    id: "business",
+    label: "Business",
+    items: [
       { href: "/app/quotes", label: "Quotes", icon: FileText },
       { href: "/app/prioritizer", label: "Prioritizer", icon: Target },
     ],
   },
+  {
+    id: "assist",
+    label: "Assist",
+    items: [
+      { href: "/app/chat", label: "AI Chat", icon: MessageSquareText },
+    ],
+  },
 ]
 
-export const SETTINGS_NAV_ITEM = { href: "/app/settings", label: "Settings", icon: Settings }
+/** Every workspace destination, in category order. */
+export const NAV_ITEMS: NavItem[] = NAV_CATEGORIES.flatMap((category) => category.items)
+
+/**
+ * The four destinations that get their own slot in the mobile bottom bar.
+ * Everything else is reachable from the "More" sheet.
+ */
+export const MOBILE_BAR_ITEMS: NavItem[] = [
+  { href: "/app/dashboard", label: "Home", icon: BarChart3, exact: true },
+  { href: "/app/snippets", label: "Snippets", icon: Code2 },
+  { href: "/app/chat", label: "Chat", icon: MessageSquareText },
+]
+
+export const SETTINGS_NAV_ITEM: NavItem = { href: "/app/settings", label: "Settings", icon: Settings }

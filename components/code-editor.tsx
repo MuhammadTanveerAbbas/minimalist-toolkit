@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react"
 import CodeMirror from "@uiw/react-codemirror"
-import { githubLight } from "@uiw/codemirror-theme-github"
+import { githubDark, githubLight } from "@uiw/codemirror-theme-github"
 import { EditorView } from "@codemirror/view"
 import { bracketMatching } from "@codemirror/language"
 
@@ -12,6 +12,7 @@ import { getLanguageExtension } from "@/lib/editor-languages"
 import type { Language } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Check, Copy } from "lucide-react"
+import { useTheme } from "@/hooks/use-theme"
 import { cn } from "@/lib/utils"
 
 interface CodeEditorProps {
@@ -32,6 +33,7 @@ export function CodeEditor({
   noBorder = false,
 }: CodeEditorProps) {
   const [copied, setCopied] = useState(false)
+  const { isDark } = useTheme()
 
   const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(value)
@@ -72,7 +74,7 @@ export function CodeEditor({
       <CodeMirror
         value={value}
         onChange={onChange}
-        theme={githubLight}
+        theme={isDark ? githubDark : githubLight}
         extensions={extensions}
         editable={!readOnly}
         basicSetup={{

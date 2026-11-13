@@ -69,7 +69,7 @@ export function DocumentSheet({
   return (
     <div
       className={cn(
-        "quotes-sheet mx-auto w-full max-w-[780px] bg-white p-6 text-neutral-900 shadow-lg ring-1 ring-black/10 sm:p-10",
+        "quotes-sheet mx-auto w-full max-w-[780px] bg-white p-4 text-neutral-900 shadow-lg ring-1 ring-black/10 dark:shadow-black/40 dark:ring-white/10 sm:p-10",
         className
       )}
     >
@@ -159,7 +159,7 @@ export function DocumentItemsTable({ quote }: { quote: QuoteDocument }) {
     <table className="mt-6 w-full border-collapse text-sm">
       <thead>
         <tr className="border-b border-neutral-200 text-left text-[11px] uppercase tracking-[0.14em] text-neutral-500">
-          <th scope="col" className="py-2 pr-3 font-medium">
+          <th scope="col" className="py-2 pr-2 font-medium sm:pr-3">
             Description
           </th>
           <th scope="col" className="py-2 text-right font-medium">
@@ -168,7 +168,7 @@ export function DocumentItemsTable({ quote }: { quote: QuoteDocument }) {
           <th scope="col" className="py-2 text-right font-medium">
             Rate
           </th>
-          <th scope="col" className="py-2 pl-3 text-right font-medium">
+          <th scope="col" className="py-2 pl-2 text-right font-medium sm:pl-3">
             Amount
           </th>
         </tr>

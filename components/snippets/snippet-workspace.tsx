@@ -145,7 +145,7 @@ export function SnippetWorkspace() {
 
   if (!isLoaded) {
     return (
-      <div className="flex h-[calc(100dvh-3.5rem-5.5rem)] items-center justify-center bg-background px-4 md:h-[calc(100dvh-3.5rem-1.5rem)]">
+      <div className="flex h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] items-center justify-center bg-background px-4 md:h-[calc(100dvh-3.5rem-1.5rem)]">
         <div className="space-y-3 text-center">
           <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card">
             <Code2 className="h-5 w-5 text-muted-foreground" />
@@ -157,7 +157,7 @@ export function SnippetWorkspace() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem-5.5rem)] flex-col overflow-hidden bg-background md:h-[calc(100dvh-3.5rem-1.5rem)]">
+    <div className="flex h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] flex-col overflow-hidden bg-background md:h-[calc(100dvh-3.5rem-1.5rem)]">
       <div className="flex items-center justify-between gap-2 border-b border-border bg-background px-3 py-2 sm:px-4">
         <div>
           <h1 className="text-sm font-semibold">Snippet Manager</h1>

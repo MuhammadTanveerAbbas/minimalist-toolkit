@@ -2,12 +2,13 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   ChevronDown,
   Command,
   ExternalLink,
   LogOut,
+  MoreHorizontal,
   PanelLeftClose,
   PanelLeftOpen,
   Settings,
@@ -15,7 +16,17 @@ import {
 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useSidebarCollapsed, useSidebarCollapsedSetter } from "@/hooks/use-sidebar-collapsed"
-import { NAV_GROUPS, SETTINGS_NAV_ITEM } from "@/lib/navigation"
+import { useUserProfile } from "@/hooks/use-user-profile"
+import {
+  MOBILE_BAR_ITEMS,
+  NAV_CATEGORIES,
+  NAV_ITEMS,
+  SETTINGS_NAV_ITEM,
+  type NavItem,
+} from "@/lib/navigation"
+import { UserAvatar } from "@/components/workspace/user-avatar"
+import { ThemeIconButton } from "@/components/theme-toggle"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 
 function isActivePath(pathname: string, href: string, exact?: boolean) {
@@ -25,17 +36,17 @@ function isActivePath(pathname: string, href: string, exact?: boolean) {
 function DesktopNav({ pathname, collapsed }: { pathname: string; collapsed: boolean }) {
   return (
     <nav className="flex flex-col gap-5" aria-label="Workspace navigation">
-      {NAV_GROUPS.map((group, groupIndex) => (
-        <div key={group.label}>
+      {NAV_CATEGORIES.map((category, categoryIndex) => (
+        <div key={category.id}>
           {!collapsed ? (
             <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
-              {group.label}
+              {category.label}
             </p>
-          ) : groupIndex > 0 ? (
+          ) : categoryIndex > 0 ? (
             <div className="mx-auto mb-2 h-px w-7 bg-border" aria-hidden="true" />
           ) : null}
           <ul className="flex flex-col gap-0.5">
-            {group.items.map((item) => {
+            {category.items.map((item) => {
               const Icon = item.icon
               const active = isActivePath(pathname, item.href, item.exact)
               return (
@@ -69,9 +80,10 @@ function DesktopNav({ pathname, collapsed }: { pathname: string; collapsed: bool
   )
 }
 
-function AccountMenu({ email, collapsed }: { email: string | null; collapsed: boolean }) {
+function AccountMenu({ collapsed }: { collapsed: boolean }) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
+  const { name, email, avatarUrl, initials } = useUserProfile()
 
   const signOut = async () => {
     const supabase = createClient()
@@ -81,7 +93,7 @@ function AccountMenu({ email, collapsed }: { email: string | null; collapsed: bo
     router.refresh()
   }
 
-  const initial = email?.charAt(0).toUpperCase() ?? "?"
+  const displayName = name ?? "Signed in"
 
   return (
     <div className="relative">
@@ -95,13 +107,14 @@ function AccountMenu({ email, collapsed }: { email: string | null; collapsed: bo
           collapsed ? "mx-2 justify-center px-0 py-2" : "px-2 py-2"
         )}
       >
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-[11px] font-semibold text-brand-foreground">
-          {initial}
-        </span>
+        <UserAvatar src={avatarUrl} name={displayName} initials={initials} size={28} />
         {!collapsed ? (
           <>
-            <span className="min-w-0 flex-1 truncate text-left text-xs text-muted-foreground">
-              {email ?? "Signed in"}
+            <span className="min-w-0 flex-1 text-left">
+              <span className="block truncate text-xs font-medium text-foreground">{displayName}</span>
+              {email ? (
+                <span className="block truncate text-[11px] text-muted-foreground">{email}</span>
+              ) : null}
             </span>
             <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
           </>
@@ -125,9 +138,12 @@ function AccountMenu({ email, collapsed }: { email: string | null; collapsed: bo
               collapsed ? "left-0" : "left-0 right-0"
             )}
           >
-            <div className="border-b border-border px-3 py-2.5">
-              <p className="truncate text-xs font-medium">Account</p>
-              <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{email ?? "Not available"}</p>
+            <div className="flex items-center gap-3 border-b border-border px-3 py-2.5">
+              <UserAvatar src={avatarUrl} name={displayName} initials={initials} size={36} />
+              <div className="min-w-0">
+                <p className="truncate text-xs font-medium">{displayName}</p>
+                <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{email ?? "Not available"}</p>
+              </div>
             </div>
             <div className="p-1">
               <Link
@@ -174,30 +190,143 @@ function AccountMenu({ email, collapsed }: { email: string | null; collapsed: bo
   )
 }
 
+/**
+ * The small-screen replacement for the sidebar. Every workspace page stays
+ * reachable: four slots in the bar itself, everything else inside the sheet.
+ */
+function MobileMoreSheet({ pathname }: { pathname: string }) {
+  const [open, setOpen] = useState(false)
+  const router = useRouter()
+  const { name, email, avatarUrl, initials } = useUserProfile()
+
+  const signOut = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    setOpen(false)
+    router.push("/login")
+    router.refresh()
+  }
+
+  const displayName = name ?? "Signed in"
+
+  // The bar holds Home, Snippets and Chat. Everything else lives in the
+  // sheet, so the More slot is marked active while one of those is open.
+  const barHrefs = MOBILE_BAR_ITEMS.map((item) => item.href)
+  const moreActive = !barHrefs.some((href) => isActivePath(pathname, href))
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <button
+          type="button"
+          aria-current={moreActive ? "page" : undefined}
+          className={cn(
+            "flex min-h-12 flex-col items-center justify-center gap-1 rounded-lg px-1 py-1.5 text-[11px] font-medium transition-colors duration-150",
+            moreActive
+              ? "bg-foreground text-background"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <MoreHorizontal className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="max-w-full truncate">More</span>
+        </button>
+      </SheetTrigger>
+      <SheetContent
+        side="bottom"
+        className="max-h-[85dvh] gap-0 overflow-y-auto px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4"
+      >
+        <SheetHeader className="p-0 pr-8">
+          <SheetTitle className="text-sm">All tools</SheetTitle>
+        </SheetHeader>
+
+        <div className="mt-3">
+          {NAV_CATEGORIES.map((category) => (
+            <div key={category.id} className="mb-4 last:mb-0">
+              <p className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                {category.label}
+              </p>
+              <ul className="flex flex-col gap-0.5">
+                {category.items.map((item) => {
+                  const Icon = item.icon
+                  const active = isActivePath(pathname, item.href, item.exact)
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        aria-current={active ? "page" : undefined}
+                        className={cn(
+                          "flex min-h-11 items-center gap-2.5 rounded-lg px-2 text-sm transition-colors duration-150",
+                          active
+                            ? "bg-foreground font-medium text-background"
+                            : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                        )}
+                      >
+                        <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        <span className="truncate">{item.label}</span>
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="border-t border-border pt-3">
+          <Link
+            href={SETTINGS_NAV_ITEM.href}
+            onClick={() => setOpen(false)}
+            className="flex min-h-11 items-center gap-2.5 rounded-lg px-2 text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground"
+          >
+            <Settings className="h-4 w-4 shrink-0" aria-hidden="true" />
+            Settings
+          </Link>
+          <Link
+            href="/app/profile"
+            onClick={() => setOpen(false)}
+            className="flex min-h-11 items-center gap-2.5 rounded-lg px-2 text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground"
+          >
+            <User className="h-4 w-4 shrink-0" aria-hidden="true" />
+            Profile
+          </Link>
+          <button
+            type="button"
+            onClick={signOut}
+            className="flex min-h-11 w-full items-center gap-2.5 rounded-lg px-2 text-sm text-muted-foreground transition-colors duration-150 hover:bg-destructive/10 hover:text-destructive"
+          >
+            <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+            Sign out
+          </button>
+        </div>
+
+        <div className="mt-3 flex items-center gap-3 border-t border-border pt-3">
+          <UserAvatar src={avatarUrl} name={displayName} initials={initials} size={36} />
+          <div className="min-w-0">
+            <p className="truncate text-xs font-medium">{displayName}</p>
+            {email ? <p className="truncate text-[11px] text-muted-foreground">{email}</p> : null}
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const [email, setEmail] = useState<string | null>(null)
   const collapsed = useSidebarCollapsed()
   const setCollapsed = useSidebarCollapsedSetter()
-
-  useEffect(() => {
-    let active = true
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }: { data: { user?: { email?: string | null } | null } | null }) => {
-      if (active) setEmail(data?.user?.email ?? null)
-    })
-    return () => {
-      active = false
-    }
-  }, [])
+  const { name, avatarUrl, initials } = useUserProfile()
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed)
   }
 
-  const allItems = NAV_GROUPS.flatMap((g) => g.items)
   const currentLabel =
-    allItems.find((i) => isActivePath(pathname, i.href, i.exact))?.label ?? "Workspace"
+    NAV_ITEMS.find((i) => isActivePath(pathname, i.href, i.exact))?.label ??
+    (isActivePath(pathname, SETTINGS_NAV_ITEM.href) ? SETTINGS_NAV_ITEM.label : null) ??
+    (isActivePath(pathname, "/app/profile") ? "Profile" : null) ??
+    "Workspace"
   const settingsActive = isActivePath(pathname, SETTINGS_NAV_ITEM.href)
 
   return (
@@ -245,7 +374,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               collapsed ? "px-0 py-2" : "px-2 py-2.5"
             )}
           >
-            <AccountMenu email={email} collapsed={collapsed} />
+            <AccountMenu collapsed={collapsed} />
             <Link
               href={SETTINGS_NAV_ITEM.href}
               title={collapsed ? "Settings" : undefined}
@@ -294,6 +423,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex items-center gap-1">
               <span className="hidden text-xs text-muted-foreground sm:inline">Private workspace</span>
+              <ThemeIconButton className="ml-1" />
+              <Link
+                href="/app/profile"
+                className="flex items-center gap-2 rounded-full"
+                aria-label={name ? `Your profile, ${name}` : "Your profile"}
+              >
+                <UserAvatar src={avatarUrl} name={name ?? "Signed in"} initials={initials} size={28} />
+              </Link>
             </div>
           </header>
 
@@ -307,14 +444,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
         aria-label="Mobile navigation"
       >
-        <div className="mx-auto grid max-w-lg grid-cols-5 gap-1 px-2 py-1.5">
-          {[
-            { href: "/app/dashboard", label: "Home", icon: NAV_GROUPS[0].items[0].icon, exact: true },
-            { href: "/app/snippets", label: "Snippets", icon: NAV_GROUPS[1].items[0].icon },
-            { href: "/app/quotes", label: "Quotes", icon: NAV_GROUPS[1].items[3].icon },
-            { href: "/app/prioritizer", label: "Prioritize", icon: NAV_GROUPS[1].items[4].icon },
-            { href: "/app/chat", label: "Chat", icon: NAV_GROUPS[0].items[2].icon },
-          ].map((item) => {
+        <div className="mx-auto grid max-w-lg grid-cols-4 gap-1 px-2 py-1.5">
+          {MOBILE_BAR_ITEMS.map((item: NavItem) => {
             const Icon = item.icon
             const active = isActivePath(pathname, item.href, item.exact)
             return (
@@ -332,6 +463,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             )
           })}
+          <MobileMoreSheet pathname={pathname} />
         </div>
       </nav>
     </div>

@@ -77,7 +77,7 @@ export function FragilityReport({
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Perturbation</span>
           <Select value={String(percent)} onValueChange={(v) => onPercentChange(Number(v))}>
-            <SelectTrigger className="h-9 w-24 text-sm" aria-label="Perturbation percentage">
+            <SelectTrigger className="h-11 w-24 text-sm md:h-9" aria-label="Perturbation percentage">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -138,7 +138,7 @@ export function FragilityReport({
               return (
                 <li key={entry.itemId} className="rounded-lg border border-border bg-surface-2 p-3.5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-sm font-medium">{name}</p>
+                    <p className="min-w-0 break-words text-sm font-medium">{name}</p>
                     <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                       <TrendingUp className="h-3 w-3" aria-hidden="true" />
                       #{entry.currentRank}

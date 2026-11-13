@@ -18,12 +18,12 @@ const STATUS_FILTERS: Array<{ id: QuoteStatus | "all"; label: string }> = [
 
 const STATUS_BADGE_CLASS: Record<QuoteStatus, string> = {
   draft: "border-border bg-surface-2 text-muted-foreground",
-  sent: "border-sky-300 bg-sky-50 text-sky-700   ",
+  sent: "border-sky-300 bg-sky-50 text-sky-700 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-200",
   accepted:
-    "border-emerald-300 bg-emerald-50 text-emerald-700   ",
+    "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200",
   declined:
-    "border-red-300 bg-red-50 text-red-700   ",
-  paid: "border-emerald-400 bg-emerald-100 text-emerald-800   ",
+    "border-red-300 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-200",
+  paid: "border-emerald-400 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200",
 }
 
 export function QuoteList({

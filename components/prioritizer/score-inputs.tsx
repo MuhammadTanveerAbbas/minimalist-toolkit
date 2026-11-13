@@ -228,7 +228,7 @@ function NumberField({
           setText(String(next))
           onChange(next)
         }}
-        className="numeric-input h-9 text-sm"
+        className="numeric-input h-11 text-base md:h-9 md:text-sm"
       />
       <p className="text-[11px] leading-relaxed text-muted-foreground">{hint}</p>
     </div>
@@ -275,7 +275,7 @@ export function ScoreInputs({ item, project, onChange, onDelete }: ScoreInputsPr
           value={item.name}
           onChange={(event) => onChange({ ...item, name: event.target.value })}
           placeholder="e.g. Offline mode"
-          className="h-9 text-sm"
+          className="h-11 text-base md:h-9 md:text-sm"
         />
       </div>
 
@@ -290,7 +290,7 @@ export function ScoreInputs({ item, project, onChange, onDelete }: ScoreInputsPr
           onChange={(event) => onChange({ ...item, description: event.target.value })}
           placeholder="One line on what this feature does and who it is for."
           rows={2}
-          className="resize-none text-sm"
+          className="resize-none text-base md:text-sm"
         />
       </div>
 
@@ -346,14 +346,20 @@ export function ScoreInputs({ item, project, onChange, onDelete }: ScoreInputsPr
                     : "Built by the platform team, about 3 weeks"
               }
               rows={2}
-              className="resize-none text-sm"
+              className="resize-none text-base md:text-sm"
             />
           </div>
         ))}
       </div>
 
       {onDelete ? (
-        <Button type="button" variant="ghost" size="sm" onClick={onDelete} className="self-start">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={onDelete}
+          className="min-h-11 self-start md:min-h-8"
+        >
           <Trash2 className={cn("text-destructive")} />
           Delete feature
         </Button>

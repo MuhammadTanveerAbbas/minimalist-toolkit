@@ -238,7 +238,7 @@ export default function ChatPage() {
   }, [messages])
 
   return (
-    <div className="mx-auto flex h-[calc(100dvh-3.5rem-4rem)] w-full max-w-4xl flex-col px-4 py-4 sm:px-6 md:h-[calc(100dvh-3.5rem-1.5rem)] lg:px-8">
+    <div className="mx-auto flex h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] w-full max-w-4xl flex-col px-4 py-4 sm:px-6 md:h-[calc(100dvh-3.5rem-1.5rem)] lg:px-8">
       <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
         <div className="min-w-0">
           <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">AI Chat</h1>

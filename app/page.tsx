@@ -4,12 +4,9 @@ import { Hero } from "@/components/landing/hero"
 import { BentoGrid } from "@/components/landing/bento-grid"
 import { WorkflowShowcase } from "@/components/landing/workflow-showcase"
 import { UseCases } from "@/components/landing/use-cases"
-import { SecuritySection } from "@/components/landing/security-section"
 import { FaqSection } from "@/components/landing/faq-section"
 import { FinalCta } from "@/components/landing/final-cta"
 import { SiteFooter } from "@/components/landing/site-footer"
-import { TextBand } from "@/components/landing/marquee"
-import { SmoothScroll } from "@/components/smooth-scroll"
 
 export const metadata: Metadata = {
   title: "Minimalist Toolkit - Six focused tools for code, visuals, prompts and client work",
@@ -42,8 +39,7 @@ export default function LandingPage() {
   }
 
   return (
-    <SmoothScroll>
-      <div className="min-h-dvh bg-background text-foreground">
+    <div className="min-h-dvh bg-background text-foreground">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -60,16 +56,13 @@ export default function LandingPage() {
         <main id="main" className="reveal-sections">
           <Hero />
           <BentoGrid />
-          <TextBand />
           <WorkflowShowcase />
           <UseCases />
-          <SecuritySection />
           <FaqSection />
           <FinalCta />
         </main>
 
         <SiteFooter />
       </div>
-    </SmoothScroll>
   )
 }

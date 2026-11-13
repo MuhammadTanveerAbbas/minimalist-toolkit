@@ -131,7 +131,7 @@ export function PromptForm({
                 setPromptError(null)
               }}
               className={cn(
-                "min-h-9 rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground",
+                "min-h-11 rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground md:min-h-9",
                 "hover:border-ring hover:text-foreground transition-colors font-mono",
                 prompt === preset.prompt && "border-ring text-foreground"
               )}
@@ -161,7 +161,7 @@ export function PromptForm({
           rows={4}
           className={cn(
             "w-full resize-none rounded-lg border bg-muted px-4 py-3 pb-6",
-            "h-32 font-sans text-sm text-foreground placeholder:text-muted-foreground",
+            "h-32 font-sans text-base text-foreground placeholder:text-muted-foreground md:text-sm",
             "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 transition-colors leading-relaxed",
             promptError ? "border-destructive" : "border-border"
           )}
@@ -189,7 +189,7 @@ export function PromptForm({
             onChange={(e) => onModelChange(e.target.value as ImageModel)}
               className={cn(
                 "rounded-lg border border-border bg-muted px-3 py-2",
-                "text-sm text-foreground font-sans",
+                "text-base text-foreground font-sans md:text-sm",
                 "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 transition-colors"
               )}
             >
@@ -220,7 +220,7 @@ export function PromptForm({
               onChange={(e) => onQualityChange(e.target.value as Quality)}
               className={cn(
                 "rounded-lg border border-border bg-muted px-3 py-2",
-                "text-sm text-foreground font-sans",
+                "text-base text-foreground font-sans md:text-sm",
                 "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 transition-colors"
               )}
             >
@@ -290,7 +290,7 @@ export function PromptForm({
             onClick={onSeedLockToggle}
             aria-pressed={seedLocked}
             className={cn(
-              "inline-flex min-h-9 items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-mono transition-colors",
+              "inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-mono transition-colors md:min-h-9",
               seedLocked
                 ? "border-ring bg-accent/10 text-foreground"
                 : "border-border text-muted-foreground hover:text-foreground"
@@ -320,7 +320,7 @@ export function PromptForm({
             }}
             aria-labelledby="mockify-seed-label"
             className={cn(
-              "numeric-input w-full rounded-lg border border-border bg-muted px-3 py-2 font-mono text-sm text-foreground",
+              "numeric-input w-full rounded-lg border border-border bg-muted px-3 py-2 font-mono text-base text-foreground md:text-sm",
               "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 transition-colors",
               !seedLocked && "opacity-50"
             )}

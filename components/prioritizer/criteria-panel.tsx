@@ -146,7 +146,7 @@ export function CriteriaPanel({ project, onChange }: CriteriaPanelProps) {
                 onClick={() => selectFramework(option.value)}
                 aria-pressed={active}
                 className={cn(
-                  "min-h-9 rounded-md px-2 text-xs font-medium transition-colors",
+                  "min-h-11 rounded-md px-2 text-xs font-medium transition-colors md:min-h-9",
                   active
                     ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -161,7 +161,7 @@ export function CriteriaPanel({ project, onChange }: CriteriaPanelProps) {
             onClick={selectWeighted}
             aria-pressed={isWeighted}
             className={cn(
-              "col-span-2 min-h-9 rounded-md px-2 text-xs font-medium transition-colors sm:col-span-1",
+              "col-span-2 min-h-11 rounded-md px-2 text-xs font-medium transition-colors sm:col-span-1 md:min-h-9",
               isWeighted
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -228,7 +228,7 @@ export function CriteriaPanel({ project, onChange }: CriteriaPanelProps) {
                             updateCriterion(index, { name: event.target.value })
                           }
                           aria-label={`Criterion ${index + 1} name`}
-                          className="h-8 min-w-0 flex-1 text-xs"
+                          className="h-11 min-w-0 flex-1 text-base md:h-8 md:text-xs"
                         />
                       ) : (
                         <span className="min-w-0 flex-1 truncate text-xs font-medium">
@@ -261,7 +261,7 @@ export function CriteriaPanel({ project, onChange }: CriteriaPanelProps) {
                           if (!Number.isFinite(parsed)) return
                           setWeight(index, Math.min(100, Math.max(0, parsed)))
                         }}
-                        className="numeric-input h-8 w-20 text-xs"
+                        className="numeric-input h-11 w-20 text-base md:h-8 md:text-xs"
                       />
                       <div className="min-w-0 flex-1">
                         {isWeighted ? (
@@ -277,7 +277,7 @@ export function CriteriaPanel({ project, onChange }: CriteriaPanelProps) {
                             }}
                           >
                             <SelectTrigger
-                              className="h-8 w-full text-xs"
+                              className="h-11 w-full text-xs md:h-8"
                               aria-label={`Source input for ${criterion.name}`}
                             >
                               <SelectValue />
@@ -299,7 +299,7 @@ export function CriteriaPanel({ project, onChange }: CriteriaPanelProps) {
                     </div>
 
                     <div className="flex items-center justify-between gap-2">
-                      <label className="flex min-h-8 cursor-pointer items-center gap-2 text-[11px] text-muted-foreground">
+                      <label className="flex min-h-11 cursor-pointer items-center gap-2 text-[11px] text-muted-foreground md:min-h-8">
                         <Checkbox
                           checked={criterion.lowerIsBetter}
                           disabled={!isWeighted}
@@ -320,6 +320,7 @@ export function CriteriaPanel({ project, onChange }: CriteriaPanelProps) {
                             onClick={() => moveCriterion(index, -1)}
                             disabled={index === 0}
                             aria-label={`Move ${criterion.name} up`}
+                            className="h-11 w-11 md:h-8 md:w-8"
                           >
                             <ArrowUp />
                           </Button>
@@ -330,6 +331,7 @@ export function CriteriaPanel({ project, onChange }: CriteriaPanelProps) {
                             onClick={() => moveCriterion(index, 1)}
                             disabled={index === normalised.length - 1}
                             aria-label={`Move ${criterion.name} down`}
+                            className="h-11 w-11 md:h-8 md:w-8"
                           >
                             <ArrowDown />
                           </Button>
@@ -339,6 +341,7 @@ export function CriteriaPanel({ project, onChange }: CriteriaPanelProps) {
                             size="icon-sm"
                             onClick={() => removeCriterion(index)}
                             aria-label={`Remove ${criterion.name}`}
+                            className="h-11 w-11 md:h-8 md:w-8"
                           >
                             <Trash2 className="text-destructive" />
                           </Button>
@@ -353,7 +356,13 @@ export function CriteriaPanel({ project, onChange }: CriteriaPanelProps) {
         )}
 
         {isWeighted ? (
-          <Button type="button" variant="outline" size="sm" onClick={addCriterion}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={addCriterion}
+            className="min-h-11 md:min-h-8"
+          >
             <Plus />
             Add criterion
           </Button>

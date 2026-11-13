@@ -14,6 +14,9 @@ import {
   User,
 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
+import { useUserProfile } from "@/hooks/use-user-profile"
+import { UserAvatar } from "@/components/workspace/user-avatar"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { TOOLS } from "@/lib/navigation"
 
 const CONTAINER = "mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8"
@@ -58,20 +61,17 @@ const LOCAL_KEYS = [
 ]
 
 export default function SettingsPage() {
-  const [email, setEmail] = useState<string | null>(null)
+  const { name, email, avatarUrl, initials, createdAt } = useUserProfile()
   const [userId, setUserId] = useState<string | null>(null)
-  const [createdAt, setCreatedAt] = useState<string | null>(null)
   const [cleared, setCleared] = useState(false)
 
   useEffect(() => {
     let active = true
     createClient()
       .auth.getUser()
-      .then(({ data }: { data: { user?: { email?: string | null; id?: string; created_at?: string } | null } | null }) => {
+      .then(({ data }: { data: { user?: { id?: string } | null } | null }) => {
         if (!active) return
-        setEmail(data?.user?.email ?? null)
         setUserId(data?.user?.id ?? null)
-        setCreatedAt(data?.user?.created_at ?? null)
       })
     return () => {
       active = false
@@ -99,12 +99,25 @@ export default function SettingsPage() {
 
       <div className="mt-6 space-y-4">
         <SettingsCard icon={User} title="Account" description="Details for the account you signed in with.">
-          <dl className="grid gap-3 sm:grid-cols-2">
+          <div className="flex items-center gap-3.5 rounded-lg border border-border bg-surface-2 p-3">
+            <UserAvatar
+              src={avatarUrl}
+              name={name ?? "Signed in"}
+              initials={initials}
+              size={44}
+              className="rounded-xl"
+            />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">{name ?? "Signed in"}</p>
+              <p className="truncate text-xs text-muted-foreground">{email ?? "Not available"}</p>
+            </div>
+          </div>
+          <dl className="mt-3 grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg border border-border bg-surface-2 p-3">
               <dt className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                Email
+                Sign-in provider
               </dt>
-              <dd className="mt-1 break-all text-sm font-medium">{email ?? "Signed in"}</dd>
+              <dd className="mt-1 text-sm font-medium">Google</dd>
             </div>
             <div className="rounded-lg border border-border bg-surface-2 p-3">
               <dt className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -143,8 +156,9 @@ export default function SettingsPage() {
           </div>
         </SettingsCard>
 
-        <SettingsCard icon={Palette} title="Appearance" description="How the workspace is laid out.">
-          <div className="grid gap-3 sm:grid-cols-2">
+        <SettingsCard icon={Palette} title="Appearance" description="How the workspace looks.">
+          <ThemeToggle className="max-w-sm" />
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <div className="flex items-start gap-3 rounded-lg border border-border bg-surface-2 p-3">
               <Monitor className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <div>
@@ -159,7 +173,7 @@ export default function SettingsPage() {
               <div>
                 <p className="text-sm font-medium">Mobile layout</p>
                 <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
-                  Bottom tab bar, sheet-based filters, and stacked data views.
+                  Bottom tab bar with a More sheet, sheet-based filters, and stacked data views.
                 </p>
               </div>
             </div>

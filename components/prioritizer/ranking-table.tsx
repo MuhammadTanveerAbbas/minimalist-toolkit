@@ -246,9 +246,9 @@ export function RankingTable({ ranked, project, fragility, onEdit }: RankingTabl
                     {entry.rank}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium">{item.name || "Untitled feature"}</p>
+                    <p className="break-words font-medium">{item.name || "Untitled feature"}</p>
                     {item.description ? (
-                      <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                      <p className="mt-0.5 line-clamp-2 break-words text-xs text-muted-foreground">
                         {item.description}
                       </p>
                     ) : null}
