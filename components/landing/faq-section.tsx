@@ -7,11 +7,11 @@ import { cn } from "@/lib/utils"
 const FAQ = [
   {
     q: "Do I need a separate account for each tool?",
-    a: "No. One Google sign-in gives you all six tools. Your snippets, quotes, scoring projects and generation history are all attached to the same account, so you can move between them without logging in again.",
+    a: "No. One sign-in gives you all tools. Your snippets, chat history, and generation history are all attached to the same account, so you can move between them without logging in again.",
   },
   {
     q: "Which tools work without an AI key?",
-    a: "Snippet Manager, Quotes, Prioritizer, and the dashboard are fully deterministic and work with no external service configured. Mockify uses a free image endpoint. PromptCraft and AI Chat need a model API key on the server, and show a clear configuration message if one is missing.",
+    a: "Snippet Manager, the dashboard, and chat history work with no external service configured. PromptCraft and the chat workspace need a model API key on the server, and show a clear configuration message if one is missing.",
   },
   {
     q: "Where is my data stored?",
@@ -19,7 +19,7 @@ const FAQ = [
   },
   {
     q: "Can I get my data out?",
-    a: "Yes. Snippets export to JSON or a Gist payload, quotes export to CSV or Markdown, and scoring projects export to CSV or a Markdown decision record. Nothing is locked in.",
+    a: "Yes. Snippets export to JSON or a Gist payload. Nothing is locked in.",
   },
   {
     q: "Is there a paid tier?",
@@ -41,7 +41,7 @@ export function FaqSection() {
   return (
     <section id="faq" className="scroll-mt-16 border-b border-border">
       <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-14">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-brand">Questions</p>
             <h2 className="mt-3 text-balance-tight text-3xl font-semibold tracking-tight sm:text-4xl">

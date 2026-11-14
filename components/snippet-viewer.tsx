@@ -257,7 +257,7 @@ function TitleBtn({
     <button
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 focus:outline-none",
+        "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 outline-none",
         danger
           ? "text-destructive/70 hover:text-destructive hover:bg-destructive/10"
           : "text-muted-foreground hover:text-foreground hover:bg-accent"

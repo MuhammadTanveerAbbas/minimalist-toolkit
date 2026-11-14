@@ -199,7 +199,7 @@ export function PromptForm({ onGenerate, isLoading }: PromptFormProps) {
   }
 
   const inputClass =
-    "w-full rounded-lg border border-border bg-background/60 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/35 focus:border-foreground/25 focus:outline-none focus:ring-2 focus:ring-foreground/10 transition-all"
+    "w-full rounded-lg border border-border bg-background/60 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/35 outline-none transition-all"
 
   const chipClass = (active: boolean) =>
     cn(

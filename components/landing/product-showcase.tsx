@@ -2,7 +2,6 @@ import {
   BarChart3,
   Code2,
   Command,
-  FileText,
   MessageSquareText,
   Plus,
   Search,
@@ -22,7 +21,7 @@ const SIDEBAR_SECTIONS = [
     label: "Create",
     items: [
       { label: "Mockify", icon: Sparkles, active: false },
-      { label: "Quotes", icon: FileText, active: false },
+      { label: "PromptCraft", icon: Sparkles, active: false },
     ],
   },
   {

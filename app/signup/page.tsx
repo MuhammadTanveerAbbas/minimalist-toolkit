@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Create an account",
-  description: "Create a Minimalist Toolkit account and unlock all six tools.",
+  description: "Create a Minimalist Toolkit account and unlock the full workspace.",
   robots: { index: false, follow: false },
 }
 

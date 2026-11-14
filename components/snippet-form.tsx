@@ -124,7 +124,7 @@ export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
             <div className="space-y-1.5">
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Language</p>
               <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
-                <SelectTrigger className="h-9 text-sm bg-muted/40 border-border/70 focus:ring-1">
+                <SelectTrigger className="h-9 text-sm bg-muted/40 border-border/70">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="max-h-64">
@@ -177,7 +177,7 @@ export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   placeholder="e.g. Utilities"
-                  className="h-9 text-sm pl-8 bg-muted/40 border-border/70 focus-visible:ring-1"
+                  className="h-9 text-sm pl-8 bg-muted/40 border-border/70"
                 />
               </div>
             </div>
@@ -192,7 +192,7 @@ export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddTag() } }}
                   placeholder="Add tag, press Enter"
-                  className="h-9 text-sm pl-8 bg-muted/40 border-border/70 focus-visible:ring-1"
+                  className="h-9 text-sm pl-8 bg-muted/40 border-border/70"
                 />
               </div>
               {tags.length > 0 && (

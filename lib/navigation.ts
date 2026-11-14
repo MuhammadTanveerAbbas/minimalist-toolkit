@@ -2,13 +2,10 @@ import type { LucideIcon } from "lucide-react"
 import {
   BarChart3,
   Code2,
-  FileText,
-  ImageIcon,
   ListChecks,
   MessageSquareText,
   Settings,
   Sparkles,
-  Target,
 } from "lucide-react"
 
 export interface ToolDefinition {
@@ -45,22 +42,6 @@ export const TOOLS: ToolDefinition[] = [
     accent: "var(--chart-2)",
   },
   {
-    id: "mockify",
-    name: "Mockify",
-    href: "/app/mockify",
-    icon: ImageIcon,
-    tagline: "Prompt to product visuals",
-    description:
-      "Turn a written brief into a mockup or concept image, then keep a searchable history of everything you have generated.",
-    highlights: [
-      "Aspect ratio and model controls",
-      "Generation history in the browser",
-      "Download, fullscreen, and copy prompt",
-      "Reusable prompt starters",
-    ],
-    accent: "var(--chart-3)",
-  },
-  {
     id: "promptcraft",
     name: "PromptCraft",
     href: "/app/promptcraft",
@@ -77,49 +58,17 @@ export const TOOLS: ToolDefinition[] = [
     accent: "var(--chart-1)",
   },
   {
-    id: "quotes",
-    name: "Quotes",
-    href: "/app/quotes",
-    icon: FileText,
-    tagline: "Scope, quote, and get paid",
-    description:
-      "Build a client quote with line items, tax, deposit, and payment terms, then convert it into an invoice without retyping a thing.",
-    highlights: [
-      "Line items with quantity and rate",
-      "Tax, discount, and deposit handling",
-      "Net 7/15/30 payment terms",
-      "Convert quote to invoice",
-    ],
-    accent: "var(--chart-4)",
-  },
-  {
-    id: "prioritizer",
-    name: "Prioritizer",
-    href: "/app/prioritizer",
-    icon: Target,
-    tagline: "Defend your roadmap order",
-    description:
-      "Score features with weighted criteria, see how sensitive the ranking is to your assumptions, and export a decision record.",
-    highlights: [
-      "RICE, ICE, and WSJF scoring",
-      "Adjustable criteria weights",
-      "Rank fragility analysis",
-      "CSV and Markdown export",
-    ],
-    accent: "var(--chart-5)",
-  },
-  {
     id: "chat",
     name: "AI Chat",
     href: "/app/chat",
     icon: MessageSquareText,
-    tagline: "Short answers, in context",
+    tagline: "Chat and image generation in one workspace",
     description:
-      "Ask for help with code, prompts, or product decisions and get a short, plain-language answer without leaving the workspace.",
+      "Ask for help with code, prompts, or product decisions, stream short answers, and generate mockups without leaving the workspace.",
     highlights: [
       "Streaming responses",
+      "Image generation with history",
       "Conversation history per session",
-      "Short, structured answers",
       "Clear error states",
     ],
     accent: "var(--chart-2)",
@@ -162,16 +111,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
     label: "Create",
     items: [
       { href: "/app/snippets", label: "Snippets", icon: Code2 },
-      { href: "/app/mockify", label: "Mockify", icon: ImageIcon },
       { href: "/app/promptcraft", label: "PromptCraft", icon: Sparkles },
-    ],
-  },
-  {
-    id: "business",
-    label: "Business",
-    items: [
-      { href: "/app/quotes", label: "Quotes", icon: FileText },
-      { href: "/app/prioritizer", label: "Prioritizer", icon: Target },
     ],
   },
   {

@@ -66,16 +66,28 @@ export function useUserProfile(): UserProfile & { isLoading: boolean; createdAt:
   const [state, setState] = useState<CachedProfile>(cache)
 
   useEffect(() => {
-    if (!state.isLoading) return undefined
-
     const listener = (next: CachedProfile) => setState(next)
     listeners.add(listener)
     loadProfile()
 
+    const { data } = createClient().auth.onAuthStateChange((_event: string, session: { user?: unknown } | null) => {
+      if (!session?.user) {
+        const next: CachedProfile = { profile: EMPTY, createdAt: null, isLoading: false }
+        cache = next
+        inFlight = null
+        listeners.forEach((l) => l(next))
+        return
+      }
+      inFlight = null
+      cache = { ...cache, isLoading: true }
+      loadProfile()
+    })
+
     return () => {
       listeners.delete(listener)
+      data.subscription.unsubscribe()
     }
-  }, [state.isLoading])
+  }, [])
 
   return { ...state.profile, createdAt: state.createdAt, isLoading: state.isLoading }
 }

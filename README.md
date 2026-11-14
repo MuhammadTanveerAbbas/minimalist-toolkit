@@ -1,23 +1,23 @@
 # Minimalist Toolkit
 
-Minimalist Toolkit is a workspace that brings six focused tools under one account:
+Minimalist Toolkit is a workspace that brings focused tools under one account:
 
 - **Dashboard** (`/app/dashboard`): workspace analytics and quick access to every tool
 - **Snippet Manager** (`/app/snippets`): save, search, and organise reusable code
 - **Categories** (`/app/categories`): browse and compare snippet categories
-- **Mockify** (`/app/mockify`): create visual mockups from text prompts
 - **PromptCraft** (`/app/promptcraft`): draft and improve prompts for a specific model
-- **Quotes** (`/app/quotes`): build client quotes and convert them into invoices
-- **Prioritizer** (`/app/prioritizer`): score features and test how fragile the ranking is
-- **AI Chat** (`/app/chat`): short answers on code, prompts, and product decisions
+- **AI Chat** (`/app/chat`): chat and image generation (Mockify) in one workspace
+
+`/app/mockify` redirects into the Chat images tab.
 
 ## Features
 
-- One account across the workspace, with server-side route protection
+- One account across the workspace, with server-side route protection (`proxy.ts`)
+- Email/password and Google sign-in, password reset, and email confirmation via Supabase Auth
 - Row-level security so every saved record is owned by its creator
-- Snippets, Quotes, and Prioritizer are deterministic and need no AI key
+- Snippets and the dashboard are deterministic and need no AI key
 - Light and dark theme, responsive from 360px up
-- Exports for everything: JSON, Gist, CSV, Markdown, and print to PDF
+- Snippet exports: JSON download and GitHub Gist
 
 ## Tech stack
 
@@ -25,7 +25,7 @@ Minimalist Toolkit is a workspace that brings six focused tools under one accoun
 - React 19
 - TypeScript (strict)
 - Tailwind CSS 4 with a custom token system
-- Supabase (Google OAuth, Postgres with RLS)
+- Supabase (Auth + Postgres with RLS)
 - pnpm
 
 ## Local development
@@ -34,6 +34,9 @@ Minimalist Toolkit is a workspace that brings six focused tools under one accoun
 pnpm install
 cp .env.example .env.local
 # Add required environment values to .env.local
+# Or, if linked to Vercel (production vars):
+#   vercel link --yes --project minimalist-toolkit
+#   vercel env pull .env.local --environment=production --yes
 pnpm dev
 ```
 
@@ -41,49 +44,59 @@ Open `http://localhost:3000`.
 
 ## Environment setup
 
-Environment variables are documented in `.env.example`. Add the values required for the features you
-want to run locally.
+Environment variables are documented in `.env.example`. Required for full local use:
 
-If this repository is linked to a Vercel project, you can pull configured values:
+| Name | Purpose |
+|------|---------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key (public) |
+| `GROQ_API_KEY` | PromptCraft + AI Chat |
+| `CRON_SECRET` | Bearer token for `/api/keep-alive` (Vercel Cron) |
 
-```bash
-vercel link
-vercel env pull .env.local
-```
-
-Do not commit `.env.local` or share secret values.
+Never commit `.env.local` or share secret values. Never put a service-role key in the Next.js app.
 
 ## Routes
 
-- Public: `/`, `/login`, `/signup`, `/forgot-password`, `/auth/callback`
+- Public: `/`, `/login`, `/signup`, `/forgot-password`, `/update-password`, `/auth/callback`
 - Workspace (protected): `/app/dashboard`, `/app/categories`, `/app/chat`, `/app/snippets`,
-  `/app/mockify`, `/app/promptcraft`, `/app/quotes`, `/app/prioritizer`, `/app/settings`,
-  `/app/profile`
+  `/app/promptcraft`, `/app/settings`, `/app/profile`
 
 `/app` redirects to `/app/dashboard`.
 
 ## Authentication behaviour
 
+- Email/password registration and login, plus Google OAuth
+- Password reset: `/forgot-password` → email link → `/auth/callback` → `/update-password`
 - A signed-in visitor who opens `/`, `/login`, or `/signup` is redirected to `/app/dashboard`
-- An unauthenticated visitor who opens a protected route is redirected to `/login` with the
-  originally requested path preserved in `next`, and returns there after signing in
-- Redirect targets are validated on the server and can only ever resolve to a path inside this app
-- Sign-in and callback endpoints are rate limited per client
+- An unauthenticated visitor who opens a protected route is redirected to `/login` with `next` preserved
+- Redirect targets are validated and can only resolve to a path inside this app
+- Auth endpoints are rate limited per client
 
 ## Database
 
-SQL migrations are in `supabase/`:
+**Source of truth:** `supabase/schema.sql` (idempotent, non-destructive).
 
-1. `001_core.sql` - shared setup (idempotent)
-2. `002_snippet_manager.sql` - `public.snippets` schema and RLS (preservation-oriented; do not drop/rename existing data)
-3. `003_mockify.sql` - `public.mockify_generations` (owner-only RLS)
-4. `004_promptcraft.sql` - `public.promptcraft_history` (owner-only RLS)
-5. `005_tool_documents.sql` - `public.tool_documents`, the shared store behind Quotes and Prioritizer
+Numbered scripts remain for stepwise applies on existing projects:
 
-Apply migrations with your Supabase workflow and review them against the target project before running.
+1. `001_core.sql` – shared setup
+2. `002_snippet_manager.sql` – `snippets` + RLS + `handle_updated_at`
+3. `003_mockify.sql` – `mockify_generations`
+4. `004_promptcraft.sql` – `promptcraft_history`
+5. `005_tool_documents.sql` – `tool_documents` (reserved; Chat history is still browser-local)
 
-The Quotes and Prioritizer tools fall back to browser storage when the database is unreachable, so they
-remain usable before a migration has been applied.
+### Safe apply strategy
+
+1. Snapshot/backup the Supabase project.
+2. Prefer re-applying `schema.sql` or `001`→`005` in order (all use `IF NOT EXISTS` / policy guards).
+3. Do not `DROP TABLE`, truncate, or rename columns in production without an explicit plan.
+4. Smoke-test signed-in CRUD for snippets, Mockify history, and PromptCraft history.
+
+```bash
+# After linking (asks for confirmation; do not push blindly):
+supabase link --project-ref <your-project-ref>
+# Inspect only, or apply via SQL editor /:
+# supabase db query --file supabase/schema.sql
+```
 
 ## Scripts
 
@@ -96,9 +109,9 @@ pnpm build
 
 ## Notes
 
-- Some features depend on environment configuration and available services.
-- AI-powered features require the appropriate server configuration.
-- Keep user data private and verify behavior in your target environment before release.
+- PromptCraft and AI Chat need `GROQ_API_KEY`. Image generation proxies Pollinations server-side.
+- Chat conversation history is local to the browser; snippets and tool history tables sync when signed in.
+- Set `CRON_SECRET` in Vercel (Production + Preview) so `/api/keep-alive` can authenticate cron jobs.
 
 ## Made by
 

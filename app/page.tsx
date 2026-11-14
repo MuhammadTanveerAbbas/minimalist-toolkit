@@ -9,9 +9,9 @@ import { FinalCta } from "@/components/landing/final-cta"
 import { SiteFooter } from "@/components/landing/site-footer"
 
 export const metadata: Metadata = {
-  title: "Minimalist Toolkit - Six focused tools for code, visuals, prompts and client work",
+  title: "Minimalist Toolkit - Focused tools for code, visuals, prompts and AI",
   description:
-    "Save and organise code snippets, generate mockups, write better prompts, quote clients, score your roadmap, and ask for help. One account, six tools, your data stays yours.",
+    "Save and organise code snippets, generate mockups, write better prompts, and chat with an AI workspace. One account, your data stays yours.",
   alternates: { canonical: "/" },
 }
 
@@ -26,15 +26,13 @@ export default function LandingPage() {
     applicationCategory: "DeveloperApplication",
     operatingSystem: "Web",
     description:
-      "Minimalist Toolkit brings a snippet manager, mockup generator, prompt builder, client quote builder, feature prioritiser and AI chat into one workspace.",
+      "Minimalist Toolkit brings a snippet manager, prompt builder, mockup generator, and an AI chat workspace into one account.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     featureList: [
       "Snippet Manager with search, tags and version history",
       "Mockify for prompt-based visuals",
       "PromptCraft for model-specific prompt writing",
-      "Quotes for client scopes, deposits and invoices",
-      "Prioritizer for weighted feature scoring and rank fragility",
-      "AI Chat for short answers in context",
+      "AI Chat workspace with image generation",
     ],
   }
 

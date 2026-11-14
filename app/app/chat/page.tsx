@@ -13,6 +13,7 @@ import {
   User,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { MockifyTool } from "@/components/mockify/mockify-tool"
 
 type Msg = { role: "user" | "assistant"; content: string }
 
@@ -113,6 +114,7 @@ export default function ChatPage() {
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [tab, setTab] = useState<"chat" | "images">("chat")
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const endRef = useRef<HTMLDivElement | null>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -237,8 +239,45 @@ export default function ChatPage() {
     return { messages: messages.length, words }
   }, [messages])
 
+  if (tab === "images") {
+    return (
+      <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+        <div className="mb-4 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setTab("chat")}
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-border px-3 text-sm text-muted-foreground hover:text-foreground"
+          >
+            Back to chat
+          </button>
+          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Images</h1>
+        </div>
+        <MockifyTool />
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto flex h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] w-full max-w-4xl flex-col px-4 py-4 sm:px-6 md:h-[calc(100dvh-3.5rem-1.5rem)] lg:px-8">
+      <div className="mb-3 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setTab("chat")}
+          className={cn(
+            "inline-flex min-h-9 items-center rounded-lg px-3 text-sm",
+            "bg-foreground text-background"
+          )}
+        >
+          Chat
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("images")}
+          className="inline-flex min-h-9 items-center rounded-lg border border-border px-3 text-sm text-muted-foreground hover:text-foreground"
+        >
+          Images
+        </button>
+      </div>
       <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
         <div className="min-w-0">
           <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">AI Chat</h1>
@@ -373,7 +412,7 @@ export default function ChatPage() {
             }}
             rows={1}
             placeholder="Ask a question..."
-            className="max-h-40 min-h-11 w-full resize-y rounded-lg border border-border bg-background px-3 py-2.5 text-sm leading-5 transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
+            className="max-h-40 min-h-11 w-full resize-y rounded-lg border border-border bg-background px-3 py-2.5 text-sm leading-5 transition-colors placeholder:text-muted-foreground outline-none"
           />
           {isLoading ? (
             <button

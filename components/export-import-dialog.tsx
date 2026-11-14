@@ -140,7 +140,7 @@ export function ExportImportDialog({ onExportJSON, onImportJSON, onExportGist }:
                   onChange={(e) => setImportText(e.target.value)}
                   placeholder='[{"title": "My snippet", ...}]'
                   rows={7}
-                  className="font-mono text-xs bg-muted/30 border-border/70 focus-visible:ring-1 resize-none"
+                  className="font-mono text-xs bg-muted/30 border-border/70 resize-none"
                 />
               </div>
               {importResult && (

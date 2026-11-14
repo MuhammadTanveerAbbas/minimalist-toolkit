@@ -6,7 +6,7 @@ import { clientIdentifier, rateLimit } from "@/lib/security/rate-limit"
 const PROTECTED_PREFIX = "/app"
 
 /** API routes that must stay reachable without a session. */
-const PUBLIC_API_PREFIXES = ["/api/keep-alive", "/api/cron"]
+const PUBLIC_API_PREFIXES = ["/api/keep-alive"]
 
 function hasSupabaseConfig() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -65,7 +65,12 @@ export async function proxy(request: NextRequest) {
   }
 
   // Rate limit the authentication endpoints to slow automated abuse.
-  if (pathname === "/auth/callback" || pathname === "/login" || pathname === "/signup") {
+  if (
+    pathname === "/auth/callback" ||
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname === "/forgot-password"
+  ) {
     const limit = rateLimit(`auth:${clientIdentifier(request)}`, 30, 60_000)
     if (!limit.ok) {
       if (pathname.startsWith("/api/")) {
@@ -122,8 +127,23 @@ export async function proxy(request: NextRequest) {
     return supabaseResponse
   }
 
+  // Signed-in visitors do not need the marketing or auth pages.
+  if (pathname === "/" || pathname === "/login" || pathname === "/signup") {
+    const rawNext = request.nextUrl.searchParams.get("next")
+    let destination = "/app/dashboard"
+    if (rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") && !rawNext.includes("\\")) {
+      destination = rawNext
+    }
+    const url = request.nextUrl.clone()
+    url.pathname = destination.split("?")[0]
+    url.search = destination.includes("?") ? destination.slice(destination.indexOf("?")) : ""
+    return NextResponse.redirect(url)
+  }
+
   return supabaseResponse
 }
+
+// Proxy always runs on Node.js in Next.js 16; do not export `runtime` here.
 
 export const config = {
   matcher: [

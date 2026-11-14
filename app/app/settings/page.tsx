@@ -55,23 +55,48 @@ const LOCAL_KEYS = [
   "mockify_history",
   "mockify_settings",
   "promptcraft_history",
-  "toolkit_quotes_documents",
-  "toolkit_prioritizer_documents",
+  "toolkit_chat_history",
   "workspace-sidebar-collapsed",
 ]
+
+function providerLabel(user: {
+  app_metadata?: { provider?: string; providers?: string[] } | null
+  identities?: Array<{ provider?: string }> | null
+} | null): string {
+  const providers = new Set<string>()
+  const meta = user?.app_metadata
+  if (meta?.provider) providers.add(meta.provider)
+  if (Array.isArray(meta?.providers)) meta.providers.forEach((p) => providers.add(p))
+  if (Array.isArray(user?.identities)) {
+    user.identities.forEach((identity) => {
+      if (identity?.provider) providers.add(identity.provider)
+    })
+  }
+  const labels: string[] = []
+  if (providers.has("google")) labels.push("Google")
+  if (providers.has("email")) labels.push("Email")
+  if (!labels.length && providers.size) {
+    return Array.from(providers)
+      .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+      .join(", ")
+  }
+  return labels.length ? labels.join(" · ") : "Email"
+}
 
 export default function SettingsPage() {
   const { name, email, avatarUrl, initials, createdAt } = useUserProfile()
   const [userId, setUserId] = useState<string | null>(null)
+  const [provider, setProvider] = useState("Email")
   const [cleared, setCleared] = useState(false)
 
   useEffect(() => {
     let active = true
     createClient()
       .auth.getUser()
-      .then(({ data }: { data: { user?: { id?: string } | null } | null }) => {
+      .then(({ data }: { data: { user?: any } | null }) => {
         if (!active) return
         setUserId(data?.user?.id ?? null)
+        setProvider(providerLabel(data?.user ?? null))
       })
     return () => {
       active = false
@@ -117,7 +142,7 @@ export default function SettingsPage() {
               <dt className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
                 Sign-in provider
               </dt>
-              <dd className="mt-1 text-sm font-medium">Google</dd>
+                  <dd className="mt-1 text-sm font-medium">{provider}</dd>
             </div>
             <div className="rounded-lg border border-border bg-surface-2 p-3">
               <dt className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -193,7 +218,7 @@ export default function SettingsPage() {
             </li>
             <li className="flex gap-2">
               <Database className="mt-1 h-4 w-4 shrink-0 text-brand" aria-hidden="true" />
-              Saved snippets, quotes and scoring projects are owned by your account id and enforced by
+              Saved snippets and generations are owned by your account id and enforced by
               database policies, not by the interface.
             </li>
             <li className="flex gap-2">

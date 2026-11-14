@@ -1,14 +1,50 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import { ArrowLeft, Command, KeyRound, Mail, ShieldCheck } from "lucide-react"
+"use client"
 
-export const metadata: Metadata = {
-  title: "Account help",
-  description: "Recover access to your Minimalist Toolkit account.",
-  robots: { index: false, follow: false },
-}
+import { useState } from "react"
+import Link from "next/link"
+import { ArrowLeft, Command, KeyRound, Loader2, Mail, ShieldCheck } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
 
 export default function ForgotPasswordPage() {
+  const [email, setEmail] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const sendReset = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isLoading) return
+    setError(null)
+    setNotice(null)
+
+    const trimmed = email.trim()
+    if (!trimmed) {
+      setError("Enter the email you use to sign in.")
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const supabase = createClient()
+      const redirect = new URL("/auth/callback", window.location.origin)
+      redirect.searchParams.set("next", "/update-password")
+      redirect.searchParams.set("type", "recovery")
+      const { error: authErr } = await supabase.auth.resetPasswordForEmail(trimmed, {
+        redirectTo: redirect.toString(),
+      })
+      if (authErr) {
+        setError(authErr.message || "Unable to send reset email.")
+      } else {
+        // Same message whether or not the address exists, to avoid account enumeration.
+        setNotice("If an account exists for that email, a reset link is on its way. Check your inbox.")
+      }
+    } catch {
+      setError("Unable to send reset email.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="relative flex min-h-dvh items-center justify-center bg-background px-4 py-10 sm:py-16">
       <div className="w-full max-w-md">
@@ -23,42 +59,76 @@ export default function ForgotPasswordPage() {
           <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface-2">
             <KeyRound className="h-4 w-4 text-brand" aria-hidden="true" />
           </span>
-          <h1 className="mt-4 text-xl font-semibold tracking-tight">Account help</h1>
+          <h1 className="mt-4 text-xl font-semibold tracking-tight">Recover your account</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Accounts here use Google sign-in, so password recovery runs through Google rather than a reset
-            email from this app.
+            Enter your email and we will send a link to set a new password.
           </p>
 
-          <ol className="mt-5 space-y-3">
-            {[
-              {
-                icon: Mail,
-                title: "Reset your Google password",
-                body: "Use google.com/account recovery to reset the password on the Google account you sign in with.",
-              },
-              {
-                icon: ShieldCheck,
-                title: "Sign in again",
-                body: "Return here and choose Continue with Google. Any existing workspace data is untouched.",
-              },
-            ].map((step, index) => (
-              <li key={step.title} className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-2 font-mono text-[11px] tabular-nums text-muted-foreground">
-                  {index + 1}
-                </span>
-                <div>
-                  <p className="text-sm font-medium">{step.title}</p>
-                  <p className="mt-0.5 text-sm leading-6 text-muted-foreground">{step.body}</p>
-                </div>
-              </li>
-            ))}
+          {error ? (
+            <p role="alert" className="mt-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+              {error}
+            </p>
+          ) : null}
+          {notice ? (
+            <p role="status" className="mt-4 rounded-lg border border-border bg-surface-2 px-3 py-2.5 text-sm text-foreground">
+              {notice}
+            </p>
+          ) : null}
+
+          <form className="mt-5 space-y-3" onSubmit={sendReset}>
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="text-xs font-medium text-muted-foreground">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="min-h-11 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+                placeholder="you@example.com"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-60"
+            >
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Mail className="h-4 w-4" aria-hidden="true" />}
+              Send reset link
+            </button>
+          </form>
+
+          <ol className="mt-6 space-y-3 border-t border-border pt-5">
+            <li className="flex items-start gap-3">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-2 font-mono text-[11px] text-muted-foreground">
+                1
+              </span>
+              <div>
+                <p className="text-sm font-medium">Email and password</p>
+                <p className="mt-0.5 text-sm leading-6 text-muted-foreground">
+                  Use the form above. Open the link from your inbox to choose a new password.
+                </p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-2 font-mono text-[11px] text-muted-foreground">
+                2
+              </span>
+              <div>
+                <p className="text-sm font-medium flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
+                  Google account
+                </p>
+                <p className="mt-0.5 text-sm leading-6 text-muted-foreground">
+                  Recover access at Google Account Recovery, then sign in here with Continue with Google.
+                  Your workspace data stays tied to that Google identity.
+                </p>
+              </div>
+            </li>
           </ol>
-
-          <p className="mt-5 rounded-lg border border-border bg-surface-2 p-3 text-sm leading-6 text-muted-foreground">
-            If the Google account is no longer yours, or you use a workspace email that was deactivated,
-            contact the workspace owner. Access is bound to the Google account id, so there is no separate
-            password to reset.
-          </p>
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row">
             <Link

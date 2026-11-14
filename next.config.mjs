@@ -17,7 +17,9 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self'${isDev ? " ws: wss:" : ""} https://api.groq.com https://image.pollinations.ai`,
+  // Browser auth and PostgREST talk to the linked Supabase project.
+  // Wildcard covers project refs without baking a single host into the build.
+  `connect-src 'self'${isDev ? " ws: wss:" : ""} https://*.supabase.co wss://*.supabase.co https://api.groq.com https://image.pollinations.ai`,
   "media-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
@@ -60,6 +62,10 @@ const nextConfig = {
           ...securityHeaders,
           { key: "Cache-Control", value: "no-store, max-age=0" },
         ],
+      },
+      {
+        source: "/Footer.gif",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
     ]
   },

@@ -47,7 +47,7 @@ function HistoryCard({
       onClick={onSelect}
       onKeyDown={(e) => e.key === "Enter" && onSelect()}
       aria-label={`Load prompt: ${item.topic}`}
-      className="group flex w-full cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors duration-150 hover:bg-muted/30 focus:outline-none focus:ring-2 focus:ring-ring/40"
+      className="group flex w-full cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors duration-150 hover:bg-muted/30 outline-none"
     >
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex flex-wrap items-center gap-1.5">
@@ -148,7 +148,7 @@ export function PromptHistory({ items, onSelect, onDelete, onClearAll }: PromptH
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search history…"
-            className="min-h-11 w-full rounded-lg border border-border bg-background py-2 pl-8 pr-8 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 transition-colors duration-150"
+            className="min-h-11 w-full rounded-lg border border-border bg-background py-2 pl-8 pr-8 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors duration-150"
           />
           {search && (
             <button

@@ -1,29 +1,29 @@
 # Minimalist Toolkit
 
-Minimalist Toolkit is a web workspace that combines six focused productivity tools under one account.
+Minimalist Toolkit is a web workspace that combines focused productivity tools under one account: Snippet Manager, PromptCraft, and AI Chat (with image generation).
 
 ## Public pages
 - / : Product overview, workflow showcase, use cases, security and FAQ
-- /login : Sign in
+- /login : Sign in with email/password or Google
 - /signup : Create an account
-- /forgot-password : Account recovery guidance
+- /forgot-password : Request a password reset email
+- /update-password : Set a new password after opening a reset link
+- /auth/callback : OAuth and email confirmation exchange
 
 ## Workspace tools (after sign-in)
 - /app/dashboard : Workspace overview and analytics
 - /app/snippets : Save, search, and organize reusable code
 - /app/categories : Browse snippet categories and their distribution
-- /app/mockify : Generate visual mockups from text prompts
 - /app/promptcraft : Draft and improve prompts for a specific model
-- /app/quotes : Client quotes and invoices, convertible from quote to invoice
-- /app/prioritizer : Weighted feature scoring with rank fragility analysis
-- /app/chat : AI chat for quick help
+- /app/chat : AI chat and image generation (Mockify) in one workspace
+- /app/mockify : Redirects to /app/chat image tab
 - /app/profile : Account overview and library stats
 - /app/settings : Account, appearance, privacy and tool preferences
 
 ## Notes
-- Each tool has its own workflow and page.
-- Snippets, Quotes and Prioritizer are deterministic and work without an AI key.
-- Mockify, PromptCraft and AI Chat depend on the relevant server configuration.
-- User workspace data is private to the signed-in account, enforced by database row-level security.
+- Snippet Manager is deterministic and works without an AI key.
+- PromptCraft and AI Chat need GROQ_API_KEY. Image generation uses Pollinations via a server proxy.
+- Chat conversation history is stored in the browser. Snippets, PromptCraft history, and Mockify metadata sync to Supabase with owner-only RLS.
+- User workspace data is private to the signed-in account.
 
 Made by Tanveer: https://muhammadtanveerabbas.vercel.app

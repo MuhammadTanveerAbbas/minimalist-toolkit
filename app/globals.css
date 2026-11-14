@@ -152,8 +152,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -240,12 +240,7 @@
   }
 }
 
-code,
-pre,
-kbd {
-  font-family: var(--font-mono);
-  font-feature-settings: "ss01", "zero";
-}
+
 
 /* Scrollbars hidden on every surface and browser. Scrolling still works. */
 * {

@@ -85,7 +85,7 @@ export function SearchBar({
             onChange={handleSearchChange}
             placeholder="Search titles, descriptions, code and tags..."
             aria-label="Search snippets"
-            className="h-11 w-full rounded-lg border border-border bg-card pl-9 pr-9 text-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
+            className="h-11 w-full rounded-lg border border-border bg-card pl-9 pr-9 text-sm transition-colors placeholder:text-muted-foreground outline-none"
           />
           {search ? (
             <button

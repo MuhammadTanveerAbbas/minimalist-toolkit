@@ -1,13 +1,21 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
+import { Bebas_Neue, Noto_Sans } from "next/font/google"
 import { THEME_INIT_SCRIPT } from "@/lib/theme"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import "./globals.css"
 
-const geistSans = GeistSans
-const geistMono = GeistMono
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
+})
+
+const notoSans = Noto_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
+
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://minimalist-toolkit.vercel.app"
 const siteName = "Minimalist Toolkit"
@@ -86,7 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Applies the stored theme before the first paint so there is no flash. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
+      <body className={`${bebasNeue.variable} ${notoSans.variable} font-sans antialiased`}>
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

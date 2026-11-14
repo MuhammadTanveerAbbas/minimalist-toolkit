@@ -51,7 +51,7 @@ function HistoryCard({
         }
       }}
       aria-label={`Open generation: ${item.prompt}`}
-      className="group flex w-full cursor-pointer items-start gap-3 rounded-xl border border-border/80 bg-card p-4 text-left transition-all hover:border-ring/40 hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring/30"
+      className="group flex w-full cursor-pointer items-start gap-3 rounded-xl border border-border/80 bg-card p-4 text-left transition-all hover:border-ring/40 hover:bg-accent outline-none"
     >
       {hasImage ? (
         /* eslint-disable-next-line @next/next/no-img-element -- generated/remote preview URLs */
@@ -153,7 +153,7 @@ export function PromptHistory({ items, onSelect, onDelete, onClearAll }: PromptH
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search history..."
             aria-label="Search generation history"
-            className="w-full min-h-11 rounded-lg border border-border bg-background/60 py-2 pl-8 pr-8 text-xs text-foreground placeholder:text-muted-foreground/35 focus:border-foreground/25 focus:outline-none focus:ring-2 focus:ring-foreground/10 transition-all"
+            className="w-full min-h-11 rounded-lg border border-border bg-background/60 py-2 pl-8 pr-8 text-xs text-foreground placeholder:text-muted-foreground/35 outline-none transition-all"
           />
           {search && (
             <button

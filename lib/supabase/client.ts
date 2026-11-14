@@ -18,8 +18,12 @@ function createStub() {
   const auth = {
     getUser: async () => ({ data: { user: null }, error: err }),
     getSession: async () => ({ data: { session: null }, error: err }),
+    signInWithPassword: async () => ({ data: { user: null, session: null }, error: err }),
+    signUp: async () => ({ data: { user: null, session: null }, error: err }),
     signInWithOAuth: async () => ({ data: { provider: null, url: null }, error: err }),
     signOut: async () => ({ error: err }),
+    resetPasswordForEmail: async () => ({ data: {}, error: err }),
+    updateUser: async () => ({ data: { user: null }, error: err }),
     onAuthStateChange: () => sub,
     exchangeCodeForSession: async () => ({ data: { session: null, user: null }, error: err }),
   }

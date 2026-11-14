@@ -122,7 +122,7 @@ export default function CategoriesPage() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Filter categories..."
               aria-label="Filter categories"
-              className="h-11 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 sm:max-w-sm"
+              className="h-11 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-sm transition-colors placeholder:text-muted-foreground outline-none sm:max-w-sm"
             />
           </div>
 

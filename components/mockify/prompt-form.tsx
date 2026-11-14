@@ -162,7 +162,7 @@ export function PromptForm({
           className={cn(
             "w-full resize-none rounded-lg border bg-muted px-4 py-3 pb-6",
             "h-32 font-sans text-base text-foreground placeholder:text-muted-foreground md:text-sm",
-            "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 transition-colors leading-relaxed",
+            "outline-none transition-colors leading-relaxed",
             promptError ? "border-destructive" : "border-border"
           )}
         />
@@ -190,7 +190,7 @@ export function PromptForm({
               className={cn(
                 "rounded-lg border border-border bg-muted px-3 py-2",
                 "text-base text-foreground font-sans md:text-sm",
-                "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 transition-colors"
+                "outline-none transition-colors"
               )}
             >
             {MODEL_OPTIONS.map((opt) => (
@@ -221,7 +221,7 @@ export function PromptForm({
               className={cn(
                 "rounded-lg border border-border bg-muted px-3 py-2",
                 "text-base text-foreground font-sans md:text-sm",
-                "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 transition-colors"
+                "outline-none transition-colors"
               )}
             >
               {qualityOptions.map((q) => (
@@ -321,7 +321,7 @@ export function PromptForm({
             aria-labelledby="mockify-seed-label"
             className={cn(
               "numeric-input w-full rounded-lg border border-border bg-muted px-3 py-2 font-mono text-base text-foreground md:text-sm",
-              "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 transition-colors",
+              "outline-none transition-colors",
               !seedLocked && "opacity-50"
             )}
           />
