@@ -58,8 +58,8 @@ function validateInput(
 }
 
 export async function POST(req: NextRequest) {
-  const guard = await requireUser(req, { limit: 30, windowMs: 60_000 })
-  if (guard instanceof Response) return guard
+  const guard = requireUser(req, { limit: 30, windowMs: 60_000 })
+  if (guard) return guard
 
   let body: unknown
   try {

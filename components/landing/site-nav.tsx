@@ -22,7 +22,7 @@ export function SiteNav() {
     <header
       className={cn(
         "sticky top-0 z-50 w-full border-b transition-colors duration-200",
-        scrolled ? "border-border bg-background/85 backdrop-blur-md" : "border-transparent bg-background"
+        scrolled ? "border-border bg-background" : "border-transparent bg-background"
       )}
     >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
@@ -57,10 +57,10 @@ export function SiteNav() {
           </Link>
           <Link
             href="/signup"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-foreground px-3.5 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
+            className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-foreground px-3 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
           >
             Get started
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            <ArrowRight className="hidden h-3.5 w-3.5 sm:block" aria-hidden="true" />
           </Link>
         </div>
       </div>

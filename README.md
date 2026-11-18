@@ -2,13 +2,13 @@
 
 Minimalist Toolkit is a workspace that brings focused tools under one account:
 
-- **Dashboard** (`/app/dashboard`): workspace analytics and quick access to every tool
+- **Analytics** (`/app/dashboard`): workspace analytics and quick access to every tool
 - **Snippet Manager** (`/app/snippets`): save, search, and organise reusable code
 - **Categories** (`/app/categories`): browse and compare snippet categories
 - **PromptCraft** (`/app/promptcraft`): draft and improve prompts for a specific model
 - **AI Chat** (`/app/chat`): chat and image generation (Mockify) in one workspace
 
-`/app/mockify` redirects into the Chat images tab.
+- **Mockify** (`/app/mockify`): generate images from a written prompt
 
 ## Features
 

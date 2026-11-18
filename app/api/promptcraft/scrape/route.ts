@@ -167,8 +167,8 @@ function extractMainContent(html: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  const guard = await requireUser(req, { limit: 20, windowMs: 60_000 })
-  if (guard instanceof Response) return guard
+  const guard = requireUser(req, { limit: 20, windowMs: 60_000 })
+  if (guard) return guard
 
   let body: unknown
   try {

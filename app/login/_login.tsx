@@ -4,14 +4,9 @@ import { useCallback, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import {
-  ArrowRight,
-  Check,
-  Command,
   Eye,
   EyeOff,
   Loader2,
-  ShieldCheck,
-  Sparkles,
 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { getSafeNextOrNull } from "@/lib/auth/safe-next"
@@ -165,79 +160,31 @@ export default function AuthPage({ mode }: AuthPageProps) {
   const isSignup = mode === "signup"
 
   return (
-    <div className="relative grid min-h-dvh lg:grid-cols-2">
-      {/* Context side */}
-      <div className="relative hidden overflow-hidden border-r border-border bg-surface-2 lg:flex lg:flex-col lg:justify-center">
-        <div
-          className="pointer-events-none absolute inset-0 grid-lines opacity-30 [mask-image:radial-gradient(90%_90%_at_60%_20%,black,transparent_80%)]"
-          aria-hidden="true"
-        />
-        <div className="relative px-10 py-16 xl:px-14">
-          <p className="text-xs font-semibold uppercase tracking-wider text-brand">
-            One account. One workspace.
-          </p>
-          <h2 className="mt-4 max-w-md text-balance-tight text-3xl font-semibold tracking-tight">
-            Everything you need in one workspace
-          </h2>
+    <div className="relative flex min-h-dvh items-center justify-center px-4 py-8">
+      <div className="flex w-full max-w-sm flex-col">
+        <div>
+          <div className="rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8">
+            {/* Logo */}
+            <div className="mb-6 flex flex-col items-center gap-3 text-center">
+              <Link href="/" className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground focus-visible:outline-none focus-visible:ring-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" stroke="#FDFBF8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </Link>
+              <span className="text-sm font-semibold tracking-tight">Minimalist Toolkit</span>
+            </div>
 
-          <ul className="mt-8 space-y-4">
-            {[
-              { icon: ShieldCheck, label: "Private by default", detail: "Every record is owner-only. No one else can see your data." },
-              { icon: Sparkles, label: "AI tools included", detail: "PromptCraft and AI Chat work out of the box no extra setup." },
-            ].map((item) => (
-              <li key={item.label} className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
-                  <item.icon className="h-4 w-4 text-brand" aria-hidden="true" />
-                </span>
-                <div>
-                  <p className="text-sm font-medium">{item.label}</p>
-                  <p className="mt-0.5 text-sm leading-6 text-muted-foreground">{item.detail}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+            {/* Divider */}
+            <div className="mb-6 h-px bg-border" aria-hidden="true" />
 
-          <div className="mt-10 rounded-xl border border-border bg-card p-4">
-            <p className="text-sm font-medium">Free account includes</p>
-            <ul className="mt-3 space-y-2">
-              {["Snippets, PromptCraft, and AI Chat", "Private, owner-only storage", "Export everything you create"].map(
-                (item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Check className="h-3.5 w-3.5 shrink-0 text-brand" aria-hidden="true" />
-                    {item}
-                  </li>
-                )
-              )}
-            </ul>
-            <Link
-              href="/"
-              className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-foreground underline-offset-4 hover:underline"
-            >
-              Learn more
-              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Form side */}
-      <div className="flex flex-col px-4 py-8 sm:px-8 lg:px-12">
-        <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center">
-          <Link href="/" className="mb-8 inline-flex w-fit items-center gap-2.5 focus-visible:outline-none focus-visible:ring-0">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground text-background">
-              <Command className="h-4 w-4" aria-hidden="true" />
-            </span>
-            <span className="text-sm font-semibold tracking-tight">Minimalist Toolkit</span>
-          </Link>
-
-          <div className="rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
-            <div className="space-y-2">
-              <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
+            {/* Heading */}
+            <div className="mb-6 space-y-1 text-center">
+              <h1 className="text-xl font-semibold tracking-tight">
                 {isSignup ? "Create your workspace" : "Welcome back"}
               </h1>
-              <p className="text-sm leading-6 text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {isSignup
-                  ? "One account unlocks all tools. No card, no trial countdown."
+                  ? "One account unlocks all tools. No card required."
                   : "Sign in to pick up where you left off."}
               </p>
             </div>
@@ -275,7 +222,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="min-h-11 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm transition-colors placeholder:text-muted-foreground outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+                    className="min-h-11 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm transition-colors placeholder:text-muted-foreground outline-none focus:outline-none focus:ring-0 focus:border-border focus-visible:outline-none focus-visible:ring-0"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -292,7 +239,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
                       minLength={isSignup ? 8 : 6}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="min-h-11 w-full rounded-lg border border-border bg-background px-3 py-2.5 pr-10 text-sm transition-colors placeholder:text-muted-foreground outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+                      className="min-h-11 w-full rounded-lg border border-border bg-background px-3 py-2.5 pr-10 text-sm transition-colors placeholder:text-muted-foreground outline-none focus:outline-none focus:ring-0 focus:border-border focus-visible:outline-none focus-visible:ring-0"
                       placeholder={isSignup ? "At least 8 characters" : "Your password"}
                     />
                     <button
@@ -353,41 +300,28 @@ export default function AuthPage({ mode }: AuthPageProps) {
                 {isLoading ? "Continuing..." : "Continue with Google"}
               </button>
 
-              <div className="space-y-2 text-center text-sm text-muted-foreground">
-                <p>
-                  {isSignup ? (
-                    <>
-                      Already have an account?{" "}
-                      <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0">
-                        Log in
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      New here?{" "}
-                      <Link href="/signup" className="font-medium text-foreground underline-offset-4 hover:underline focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0">
-                        Create an account
-                      </Link>
-                    </>
-                  )}
-                </p>
-                <p>
-                  <Link href="/forgot-password" className="underline-offset-4 hover:text-foreground hover:underline focus:outline-none focus:ring-0">
-                    Need help signing in?
-                  </Link>
-                </p>
+              <div className="text-center text-sm text-muted-foreground">
+                {isSignup ? (
+                  <>
+                    Already have an account?{" "}
+                    <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0">
+                      Log in
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    New here?{" "}
+                    <Link href="/signup" className="font-medium text-foreground underline-offset-4 hover:underline focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0">
+                      Create an account
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
 
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            <Link href="/" className="underline-offset-4 hover:text-foreground hover:underline focus:outline-none focus:ring-0">
-              Back to the site
-            </Link>
-          </p>
         </div>
       </div>
-
     </div>
   )
 }

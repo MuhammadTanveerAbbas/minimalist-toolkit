@@ -1,20 +1,9 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
-
-function configured() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  return Boolean(url && key && !url.includes("placeholder") && key !== "placeholder" && key !== "placeholder-anon-key-not-configured")
-}
-
-function notConfiguredError() {
-  return new Error(
-    "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local (or pull from Vercel), then restart the app."
-  )
-}
+import { getSupabaseConfig, SUPABASE_SETUP_MESSAGE } from "@/lib/supabase/config"
 
 function createStub() {
-  const err = notConfiguredError()
+  const err = new Error(SUPABASE_SETUP_MESSAGE)
   const auth = {
     getUser: async () => ({ data: { user: null }, error: err }),
     getSession: async () => ({ data: { session: null }, error: err }),
@@ -40,9 +29,10 @@ function createStub() {
 }
 
 export async function createClient() {
-  if (!configured()) return createStub()
+  const config = getSupabaseConfig()
+  if (!config) return createStub()
   const cookieStore = await cookies()
-  return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+  return createServerClient(config.url, config.key, {
     cookies: {
       getAll() {
         return cookieStore.getAll()

@@ -1,19 +1,8 @@
 import { createBrowserClient } from "@supabase/ssr"
-
-function configured() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  return Boolean(url && key && !url.includes("placeholder") && key !== "placeholder" && key !== "placeholder-anon-key-not-configured")
-}
-
-function notConfiguredError() {
-  return new Error(
-    "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local (or pull from Vercel), then restart the app."
-  )
-}
+import { getSupabaseConfig, SUPABASE_SETUP_MESSAGE } from "@/lib/supabase/config"
 
 function createStub() {
-  const err = notConfiguredError()
+  const err = new Error(SUPABASE_SETUP_MESSAGE)
   const sub = { data: { subscription: { unsubscribe: () => {} } } }
   const auth = {
     getUser: async () => ({ data: { user: null }, error: err }),
@@ -46,6 +35,7 @@ function createStub() {
 }
 
 export function createClient() {
-  if (!configured()) return createStub()
-  return createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+  const config = getSupabaseConfig()
+  if (!config) return createStub()
+  return createBrowserClient(config.url, config.key)
 }

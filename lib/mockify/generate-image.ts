@@ -215,7 +215,12 @@ async function requestImage(request: GenerationRequest): Promise<string> {
       body: JSON.stringify(request.payload),
     })
   } catch (err) {
-    throw new Error(extractRawMessage(err) ?? "Network error while generating image.")
+    const raw = extractRawMessage(err) ?? ""
+    // AbortError means our own timeout fired, not a network drop
+    if (raw.toLowerCase().includes("abort") || raw.toLowerCase().includes("user aborted")) {
+      throw new Error("Image generation timed out. Please try again.")
+    }
+    throw new Error("Could not reach the image service. Check your connection and retry.")
   }
 
   if (!response.ok) {

@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import Link from "next/link"
 import { AlertCircle, Command, RotateCw } from "lucide-react"
+import { SUPABASE_SETUP_MESSAGE } from "@/lib/supabase/config"
 
 export default function Error({
   error,
@@ -15,6 +16,8 @@ export default function Error({
     console.error(error)
   }, [error])
 
+  const isSetupError = /supabase|not configured|env/i.test(error.message)
+
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background px-4 py-8">
       <div className="w-full max-w-md space-y-5 text-center">
@@ -24,7 +27,9 @@ export default function Error({
         <div>
           <h1 className="text-lg font-semibold tracking-tight">Something went wrong</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            An unexpected error interrupted this page. Your saved data is unaffected.
+            {isSetupError
+              ? SUPABASE_SETUP_MESSAGE
+              : "An unexpected error interrupted this page. Your saved data is unaffected."}
           </p>
           {error.digest ? (
             <p className="mt-2 font-mono text-[11px] text-muted-foreground/70">

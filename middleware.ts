@@ -1,20 +1,13 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 import { clientIdentifier, rateLimit } from "@/lib/security/rate-limit"
+import { getSupabaseConfig, SUPABASE_SETUP_MESSAGE } from "@/lib/supabase/config"
 
 /** Routes that require a signed-in user. */
 const PROTECTED_PREFIX = "/app"
 
 /** API routes that must stay reachable without a session. */
 const PUBLIC_API_PREFIXES = ["/api/keep-alive"]
-
-function hasSupabaseConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !key) return false
-  if (url.includes("placeholder") || key === "placeholder" || key === "your_supabase_anon_key") return false
-  return true
-}
 
 function authDisabledForTest() {
   return process.env.DISABLE_AUTH_FOR_TEST === "true"
@@ -27,7 +20,7 @@ function authDisabledForTest() {
  * any page renders, so protected content is never sent to the browser for a
  * signed-out visitor.
  */
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
   const { pathname, search } = request.nextUrl
 
@@ -40,26 +33,18 @@ export async function proxy(request: NextRequest) {
     return supabaseResponse
   }
 
-  if (!hasSupabaseConfig()) {
+  const config = getSupabaseConfig()
+  if (!config) {
     if (pathname.startsWith(PROTECTED_PREFIX)) {
       const url = request.nextUrl.clone()
       url.pathname = "/login"
       url.search = ""
       url.searchParams.set("next", pathname)
-      url.searchParams.set(
-        "error",
-        "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (see .env.example), then restart the dev server."
-      )
+      url.searchParams.set("error", SUPABASE_SETUP_MESSAGE)
       return NextResponse.redirect(url)
     }
     if (pathname.startsWith("/api/")) {
-      return NextResponse.json(
-        {
-          error:
-            "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
-        },
-        { status: 503 }
-      )
+      return NextResponse.json({ error: SUPABASE_SETUP_MESSAGE }, { status: 503 })
     }
     return supabaseResponse
   }
@@ -88,8 +73,8 @@ export async function proxy(request: NextRequest) {
   }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    config.url,
+    config.key,
     {
       cookies: {
         getAll() {
@@ -143,7 +128,7 @@ export async function proxy(request: NextRequest) {
   return supabaseResponse
 }
 
-// Proxy always runs on Node.js in Next.js 16; do not export `runtime` here.
+// Middleware always runs on Node.js in Next.js 16; do not export `runtime` here.
 
 export const config = {
   matcher: [

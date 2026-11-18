@@ -1,6 +1,7 @@
 'use client'
 
 import './globals.css'
+import { SUPABASE_SETUP_MESSAGE } from '@/lib/supabase/config'
 
 export default function GlobalError({
   error,
@@ -16,7 +17,9 @@ export default function GlobalError({
           <div className="w-full max-w-sm space-y-4 text-center">
             <h1 className="text-lg font-semibold tracking-tight">Something went wrong</h1>
             <p className="text-sm leading-6 text-muted-foreground">
-              The app ran into a problem. Please refresh and try again.
+              {/supabase|not configured|env/i.test(error.message)
+                ? SUPABASE_SETUP_MESSAGE
+                : "The app ran into a problem. Please refresh and try again."}
             </p>
             <button
               type="button"

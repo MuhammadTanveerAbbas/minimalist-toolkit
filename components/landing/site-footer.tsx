@@ -17,17 +17,8 @@ const ACCOUNT_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer
-      className="relative border-t border-border bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/Footer.gif')" }}
-    >
-      {/* Scrim just enough to keep text readable, GIF stays visible */}
-      <div
-        className="absolute inset-0 bg-background/55 backdrop-blur-[1px] dark:bg-background/65"
-        aria-hidden="true"
-      />
-
-      <div className="relative mx-auto w-full max-w-7xl px-4 pt-16 pb-6 sm:px-6 lg:px-8">
+    <footer className="border-t border-border">
+      <div className="mx-auto w-full max-w-7xl px-4 pt-16 pb-6 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
 
           {/* Brand full width on mobile, single col on lg */}

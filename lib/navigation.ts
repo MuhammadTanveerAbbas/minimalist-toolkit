@@ -2,7 +2,7 @@ import type { LucideIcon } from "lucide-react"
 import {
   BarChart3,
   Code2,
-  ListChecks,
+  ImageIcon,
   MessageSquareText,
   Settings,
   Sparkles,
@@ -83,57 +83,18 @@ export interface NavItem {
   href: string
   label: string
   icon: LucideIcon
-  /** Match the path exactly instead of by prefix. */
   exact?: boolean
-}
-
-export interface NavCategory {
-  id: string
-  label: string
-  items: NavItem[]
+  accent?: string
 }
 
 /**
- * The workspace sidebar is organised into functional categories so a new
- * tool has an obvious home instead of joining one long flat list.
+ * The five destinations in the pill bar, in left-to-right order. The order
+ * also decides which way a page slides when someone moves between them.
  */
-export const NAV_CATEGORIES: NavCategory[] = [
-  {
-    id: "overview",
-    label: "Overview",
-    items: [
-      { href: "/app/dashboard", label: "Dashboard", icon: BarChart3, exact: true },
-      { href: "/app/categories", label: "Categories", icon: ListChecks },
-    ],
-  },
-  {
-    id: "create",
-    label: "Create",
-    items: [
-      { href: "/app/snippets", label: "Snippets", icon: Code2 },
-      { href: "/app/promptcraft", label: "PromptCraft", icon: Sparkles },
-    ],
-  },
-  {
-    id: "assist",
-    label: "Assist",
-    items: [
-      { href: "/app/chat", label: "AI Chat", icon: MessageSquareText },
-    ],
-  },
+export const PRIMARY_NAV_ITEMS: NavItem[] = [
+  { href: "/app/dashboard", label: "Analytics", icon: BarChart3, exact: true, accent: "var(--chart-4)" },
+  { href: "/app/chat", label: "Chat", icon: MessageSquareText, accent: "var(--chart-2)" },
+  { href: "/app/snippets", label: "Snippets", icon: Code2, accent: "var(--chart-2)" },
+  { href: "/app/mockify", label: "Mockify", icon: ImageIcon, accent: "var(--chart-3)" },
+  { href: "/app/settings", label: "Settings", icon: Settings, accent: "var(--muted-foreground)" },
 ]
-
-/** Every workspace destination, in category order. */
-export const NAV_ITEMS: NavItem[] = NAV_CATEGORIES.flatMap((category) => category.items)
-
-/**
- * The four destinations that get their own slot in the mobile bottom bar.
- * Everything else is reachable from the "More" sheet.
- */
-export const MOBILE_BAR_ITEMS: NavItem[] = [
-  { href: "/app/dashboard", label: "Home", icon: BarChart3, exact: true },
-  { href: "/app/snippets", label: "Snippets", icon: Code2 },
-  { href: "/app/chat", label: "Chat", icon: MessageSquareText },
-]
-
-export const SETTINGS_NAV_ITEM: NavItem = { href: "/app/settings", label: "Settings", icon: Settings }

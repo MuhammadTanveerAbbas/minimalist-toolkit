@@ -13,18 +13,24 @@ import {
   User,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { MockifyTool } from "@/components/mockify/mockify-tool"
+import { createClient } from "@/lib/supabase/client"
+import type { Snippet } from "@/lib/types"
 
 type Msg = { role: "user" | "assistant"; content: string }
 
 const STARTERS = [
-  "Explain the difference between a UUID and a ULID for database primary keys",
-  "Write a SQL query that finds duplicate email addresses in a users table",
-  "Give me three prompt variations for a developer tool launch announcement",
-  "How should I structure a pricing page with a free tier and two paid plans?",
+  "Which of my snippets could be refactored?",
+  "Find duplicate logic across my snippets",
+  "Write a SQL query to find duplicate emails in a users table",
+  "How should I structure a pricing page with a free tier?",
 ]
 
 const STORAGE_KEY = "toolkit_chat_history"
+
+// A single stable reference for the server snapshot. useSyncExternalStore
+// requires getServerSnapshot to return the same value every call, otherwise
+// React treats it as a changed snapshot and re-renders in an infinite loop.
+const SERVER_SNAPSHOT: Msg[] = []
 
 function parseHistory(raw: string | null): Msg[] {
   if (!raw) return []
@@ -74,7 +80,7 @@ class ChatHistoryStore {
     return this.snapshot
   }
 
-  getServerSnapshot = (): Msg[] => []
+  getServerSnapshot = (): Msg[] => SERVER_SNAPSHOT
 
   private emit() {
     this.listeners.forEach((listener) => listener())
@@ -114,10 +120,34 @@ export default function ChatPage() {
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [tab, setTab] = useState<"chat" | "images">("chat")
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+  const [snippets, setSnippets] = useState<Pick<Snippet, "title" | "language" | "description" | "code">[]>([])
   const endRef = useRef<HTMLDivElement | null>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+
+  const autoResize = useCallback(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = "auto"
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`
+  }, [])
+
+  useEffect(() => {
+    const supabase = createClient()
+    async function loadSnippets() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase
+        .from("snippets")
+        .select("title, language, description, code")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(30)
+      if (data) setSnippets(data as Pick<Snippet, "title" | "language" | "description" | "code">[])
+    }
+    void loadSnippets()
+  }, [])
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
@@ -135,6 +165,9 @@ export default function ChatPage() {
       const nextMessages: Msg[] = [...messages, { role: "user", content: text }]
       setMessages(nextMessages)
       setInput("")
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto"
+      }
       setError(null)
       setIsLoading(true)
       let assistant = ""
@@ -146,7 +179,7 @@ export default function ChatPage() {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: nextMessages }),
+          body: JSON.stringify({ messages: nextMessages, snippets }),
           signal: controller.signal,
         })
 
@@ -207,7 +240,7 @@ export default function ChatPage() {
         setIsLoading(false)
       }
     },
-    [input, isLoading, messages, setMessages]
+    [input, isLoading, messages, setMessages, snippets]
   )
 
   const regenerate = useCallback(() => {
@@ -239,45 +272,8 @@ export default function ChatPage() {
     return { messages: messages.length, words }
   }, [messages])
 
-  if (tab === "images") {
-    return (
-      <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-        <div className="mb-4 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setTab("chat")}
-            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-border px-3 text-sm text-muted-foreground hover:text-foreground"
-          >
-            Back to chat
-          </button>
-          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Images</h1>
-        </div>
-        <MockifyTool />
-      </div>
-    )
-  }
-
   return (
-    <div className="mx-auto flex h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] w-full max-w-4xl flex-col px-4 py-4 sm:px-6 md:h-[calc(100dvh-3.5rem-1.5rem)] lg:px-8">
-      <div className="mb-3 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setTab("chat")}
-          className={cn(
-            "inline-flex min-h-9 items-center rounded-lg px-3 text-sm",
-            "bg-foreground text-background"
-          )}
-        >
-          Chat
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("images")}
-          className="inline-flex min-h-9 items-center rounded-lg border border-border px-3 text-sm text-muted-foreground hover:text-foreground"
-        >
-          Images
-        </button>
-      </div>
+    <div className="mx-auto flex h-full w-full max-w-4xl flex-col px-4 pt-4 pb-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
         <div className="min-w-0">
           <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">AI Chat</h1>
@@ -289,7 +285,7 @@ export default function ChatPage() {
           <button
             type="button"
             onClick={clearAll}
-            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg border border-border px-3 text-sm text-muted-foreground transition-colors duration-150 hover:border-destructive/40 hover:text-destructive"
+            className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-border px-3 text-sm text-muted-foreground transition-colors duration-150 hover:border-destructive/40 hover:text-destructive"
           >
             <Trash2 className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">Clear</span>
@@ -297,13 +293,13 @@ export default function ChatPage() {
         ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto py-4">
+      <div className="min-h-0 flex-1 overflow-y-auto py-4 pb-2">
         {!hasMessages ? (
           <div className="rounded-xl border border-border bg-card p-5">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface-2">
               <Sparkles className="h-4 w-4 text-brand" aria-hidden="true" />
             </span>
-            <h2 className="mt-3 text-sm font-semibold">Ask anything</h2>
+            <h2 className="mt-3 text-base font-semibold">Ask anything</h2>
             <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
               Useful for code review, SQL, prompt writing, copy drafts and product trade-offs. Answers stay
               short and plain.
@@ -315,7 +311,7 @@ export default function ChatPage() {
                   key={starter}
                   type="button"
                   onClick={() => void send(starter)}
-                  className="rounded-lg border border-border bg-surface-2 p-3 text-left text-xs leading-5 text-muted-foreground transition-colors hover:border-foreground/25 hover:bg-card hover:text-foreground"
+                  className="rounded-lg border border-border bg-surface-2 p-3 text-left text-sm leading-6 text-muted-foreground transition-colors hover:border-foreground/25 hover:bg-card hover:text-foreground"
                 >
                   {starter}
                 </button>
@@ -325,7 +321,7 @@ export default function ChatPage() {
         ) : (
           <div className="space-y-3">
             {messages.map((m, i) => (
-              <div key={i} className={cn("flex gap-2.5", m.role === "user" ? "justify-end" : "justify-start")}>
+              <div key={i} className={cn("group flex gap-2.5", m.role === "user" ? "justify-end" : "justify-start")}>
                 {m.role === "assistant" ? (
                   <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
                     <Sparkles className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
@@ -334,7 +330,7 @@ export default function ChatPage() {
 
                 <div
                   className={cn(
-                    "group max-w-[min(100%,38rem)] whitespace-pre-wrap rounded-xl border px-3.5 py-2.5 text-sm leading-6",
+                    "max-w-[min(100%,38rem)] whitespace-pre-wrap rounded-xl border px-3.5 py-2.5 text-sm leading-6",
                     m.role === "user"
                       ? "border-foreground bg-foreground text-background"
                       : "border-border bg-card text-foreground"
@@ -350,7 +346,7 @@ export default function ChatPage() {
                 </div>
 
                 {m.role === "assistant" && m.content ? (
-                  <div className="mt-0.5 flex shrink-0 flex-col gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
+                  <div className="mt-0.5 flex shrink-0 flex-col gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100">
                     <button
                       type="button"
                       onClick={() => void copyMessage(i, m.content)}
@@ -401,25 +397,26 @@ export default function ChatPage() {
             Message
           </label>
           <textarea
+            ref={textareaRef}
             id="chat-input"
+            rows={1}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => { setInput(e.target.value); autoResize() }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault()
                 void send()
               }
             }}
-            rows={1}
             placeholder="Ask a question..."
-            className="max-h-40 min-h-11 w-full resize-y rounded-lg border border-border bg-background px-3 py-2.5 text-sm leading-5 transition-colors placeholder:text-muted-foreground outline-none"
+            className="min-h-[2.75rem] w-full resize-none overflow-hidden rounded-lg border border-border bg-background px-3 py-2.5 text-base leading-6 transition-colors placeholder:text-muted-foreground outline-none focus:border-foreground/30 focus:ring-2 focus:ring-ring/20 sm:text-sm"
           />
           {isLoading ? (
             <button
               type="button"
               onClick={() => abortRef.current?.abort()}
               aria-label="Stop generating"
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-card transition-colors hover:bg-accent"
+              className="mb-0 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-card transition-colors hover:bg-accent"
             >
               <span className="h-3.5 w-3.5 rounded-sm bg-foreground" aria-hidden="true" />
             </button>
@@ -428,7 +425,7 @@ export default function ChatPage() {
               type="submit"
               disabled={!input.trim()}
               aria-label="Send message"
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-foreground text-background transition-opacity duration-150 hover:opacity-90 disabled:opacity-40"
+              className="mb-0 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-foreground text-background transition-opacity duration-150 hover:opacity-90 disabled:opacity-40"
             >
               <Send className="h-4 w-4" aria-hidden="true" />
             </button>

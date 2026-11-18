@@ -15,8 +15,8 @@ function clamp(value: number, min: number, max: number): number {
  * so generation is routed through this server-side endpoint instead.
  */
 export async function POST(req: NextRequest) {
-  const guard = await requireUser(req, { limit: 20, windowMs: 60_000 })
-  if (guard instanceof Response) return guard
+  const guard = requireUser(req, { limit: 20, windowMs: 60_000 })
+  if (guard) return guard
 
   let body: { prompt?: unknown; model?: unknown; width?: unknown; height?: unknown; seed?: unknown }
   try {

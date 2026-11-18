@@ -104,16 +104,16 @@ function describeError(message: string): { cause: string; hint: string } {
       hint: "Try again, or switch models.",
     }
   }
-  if (lower.includes("unauthorized") || lower.includes("401")) {
+  if (lower.includes("could not reach") || lower.includes("network") || lower.includes("fetch")) {
     return {
-      cause: "Your session is no longer valid.",
-      hint: "Sign in again and retry.",
+      cause: "Could not reach the image service.",
+      hint: "Check your connection and retry.",
     }
   }
-  if (lower.includes("network") || lower.includes("fetch")) {
+  if (lower.includes("unauthorized") || lower.includes("401")) {
     return {
-      cause: "The request never reached the image service.",
-      hint: "Check your connection and retry.",
+      cause: "Your session expired.",
+      hint: "Refresh the page to sign in again, then retry.",
     }
   }
   return {

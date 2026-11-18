@@ -4,7 +4,7 @@ import { Dashboard } from "@/components/workspace/dashboard"
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
-  title: "Dashboard",
+  title: "Analytics",
   description: "Your Minimalist Toolkit workspace at a glance.",
 }
 

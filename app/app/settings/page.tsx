@@ -17,7 +17,6 @@ import { createClient } from "@/lib/supabase/client"
 import { useUserProfile } from "@/hooks/use-user-profile"
 import { UserAvatar } from "@/components/workspace/user-avatar"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { TOOLS } from "@/lib/navigation"
 
 const CONTAINER = "mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8"
 
@@ -56,7 +55,6 @@ const LOCAL_KEYS = [
   "mockify_settings",
   "promptcraft_history",
   "toolkit_chat_history",
-  "workspace-sidebar-collapsed",
 ]
 
 function providerLabel(user: {
@@ -189,7 +187,7 @@ export default function SettingsPage() {
               <div>
                 <p className="text-sm font-medium">Desktop layout</p>
                 <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
-                  Collapsible sidebar with grouped navigation and a persistent account menu.
+                  A top bar with the logo and account menu, and a five-page pill bar below it.
                 </p>
               </div>
             </div>
@@ -198,7 +196,7 @@ export default function SettingsPage() {
               <div>
                 <p className="text-sm font-medium">Mobile layout</p>
                 <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
-                  Bottom tab bar with a More sheet, sheet-based filters, and stacked data views.
+                  The same pill bar with icons above short labels, so every page stays one tap away.
                 </p>
               </div>
             </div>
@@ -246,20 +244,6 @@ export default function SettingsPage() {
           </div>
         </SettingsCard>
 
-        <SettingsCard icon={Keyboard} title="Tools" description="Jump straight to a workspace tool.">
-          <div className="grid gap-2 sm:grid-cols-2">
-            {TOOLS.map((tool) => (
-              <Link
-                key={tool.id}
-                href={tool.href}
-                className="flex min-h-11 items-center gap-3 rounded-lg border border-border bg-surface-2 px-3 text-sm font-medium transition-colors hover:bg-accent"
-              >
-                <tool.icon className="h-4 w-4 text-muted-foreground" style={{ color: tool.accent }} aria-hidden="true" />
-                <span className="truncate">{tool.name}</span>
-              </Link>
-            ))}
-          </div>
-        </SettingsCard>
       </div>
     </div>
   )
