@@ -20,27 +20,27 @@ interface Persona {
 
 const PERSONAS: Persona[] = [
   {
-    id: "founder",
-    role: "Founder",
-    context: "A small team choosing what to build",
-    headline: "Rank ideas with scores you can explain and revisit.",
-    painStat: "73% say data does not guide the roadmap",
-    painSource: "Stickynessie, 2025",
-    outcome: "Each decision keeps its scoring and tradeoffs.",
-    outcomeLabel: "Clearer calls",
-    steps: ["Score with RICE, ICE or WSJF", "Adjust weights", "Stress test inputs", "Export the decision"],
+    id: "builder",
+    role: "Builder",
+    context: "Shipping product work alone or in a small team",
+    headline: "Compare two models on the same task before you commit.",
+    painStat: "One model answers fast, another answers well. You only see the difference side by side.",
+    painSource: "AI Playground",
+    outcome: "Answers, latency, tokens and cost in one view.",
+    outcomeLabel: "Clearer choice",
+    steps: ["Pick a provider and model per side", "Write a prompt for each side", "Run the comparison", "Save the run to your account"],
     chart: "comparison",
   },
   {
     id: "developer",
     role: "Developer",
-    context: "Reusable code and workflows",
-    headline: "Keep useful snippets and workflows ready for the next project.",
-    painStat: "16% use dedicated tooling for repeat work",
-    painSource: "Freelancermap, 2025 (n=3,571)",
-    outcome: "Searchable snippets with versions when you need them.",
+    context: "Reusable code and working prompts",
+    headline: "Keep useful snippets and prompts ready for the next project.",
+    painStat: "The same setup snippet and the same prompt get rewritten on every project.",
+    painSource: "Snippet Manager + PromptCraft",
+    outcome: "Searchable snippets with versions, and prompts tuned to the model you use.",
     outcomeLabel: "Faster reuse",
-    steps: ["Save with tags", "Filter and search", "Version and restore", "Copy or export"],
+    steps: ["Save with tags and a category", "Filter and search", "Version and restore", "Copy or export"],
     chart: "trend",
   },
 ]
@@ -171,7 +171,7 @@ export function UseCases() {
             <div className="mb-4">
               <h3 className="text-sm font-semibold">Data controls</h3>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                Practical safeguards for client work, pricing and roadmap data.
+                Practical safeguards for your snippets, prompts and saved runs.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">

@@ -1,11 +1,10 @@
 /**
  * Theme handling for the workspace.
  *
- * Three values are supported: an explicit light or dark choice, and "system",
- * which follows the operating system preference. The choice is written to
- * localStorage and applied to the <html> element as a "dark" class by a
- * blocking script in the document head, so the correct palette is painted on
- * the first frame with no flash of the wrong theme.
+ * Three values are supported: light, dark and "system". Light is the default.
+ * The choice is written to localStorage and applied to the <html> element as a
+ * "dark" class by a blocking script in the document head, so the correct
+ * palette is painted on the first frame with no flash of the wrong theme.
  */
 
 export type Theme = "light" | "dark" | "system"
@@ -18,12 +17,15 @@ export const THEMES: { value: Theme; label: string }[] = [
   { value: "system", label: "System" },
 ]
 
+/** The theme used when a visitor has never chosen one. */
+export const DEFAULT_THEME: Theme = "light"
+
 /**
  * Runs before the first paint. Keep it small and dependency free.
  */
 export const THEME_INIT_SCRIPT = `(function(){try{
 var k=${JSON.stringify(THEME_STORAGE_KEY)};
-var s=localStorage.getItem(k)||"system";
+var s=localStorage.getItem(k)||"light";
 var d=s==="dark"||(s==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);
 var e=document.documentElement;
 e.classList.toggle("dark",d);
@@ -32,14 +34,14 @@ e.dataset.theme=s;
 }catch(e){}})();`
 
 export function readStoredTheme(): Theme {
-  if (typeof window === "undefined") return "system"
+  if (typeof window === "undefined") return DEFAULT_THEME
   try {
     const value = window.localStorage.getItem(THEME_STORAGE_KEY)
     if (value === "light" || value === "dark" || value === "system") return value
   } catch {
-    // Storage may be unavailable. The system preference still applies.
+    // Storage may be unavailable. Fall back to light.
   }
-  return "system"
+  return DEFAULT_THEME
 }
 
 export function resolveTheme(theme: Theme): boolean {
@@ -56,4 +58,26 @@ export function applyTheme(theme: Theme): void {
   root.classList.toggle("dark", dark)
   root.style.colorScheme = dark ? "dark" : "light"
   root.dataset.theme = theme
+}
+
+/**
+ * Runs a theme change inside a View Transition when the browser supports it.
+ * Browsers without the API, and visitors who prefer reduced motion, get an
+ * instant change with no flash.
+ */
+export function withThemeTransition(change: () => void): void {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    change()
+    return
+  }
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  const start = (document as Document & { startViewTransition?: (cb: () => void) => void })
+    .startViewTransition
+
+  if (typeof start === "function" && !reduced) {
+    start.call(document, change)
+  } else {
+    change()
+  }
 }

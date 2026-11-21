@@ -176,7 +176,7 @@ export function PromptForm({
 
       {/* Model + Quality + Size selectors */}
       <div className="flex flex-wrap gap-3">
-        <div className="flex flex-col gap-1 flex-1 min-w-[180px]">
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
           <label
             htmlFor="mockify-model"
             className="text-xs font-mono text-muted-foreground uppercase tracking-widest"
@@ -188,7 +188,7 @@ export function PromptForm({
             value={model}
             onChange={(e) => onModelChange(e.target.value as ImageModel)}
               className={cn(
-                "rounded-lg border border-border bg-muted px-3 py-2",
+                "w-full rounded-lg border border-border bg-muted px-3 py-2",
                 "text-base text-foreground font-sans md:text-sm",
                 "outline-none transition-colors"
               )}
@@ -207,7 +207,7 @@ export function PromptForm({
         </div>
 
         {qualityOptions && (
-          <div className="flex flex-col gap-1 min-w-[140px]">
+          <div className="flex min-w-0 flex-col gap-1">
             <label
               htmlFor="mockify-quality"
               className="text-xs font-mono text-muted-foreground uppercase tracking-widest"
@@ -219,7 +219,7 @@ export function PromptForm({
               value={quality}
               onChange={(e) => onQualityChange(e.target.value as Quality)}
               className={cn(
-                "rounded-lg border border-border bg-muted px-3 py-2",
+                "w-full rounded-lg border border-border bg-muted px-3 py-2",
                 "text-base text-foreground font-sans md:text-sm",
                 "outline-none transition-colors"
               )}

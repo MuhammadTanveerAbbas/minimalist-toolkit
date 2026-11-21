@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { ArrowRight, Command } from "lucide-react"
+import { ArrowRight } from "lucide-react"
+import { BrandLogo } from "@/components/brand-logo"
 import { TOOLS } from "@/lib/navigation"
 
 export function FinalCta() {
@@ -12,19 +13,11 @@ export function FinalCta() {
             className="pointer-events-none absolute inset-0 grid-lines opacity-[0.15] [mask-image:radial-gradient(75%_75%_at_50%_0%,black,transparent_80%)]"
             aria-hidden="true"
           />
-          {/* Soft brand glow */}
-          <div
-            className="pointer-events-none absolute left-1/2 top-0 h-48 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand opacity-[0.07] blur-3xl"
-            aria-hidden="true"
-          />
-
           <div className="relative">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-foreground text-background shadow-md">
-              <Command className="h-5 w-5" aria-hidden="true" />
-            </span>
+            <BrandLogo size={44} />
 
             <h2 className="mx-auto mt-6 max-w-2xl text-balance-tight text-3xl font-semibold tracking-tight sm:text-4xl">
-              One account. Six focused tools. No per-seat pricing to understand.
+              One account. Every tool in one workspace.
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-pretty text-base leading-7 text-muted-foreground">
               Start with the tool you need today and add the rest when you need them. Nothing expires, and

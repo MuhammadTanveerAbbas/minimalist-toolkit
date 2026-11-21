@@ -23,6 +23,8 @@ export function BentoGrid() {
           <BentoCard className="md:col-span-2 lg:col-span-4" tool={TOOLS[0]} visual={<SnippetVisual />} />
           <BentoCard className="md:col-span-2 lg:col-span-2" tool={TOOLS[1]} visual={<PromptCraftVisual />} />
           <BentoCard className="md:col-span-2 lg:col-span-6" tool={TOOLS[2]} visual={<ChatVisual />} wide />
+          <BentoCard className="md:col-span-2 lg:col-span-3" tool={TOOLS[3]} visual={<PlaygroundVisual />} />
+          <BentoCard className="md:col-span-2 lg:col-span-3" tool={TOOLS[4]} visual={<NewsVisual />} />
         </div>
       </div>
     </section>
@@ -193,6 +195,53 @@ function ChatVisual() {
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+function PlaygroundVisual() {
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      {["Model A", "Model B"].map((label, index) => (
+        <div key={label} className="space-y-2.5 rounded-lg border border-border bg-background p-3.5">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[10px] text-muted-foreground">{label}</span>
+            <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">
+              {index === 0 ? "Groq" : "OpenRouter"}
+            </span>
+          </div>
+          <div className="rounded-lg border border-border bg-surface-2 p-2.5">
+            <p className="text-[10px] leading-relaxed">
+              {index === 0
+                ? "Use a short prompt. Name the format, the audience and the length."
+                : "List the constraints first, then ask for three short alternatives."}
+            </p>
+          </div>
+          <div className="flex items-center justify-between font-mono text-[9px] text-muted-foreground">
+            <span>{index === 0 ? "182 ms" : "640 ms"}</span>
+            <span>{index === 0 ? "43 tokens" : "51 tokens"}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function NewsVisual() {
+  const rows = [
+    { source: "HN", title: "A new open-weight model lands with a longer context window", meta: "2h ago" },
+    { source: "arXiv", title: "Paper: routing between small models for long documents", meta: "4h ago" },
+    { source: "GitHub", title: "repo: agent-eval-kit passes 10k stars this week", meta: "6h ago" },
+  ]
+  return (
+    <div className="space-y-2 rounded-lg border border-border bg-background p-3.5">
+      {rows.map((row) => (
+        <div key={row.title} className="flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2.5">
+          <span className="w-12 shrink-0 font-mono text-[9px] text-muted-foreground">{row.source}</span>
+          <span className="min-w-0 flex-1 truncate text-[10px]">{row.title}</span>
+          <span className="shrink-0 font-mono text-[9px] text-muted-foreground">{row.meta}</span>
+        </div>
+      ))}
     </div>
   )
 }

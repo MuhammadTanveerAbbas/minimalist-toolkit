@@ -27,7 +27,7 @@ const FAQ = [
   },
   {
     q: "Does it work on a phone?",
-    a: "Every page is built mobile first. The workspace switches to a bottom tab bar on small screens, filters open in a sheet, data tables become stacked cards, and the code editor and document views adapt to the viewport.",
+    a: "Every page is built mobile first. The workspace sidebar becomes a sheet on small screens, filters collapse into menus, and the code editor and document views adapt to the viewport.",
   },
   {
     q: "Can I use it with my team?",

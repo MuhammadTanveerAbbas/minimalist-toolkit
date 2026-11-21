@@ -4,8 +4,6 @@ import { useState, useRef, useCallback, useMemo } from "react"
 import type { Snippet } from "@/lib/types"
 import { useSnippets } from "@/hooks/use-snippets"
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
-import { getSnippetCounts } from "@/lib/snippet-stats"
-import { Sidebar } from "@/components/sidebar"
 import { SearchBar, type SnippetSort } from "@/components/search-bar"
 import { SnippetList } from "@/components/snippet-list"
 import { SnippetForm } from "@/components/snippet-form"
@@ -23,7 +21,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { Plus, Code2, Check } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Plus, Check } from "lucide-react"
 import { ExportImportDialog } from "@/components/export-import-dialog"
 import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -31,7 +30,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export function SnippetWorkspace() {
   const {
     snippets,
-    allSnippets,
     filters,
     setFilters,
     allTags,
@@ -53,8 +51,6 @@ export function SnippetWorkspace() {
   const [sort, setSort] = useState<SnippetSort>("updated")
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const searchInputRef = useRef<HTMLInputElement | null>(null)
-
-  const snippetCounts = getSnippetCounts(allSnippets)
 
   const hasFilters =
     !!filters.search ||
@@ -145,19 +141,34 @@ export function SnippetWorkspace() {
 
   if (!isLoaded) {
     return (
-      <div className="flex h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] items-center justify-center bg-background px-4 md:h-[calc(100dvh-3.5rem-1.5rem)]">
-        <div className="space-y-3 text-center">
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card">
-            <Code2 className="h-5 w-5 text-muted-foreground" />
+      <div className="flex h-full flex-col overflow-hidden bg-background" role="status" aria-label="Loading snippets">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-40" />
           </div>
-          <p className="text-sm text-muted-foreground">Loading your snippets...</p>
+          <Skeleton className="h-8 w-24" />
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          <div className="mx-auto max-w-7xl space-y-5">
+            <Skeleton className="h-10 w-full" />
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-8 w-36" />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <Skeleton key={index} className="h-40 rounded-xl" />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] flex-col overflow-hidden bg-background md:h-[calc(100dvh-3.5rem-1.5rem)]">
+    <div className="flex h-full flex-col overflow-hidden bg-background">
       <div className="flex items-center justify-between gap-2 border-b border-border bg-background px-3 py-2 sm:px-4">
         <div>
           <h1 className="text-sm font-semibold">Snippet Manager</h1>
@@ -175,14 +186,6 @@ export function SnippetWorkspace() {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar
-          allTags={allTags}
-          allCategories={allCategories}
-          filters={filters}
-          onFiltersChange={setFilters}
-          snippetCounts={snippetCounts}
-        />
-
         <div className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-7xl space-y-5 p-4 pb-24 sm:p-6 md:pb-6">
             <div className="flex flex-wrap items-center justify-between gap-3">

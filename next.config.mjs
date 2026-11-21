@@ -43,6 +43,8 @@ const securityHeaders = [
 ]
 
 const nextConfig = {
+  // The dev indicator sits over the sidebar footer and hides the Settings row.
+  devIndicators: false,
   typescript: {
     ignoreBuildErrors: false,
   },

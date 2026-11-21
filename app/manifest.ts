@@ -9,15 +9,21 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/app/dashboard",
     display: "standalone",
     orientation: "portrait-primary",
-    background_color: "#0a0a0a",
-    theme_color: "#0a0a0a",
+    background_color: "#000000",
+    theme_color: "#000000",
     categories: ["productivity", "developer", "business"],
     icons: [
       {
-        src: "/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: "/logo-light.png",
+        sizes: "1024x1024",
+        type: "image/png",
         purpose: "any",
+      },
+      {
+        src: "/logo-dark.png",
+        sizes: "1024x1024",
+        type: "image/png",
+        purpose: "maskable",
       },
     ],
   }

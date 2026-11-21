@@ -2,11 +2,17 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useEffect, useLayoutEffect, useState } from "react"
-import { ChevronDown, LogOut, Settings, User } from "lucide-react"
+import { Fragment, useEffect, useLayoutEffect, useState } from "react"
+import { ChevronDown, LayoutGrid, LogOut, Settings, User } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useUserProfile } from "@/hooks/use-user-profile"
-import { PRIMARY_NAV_ITEMS } from "@/lib/navigation"
+import {
+  NAV_ORDER,
+  SETTINGS_NAV_ITEM,
+  SIDEBAR_GROUPS,
+  type NavItem,
+} from "@/lib/navigation"
+import { BrandLogo } from "@/components/brand-logo"
 import { UserAvatar } from "@/components/workspace/user-avatar"
 import { ThemeIconButton } from "@/components/theme-toggle"
 import {
@@ -14,14 +20,65 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
+
+/** Both the sidebar header and the page bar use this exact height. */
+const BAR_HEIGHT = "h-[4.625rem]"
+
+const PROFILE_NAV_ITEM: NavItem = {
+  href: "/app/profile",
+  label: "Profile",
+  icon: User,
+}
 
 function isActivePath(pathname: string, href: string, exact?: boolean) {
   return exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`)
 }
 
 function navIndex(pathname: string) {
-  return PRIMARY_NAV_ITEMS.findIndex((item) => isActivePath(pathname, item.href, item.exact))
+  return NAV_ORDER.findIndex((href) => isActivePath(pathname, href))
+}
+
+function currentNavItem(pathname: string): NavItem {
+  const items: NavItem[] = [
+    ...SIDEBAR_GROUPS.flatMap((group) => group.items),
+    SETTINGS_NAV_ITEM,
+    PROFILE_NAV_ITEM,
+  ]
+  return (
+    items.find((item) => isActivePath(pathname, item.href, item.exact)) ?? {
+      href: pathname,
+      label: "Workspace",
+      icon: LayoutGrid,
+    }
+  )
+}
+
+/** Each workspace page gets its own mark beside the title in the top bar. */
+function PageTitleIcon({ pathname }: { pathname: string }) {
+  const item = currentNavItem(pathname)
+  const Icon = item.icon
+  return (
+    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
+      <Icon className="h-4 w-4" aria-hidden="true" />
+    </span>
+  )
 }
 
 /** Layout effect on the client, effect on the server, so SSR stays quiet. */
@@ -49,9 +106,9 @@ function AccountMenu() {
         <button
           type="button"
           aria-label={`Account menu for ${displayName}`}
-          className="flex min-h-11 items-center gap-1.5 rounded-full border border-border bg-card py-1 pl-1 pr-2 transition-colors hover:bg-accent"
+          className="flex h-9 items-center gap-1.5 rounded-full border border-border bg-card py-1 pl-1 pr-2 transition-colors hover:bg-accent"
         >
-          <UserAvatar src={avatarUrl} name={displayName} initials={initials} size={30} />
+          <UserAvatar src={avatarUrl} name={displayName} initials={initials} size={28} />
           <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
         </button>
       </PopoverTrigger>
@@ -96,40 +153,91 @@ function AccountMenu() {
   )
 }
 
-/** Five equal pills on one row. On small screens the labels sit under the icons. */
-function PillNav({ pathname }: { pathname: string }) {
+function WorkspaceSidebar({ pathname }: { pathname: string }) {
   return (
-    <nav aria-label="Workspace pages" className="border-b border-border">
-      <ul className="mx-auto flex w-full max-w-2xl items-stretch gap-1 px-3 py-2.5 sm:px-6 sm:py-3.5">
-        {PRIMARY_NAV_ITEMS.map((item) => {
-          const Icon = item.icon
-          const active = isActivePath(pathname, item.href, item.exact)
-          return (
-            <li key={item.href} className="min-w-0 flex-1">
-              <Link
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "flex h-11 w-full flex-col items-center justify-center gap-0.5 rounded-full px-1 text-[10px] font-medium leading-none transition-colors duration-150 sm:h-9 sm:flex-row sm:gap-2 sm:px-2 sm:text-xs md:px-3",
-                  active
-                    ? "bg-foreground text-background"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                )}
-              >
-                <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                <span className="w-full truncate text-center">{item.label}</span>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className={cn(BAR_HEIGHT, "shrink-0 justify-center border-b border-sidebar-border px-3 py-0")}>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              tooltip="Minimalist Toolkit"
+              className="h-12 gap-2.5 px-1.5 data-[size=lg]:h-12"
+            >
+              <Link href="/app/dashboard">
+                <BrandLogo size={32} />
+                <div className="grid min-w-0 flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
+                  <span className="truncate text-sm font-semibold tracking-tight">Minimalist Toolkit</span>
+                  <span className="truncate text-xs text-muted-foreground">AI workspace</span>
+                </div>
               </Link>
-            </li>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+
+      <SidebarContent className="gap-0 py-2">
+
+        {SIDEBAR_GROUPS.map((group) => {
+          const GroupIcon = group.icon
+          return (
+            <Fragment key={group.label}>
+              <SidebarGroup className="mt-3 px-2 py-0 first:mt-0">
+                <SidebarGroupLabel className="h-7 gap-2 text-[11px] font-medium normal-case tracking-normal text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
+                  <GroupIcon className="h-3 w-3" aria-hidden="true" />
+                  <span>{group.label}</span>
+                </SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {group.items.map((item) => {
+                      const Icon = item.icon
+                      const active = isActivePath(pathname, item.href, item.exact)
+                      return (
+                        <SidebarMenuItem key={item.href}>
+                          <Link
+                            href={item.href}
+                            aria-current={active ? "page" : undefined}
+                            className={cn(
+                              "flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm transition-colors group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0",
+                              active
+                                ? "bg-sidebar-foreground text-sidebar font-medium"
+                                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                            )}
+                          >
+                            <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                            <span className="truncate group-data-[collapsible=icon]:hidden">{item.label}</span>
+                          </Link>
+                        </SidebarMenuItem>
+                      )
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </Fragment>
           )
         })}
-      </ul>
-    </nav>
+      </SidebarContent>
+
+      <SidebarFooter className="gap-0 p-0">
+        <div className="p-2 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+          <SidebarTrigger
+            title="Collapse sidebar"
+            className="flex h-9 w-full items-center gap-2 rounded-lg border border-border bg-card px-2 text-xs font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+          >
+            <span className="truncate group-data-[collapsible=icon]:hidden">Collapse sidebar</span>
+          </SidebarTrigger>
+        </div>
+      </SidebarFooter>
+
+      <SidebarRail />
+    </Sidebar>
   )
 }
 
 /**
  * Slides the incoming page in from the right when someone moves forward
- * through the pill bar, and from the left when they move back.
+ * through the sidebar, and from the left when they move back.
  */
 function PageTransition({ pathname, children }: { pathname: string; children: React.ReactNode }) {
   const index = navIndex(pathname)
@@ -175,72 +283,33 @@ function PageTransition({ pathname, children }: { pathname: string; children: Re
   )
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  defaultOpen = true,
+}: {
+  children: React.ReactNode
+  defaultOpen?: boolean
+}) {
   const pathname = usePathname()
 
   return (
-    <div className="min-h-dvh bg-background text-foreground md:flex md:h-dvh md:flex-col">
-      <div className="flex min-h-dvh flex-col md:h-full md:min-h-0">
-        <header className="sticky top-0 z-30 border-b border-border bg-background">
-          <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-3 sm:px-6 lg:px-8">
-
-            {/* Logo */}
-            <Link
-              href="/app/dashboard"
-              className="flex shrink-0 items-center gap-2 transition-opacity hover:opacity-80"
-            >
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-foreground">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" stroke="#FDFBF8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-              <span className="hidden text-sm font-semibold tracking-tight sm:block">Minimalist Toolkit</span>
-            </Link>
-
-            {/* Pill nav — centered */}
-            <nav aria-label="Workspace pages" className="flex flex-1 justify-center">
-              <ul className="flex items-center gap-0.5 rounded-full border border-border bg-card p-1">
-                {PRIMARY_NAV_ITEMS.map((item) => {
-                  const Icon = item.icon
-                  const active = isActivePath(pathname, item.href, item.exact)
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "flex h-8 items-center gap-1.5 rounded-full px-4 text-xs font-medium transition-colors duration-150",
-                          active
-                            ? "bg-foreground text-background"
-                            : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                        )}
-                      >
-                        <Icon
-                          className="h-3.5 w-3.5 shrink-0"
-                          style={{ color: active ? undefined : item.accent }}
-                          aria-hidden="true"
-                        />
-                        <span className="hidden sm:inline">{item.label}</span>
-                      </Link>
-                    </li>
-                  )
-                })}
-              </ul>
-            </nav>
-
-            {/* Right actions */}
-            <div className="flex shrink-0 items-center gap-2">
-              <ThemeIconButton className="h-9 w-9" />
-              <AccountMenu />
-            </div>
-
+    <SidebarProvider defaultOpen={defaultOpen} className="h-dvh overflow-hidden">
+      <WorkspaceSidebar pathname={pathname} />
+      <SidebarInset className="min-h-0 overflow-hidden">
+        <header className={cn(BAR_HEIGHT, "flex shrink-0 items-center gap-2 border-b border-border bg-background px-3 sm:px-4")}>
+          <SidebarTrigger className="h-8 w-8 rounded-md border border-border bg-card md:hidden" />
+          <PageTitleIcon pathname={pathname} />
+          <p className="truncate text-sm font-medium">{currentNavItem(pathname).label}</p>
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            <ThemeIconButton className="h-8 w-8 rounded-full border border-border bg-card" />
+            <AccountMenu />
           </div>
         </header>
 
-        <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-background text-foreground">
+        <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto bg-background text-foreground">
           <PageTransition pathname={pathname}>{children}</PageTransition>
-        </main>
-      </div>
-    </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

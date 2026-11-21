@@ -8,6 +8,7 @@ import {
   EyeOff,
   Loader2,
 } from "lucide-react"
+import { BrandLogo } from "@/components/brand-logo"
 import { createClient } from "@/lib/supabase/client"
 import { getSafeNextOrNull } from "@/lib/auth/safe-next"
 
@@ -29,7 +30,9 @@ export default function AuthPage({ mode }: AuthPageProps) {
   const rawNext = searchParams.get("next")
 
   const [localError, setLocalError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isEmailLoading, setIsEmailLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const isLoading = isEmailLoading || isGoogleLoading
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -50,7 +53,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
   const signInWithGoogle = async () => {
     if (isLoading) return
     setLocalError(null)
-    setIsLoading(true)
+    setIsGoogleLoading(true)
     try {
       const redirect = new URL("/auth/callback", window.location.origin)
       const destination = next()
@@ -61,11 +64,11 @@ export default function AuthPage({ mode }: AuthPageProps) {
       })
       if (authErr) {
         setLocalError(authErr.message || "Unable to sign in. Please try again.")
-        setIsLoading(false)
+        setIsGoogleLoading(false)
       }
     } catch {
       setLocalError("Unable to start the sign-in flow. Please try again.")
-      setIsLoading(false)
+      setIsGoogleLoading(false)
     }
   }
 
@@ -74,13 +77,13 @@ export default function AuthPage({ mode }: AuthPageProps) {
     if (isLoading) return
     setLocalError(null)
     setNotice(null)
-    setIsLoading(true)
+    setIsEmailLoading(true)
     try {
       const supabase = createClient()
       const { error: authErr } = await supabase.auth.signInWithPassword({ email, password })
       if (authErr) {
         setLocalError(authErr.message || "Unable to sign in. Please try again.")
-        setIsLoading(false)
+        setIsEmailLoading(false)
         return
       }
       const dest = next() || "/app/dashboard"
@@ -88,7 +91,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
       router.refresh()
     } catch {
       setLocalError("Unable to sign in. Please try again.")
-      setIsLoading(false)
+      setIsEmailLoading(false)
     }
   }
 
@@ -97,7 +100,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
     if (isLoading) return
     setLocalError(null)
     setNotice(null)
-    setIsLoading(true)
+    setIsEmailLoading(true)
     try {
       const supabase = createClient()
       const redirect = new URL("/auth/callback", window.location.origin)
@@ -110,10 +113,9 @@ export default function AuthPage({ mode }: AuthPageProps) {
       })
       if (authErr) {
         setLocalError(authErr.message || "Unable to create account. Please try again.")
-        setIsLoading(false)
+        setIsEmailLoading(false)
         return
       }
-      // When confirmations are disabled, Supabase returns a session immediately.
       if (data.session) {
         const dest = next() || "/app/dashboard"
         router.replace(dest)
@@ -121,10 +123,10 @@ export default function AuthPage({ mode }: AuthPageProps) {
         return
       }
       setNotice("Check your email to confirm your account, then sign in.")
-      setIsLoading(false)
+      setIsEmailLoading(false)
     } catch {
       setLocalError("Unable to create account. Please try again.")
-      setIsLoading(false)
+      setIsEmailLoading(false)
     }
   }
 
@@ -135,7 +137,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
     }
     setLocalError(null)
     setNotice(null)
-    setIsLoading(true)
+    setIsEmailLoading(true)
     try {
       const supabase = createClient()
       const redirect = new URL("/auth/callback", window.location.origin)
@@ -152,7 +154,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
     } catch {
       setLocalError("Unable to send reset email.")
     } finally {
-      setIsLoading(false)
+      setIsEmailLoading(false)
     }
   }
 
@@ -165,20 +167,19 @@ export default function AuthPage({ mode }: AuthPageProps) {
         <div>
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8">
             {/* Logo */}
-            <div className="mb-6 flex flex-col items-center gap-3 text-center">
-              <Link href="/" className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground focus-visible:outline-none focus-visible:ring-0">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" stroke="#FDFBF8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+            <div className="mb-4 flex flex-col items-center gap-0.5 text-center">
+              <Link href="/" className="flex h-10 w-10 items-center justify-center rounded-xl focus-visible:outline-none focus-visible:ring-0">
+                <BrandLogo size={40} />
               </Link>
               <span className="text-sm font-semibold tracking-tight">Minimalist Toolkit</span>
+              <span className="text-xs text-muted-foreground">One workspace for every tool.</span>
             </div>
 
             {/* Divider */}
-            <div className="mb-6 h-px bg-border" aria-hidden="true" />
+            <div className="mb-4 h-px bg-border" aria-hidden="true" />
 
             {/* Heading */}
-            <div className="mb-6 space-y-1 text-center">
+            <div className="mb-4 space-y-1 text-center">
               <h1 className="text-xl font-semibold tracking-tight">
                 {isSignup ? "Create your workspace" : "Welcome back"}
               </h1>
@@ -261,7 +262,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
                   disabled={isLoading}
                   className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-60 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
                 >
-                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
+                  {isEmailLoading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
                   {isSignup ? "Create account" : "Sign in"}
                 </button>
                 {!isSignup ? (
@@ -287,7 +288,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
                 disabled={isLoading}
                 className="flex min-h-11 w-full items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-60 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               >
-                {isLoading ? (
+                {isGoogleLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                 ) : (
                   <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -297,7 +298,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
                     <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335" />
                   </svg>
                 )}
-                {isLoading ? "Continuing..." : "Continue with Google"}
+                {isGoogleLoading ? "Continuing..." : "Continue with Google"}
               </button>
 
               <div className="text-center text-sm text-muted-foreground">

@@ -3,9 +3,11 @@
 import { useCallback, useSyncExternalStore } from "react"
 import {
   applyTheme,
+  DEFAULT_THEME,
   readStoredTheme,
   resolveTheme,
   THEME_STORAGE_KEY,
+  withThemeTransition,
   type Theme,
 } from "@/lib/theme"
 
@@ -17,7 +19,7 @@ function subscribe(onChange: () => void) {
   const onMediaChange = () => {
     // Only a "system" theme follows the operating system.
     if (readStoredTheme() === "system") {
-      applyTheme("system")
+      withThemeTransition(() => applyTheme("system"))
       onChange()
     }
   }
@@ -38,7 +40,7 @@ function getSnapshot(): Theme {
 }
 
 function getServerSnapshot(): Theme {
-  return "system"
+  return DEFAULT_THEME
 }
 
 /**
@@ -63,13 +65,15 @@ export function useTheme(): {
   )
 
   const setTheme = useCallback((next: Theme) => {
-    applyTheme(next)
-    try {
-      window.localStorage.setItem(THEME_STORAGE_KEY, next)
-    } catch {
-      // Storage may be unavailable. The theme still applies for this session.
-    }
-    window.dispatchEvent(new Event(EVENT))
+    withThemeTransition(() => {
+      applyTheme(next)
+      try {
+        window.localStorage.setItem(THEME_STORAGE_KEY, next)
+      } catch {
+        // Storage may be unavailable. The theme still applies for this session.
+      }
+      window.dispatchEvent(new Event(EVENT))
+    })
   }, [])
 
   const toggle = useCallback(() => {

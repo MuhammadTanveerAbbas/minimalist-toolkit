@@ -1,13 +1,13 @@
 import {
   BarChart3,
   Code2,
-  Command,
   MessageSquareText,
   Plus,
   Search,
   Settings,
   Sparkles,
 } from "lucide-react"
+import { BrandLogo } from "@/components/brand-logo"
 
 const PREVIEW_NAV = [
   { label: "Analytics", icon: BarChart3, active: false },
@@ -49,9 +49,7 @@ export function ProductShowcase() {
         <div className="flex h-[300px] flex-col bg-background sm:h-[340px] lg:h-[360px]">
           <div className="flex h-10 shrink-0 items-center justify-between gap-2 border-b border-border px-3">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-brand text-brand-foreground">
-                <Command className="h-3.5 w-3.5" aria-hidden="true" />
-              </span>
+              <BrandLogo size={24} />
               <span className="hidden truncate text-[11px] font-semibold tracking-tight sm:block">Minimalist Toolkit</span>
             </div>
             <span

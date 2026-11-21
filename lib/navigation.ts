@@ -2,8 +2,13 @@ import type { LucideIcon } from "lucide-react"
 import {
   BarChart3,
   Code2,
+  FlaskConical,
+  FolderOpen,
   ImageIcon,
+  LayoutGrid,
   MessageSquareText,
+  Newspaper,
+  PenLine,
   Settings,
   Sparkles,
 } from "lucide-react"
@@ -73,6 +78,38 @@ export const TOOLS: ToolDefinition[] = [
     ],
     accent: "var(--chart-2)",
   },
+  {
+    id: "playground",
+    name: "AI Playground",
+    href: "/app/playground",
+    icon: FlaskConical,
+    tagline: "Compare two models side by side",
+    description:
+      "Pick a provider and model for each side, send two prompts, and compare the answers, latency, tokens, and cost in one view.",
+    highlights: [
+      "Live model list from each provider",
+      "Two prompts, two models",
+      "Latency, token, and cost comparison",
+      "Saved runs for later",
+    ],
+    accent: "var(--chart-3)",
+  },
+  {
+    id: "news",
+    name: "AI News",
+    href: "/app/news",
+    icon: Newspaper,
+    tagline: "A daily open-source AI digest",
+    description:
+      "One page for new AI stories, research papers, open-source repositories, and newly released models, refreshed once a day.",
+    highlights: [
+      "Hacker News and arXiv",
+      "GitHub and Hugging Face",
+      "Grouped by day",
+      "No account feeds, no tracking",
+    ],
+    accent: "var(--chart-5)",
+  },
 ]
 
 export function getTool(id: string): ToolDefinition | undefined {
@@ -84,17 +121,59 @@ export interface NavItem {
   label: string
   icon: LucideIcon
   exact?: boolean
-  accent?: string
+}
+
+export interface NavGroup {
+  label: string
+  icon: LucideIcon
+  items: NavItem[]
 }
 
 /**
- * The five destinations in the pill bar, in left-to-right order. The order
+ * The sidebar destinations, split into four labelled categories. The order
  * also decides which way a page slides when someone moves between them.
  */
-export const PRIMARY_NAV_ITEMS: NavItem[] = [
-  { href: "/app/dashboard", label: "Analytics", icon: BarChart3, exact: true, accent: "var(--chart-4)" },
-  { href: "/app/chat", label: "Chat", icon: MessageSquareText, accent: "var(--chart-2)" },
-  { href: "/app/snippets", label: "Snippets", icon: Code2, accent: "var(--chart-2)" },
-  { href: "/app/mockify", label: "Mockify", icon: ImageIcon, accent: "var(--chart-3)" },
-  { href: "/app/settings", label: "Settings", icon: Settings, accent: "var(--muted-foreground)" },
+export const SIDEBAR_GROUPS: NavGroup[] = [
+  {
+    label: "Workspace",
+    icon: LayoutGrid,
+    items: [
+      { href: "/app/dashboard", label: "Analytics", icon: BarChart3, exact: true },
+      { href: "/app/chat", label: "AI Chat", icon: MessageSquareText },
+    ],
+  },
+  {
+    label: "Create",
+    icon: PenLine,
+    items: [
+      { href: "/app/snippets", label: "Snippets", icon: Code2 },
+      { href: "/app/promptcraft", label: "PromptCraft", icon: Sparkles },
+      { href: "/app/mockify", label: "Mockify", icon: ImageIcon },
+    ],
+  },
+  {
+    label: "AI Lab",
+    icon: FlaskConical,
+    items: [
+      { href: "/app/playground", label: "Playground", icon: FlaskConical },
+      { href: "/app/news", label: "AI News", icon: Newspaper },
+    ],
+  },
+  {
+    label: "Library",
+    icon: FolderOpen,
+    items: [{ href: "/app/categories", label: "Vault", icon: FolderOpen }],
+  },
+]
+
+export const SETTINGS_NAV_ITEM: NavItem = {
+  href: "/app/settings",
+  label: "Settings",
+  icon: Settings,
+}
+
+/** Flat order used for page transition direction. */
+export const NAV_ORDER: string[] = [
+  ...SIDEBAR_GROUPS.flatMap((group) => group.items.map((item) => item.href)),
+  SETTINGS_NAV_ITEM.href,
 ]

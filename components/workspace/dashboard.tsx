@@ -16,9 +16,9 @@ const CONTAINER = "mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8"
 function Stat({ label, value, meta }: { label: string; value: number; meta: string }) {
   return (
     <div className="rounded-xl border border-border bg-card p-5">
-      <p className="font-mono text-[11px] text-muted-foreground">{label}</p>
-      <p className="mt-3 text-3xl font-medium tabular-nums tracking-tight">{value}</p>
-      <p className="mt-2 text-xs leading-5 text-muted-foreground">{meta}</p>
+      <p className="font-mono text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">{label}</p>
+      <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight">{value}</p>
+      <p className="mt-1.5 text-xs text-muted-foreground">{meta}</p>
     </div>
   )
 }
@@ -61,7 +61,7 @@ function ActivityChart({ activity }: { activity: { label: string; value: number 
   return (
     <div>
       <div className="mt-5 flex items-end justify-between gap-3">
-        <h2 className="text-base font-medium">Snippet activity</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Snippet activity</h2>
         <span className="font-mono text-[11px] text-muted-foreground">Last 7 days</span>
       </div>
 
@@ -173,7 +173,7 @@ export function Dashboard() {
     <div className={CONTAINER}>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">Analytics</h1>
+          <h1 className="font-display text-3xl tracking-tight sm:text-4xl">Analytics</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             Your workspace at a glance. Every figure comes from data stored in your account.
           </p>
@@ -194,7 +194,7 @@ export function Dashboard() {
         </div>
       ) : null}
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {isLoaded ? (
           <>
             <Stat label="Snippets" value={counts.total} meta={`${activityTotal} updated this week`} />
@@ -216,7 +216,7 @@ export function Dashboard() {
         )}
       </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-3">
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <section className="rounded-xl border border-border bg-card p-5 lg:col-span-2 sm:p-6">
           {!isLoaded ? (
             <>
@@ -236,7 +236,7 @@ export function Dashboard() {
         </section>
 
         <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
-          <h2 className="text-base font-medium">Library makeup</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Library makeup</h2>
           {!isLoaded ? (
             <div className="mt-5 space-y-2">
               <Skeleton className="h-3 w-full" />
@@ -249,12 +249,12 @@ export function Dashboard() {
             </p>
           ) : (
             <>
-              <p className="mt-5 font-mono text-[11px] text-muted-foreground">Visibility</p>
+              <p className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">Visibility</p>
               <ul className="mt-2">
                 <MakeupBar label="Public" value={counts.public} total={counts.total} />
                 <MakeupBar label="Private" value={counts.private} total={counts.total} />
               </ul>
-              <p className="mt-5 font-mono text-[11px] text-muted-foreground">Top languages</p>
+              <p className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">Top languages</p>
               {topLanguages.length === 0 ? (
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">No language data yet.</p>
               ) : (
@@ -274,9 +274,9 @@ export function Dashboard() {
         </section>
       </div>
 
-      <section className="mt-5 rounded-xl border border-border bg-card p-5 sm:p-6">
+      <section className="mt-4 rounded-xl border border-border bg-card p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-base font-medium">Recently updated</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Recently updated</h2>
           <Link
             href="/app/categories"
             className="inline-flex min-h-9 items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -324,8 +324,8 @@ export function Dashboard() {
         )}
       </section>
 
-      <section className="mt-5 rounded-xl border border-border bg-card p-5 sm:p-6">
-        <h2 className="text-base font-medium">Jump to a tool</h2>
+      <section className="mt-4 rounded-xl border border-border bg-card p-5 sm:p-6">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Jump to a tool</h2>
         <ul className="mt-3 divide-y divide-border border-t border-border">
           {TOOLS.map((tool) => {
             const Icon = tool.icon

@@ -3,28 +3,17 @@ import { NextResponse, type NextRequest } from "next/server"
 import { clientIdentifier, rateLimit } from "@/lib/security/rate-limit"
 import { getSupabaseConfig, SUPABASE_SETUP_MESSAGE } from "@/lib/supabase/config"
 
-/** Routes that require a signed-in user. */
 const PROTECTED_PREFIX = "/app"
-
-/** API routes that must stay reachable without a session. */
-const PUBLIC_API_PREFIXES = ["/api/keep-alive"]
+const PUBLIC_API_PREFIXES = ["/api/keep-alive", "/api/cron/news"]
 
 function authDisabledForTest() {
   return process.env.DISABLE_AUTH_FOR_TEST === "true"
 }
 
-/**
- * Server-side request guard.
- *
- * Decides redirects for authenticated and unauthenticated visitors before
- * any page renders, so protected content is never sent to the browser for a
- * signed-out visitor.
- */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
   const { pathname, search } = request.nextUrl
 
-  // The auth callback and keep-alive cron are never guarded.
   if (PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
     return supabaseResponse
   }
@@ -49,7 +38,6 @@ export async function middleware(request: NextRequest) {
     return supabaseResponse
   }
 
-  // Rate limit the authentication endpoints to slow automated abuse.
   if (
     pathname === "/auth/callback" ||
     pathname === "/login" ||
@@ -72,24 +60,20 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  const supabase = createServerClient(
-    config.url,
-    config.key,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
+  const supabase = createServerClient(config.url, config.key, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll()
       },
-    }
-  )
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+        supabaseResponse = NextResponse.next({ request })
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, options)
+        )
+      },
+    },
+  })
 
   const {
     data: { user },
@@ -112,7 +96,6 @@ export async function middleware(request: NextRequest) {
     return supabaseResponse
   }
 
-  // Signed-in visitors do not need the marketing or auth pages.
   if (pathname === "/" || pathname === "/login" || pathname === "/signup") {
     const rawNext = request.nextUrl.searchParams.get("next")
     let destination = "/app/dashboard"
@@ -128,10 +111,8 @@ export async function middleware(request: NextRequest) {
   return supabaseResponse
 }
 
-// Middleware always runs on Node.js in Next.js 16; do not export `runtime` here.
+export default proxy
 
-export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|icon.svg|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|webmanifest)$).*)",
-  ],
-}
+export const matcher = [
+  "/((?!_next/static|_next/image|favicon.ico|icon.svg|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|webmanifest)$).*)",
+]

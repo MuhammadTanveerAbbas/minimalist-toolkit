@@ -4,6 +4,7 @@ create extension if not exists pgcrypto;
 create or replace function public.handle_updated_at()
 returns trigger
 language plpgsql
+set search_path = public, pg_temp
 as $$
 begin
   new.updated_at = now();
@@ -245,3 +246,175 @@ create trigger tool_documents_updated_at
   before update on public.tool_documents
   for each row
   execute function public.handle_updated_at();
+
+-- -----------------------------------------------------------------------------
+-- playground_runs (AI Playground comparisons, private to the owner)
+-- -----------------------------------------------------------------------------
+create table if not exists public.playground_runs (
+  id                 uuid        primary key default gen_random_uuid(),
+  user_id            uuid        not null references auth.users(id) on delete cascade,
+  left_provider      text        not null check (char_length(left_provider) between 1 and 40),
+  left_model         text        not null check (char_length(left_model) between 1 and 200),
+  right_provider     text        not null check (char_length(right_provider) between 1 and 40),
+  right_model        text        not null check (char_length(right_model) between 1 and 200),
+  left_prompt        text        not null check (char_length(left_prompt) between 1 and 8000),
+  right_prompt       text        not null check (char_length(right_prompt) between 1 and 8000),
+  left_output        text,
+  right_output       text,
+  left_error         text,
+  right_error        text,
+  left_latency_ms    integer     check (left_latency_ms is null or left_latency_ms >= 0),
+  right_latency_ms   integer     check (right_latency_ms is null or right_latency_ms >= 0),
+  left_total_tokens  integer     check (left_total_tokens is null or left_total_tokens >= 0),
+  right_total_tokens integer     check (right_total_tokens is null or right_total_tokens >= 0),
+  left_cost_usd      numeric(14, 8) check (left_cost_usd is null or left_cost_usd >= 0),
+  right_cost_usd     numeric(14, 8) check (right_cost_usd is null or right_cost_usd >= 0),
+  created_at         timestamptz not null default now()
+);
+
+create index if not exists playground_runs_user_id_created_at_idx
+  on public.playground_runs (user_id, created_at desc);
+
+alter table public.playground_runs enable row level security;
+alter table public.playground_runs force row level security;
+
+do $$
+begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='playground_runs' and policyname='Playground runs select own') then
+    create policy "Playground runs select own"
+      on public.playground_runs for select
+      using (auth.uid() = user_id);
+  end if;
+
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='playground_runs' and policyname='Playground runs insert own') then
+    create policy "Playground runs insert own"
+      on public.playground_runs for insert
+      with check (auth.uid() = user_id);
+  end if;
+
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='playground_runs' and policyname='Playground runs delete own') then
+    create policy "Playground runs delete own"
+      on public.playground_runs for delete
+      using (auth.uid() = user_id);
+  end if;
+end $$;
+
+-- -----------------------------------------------------------------------------
+-- news_items (daily AI digest, written by the cron job, readable by users)
+-- -----------------------------------------------------------------------------
+create table if not exists public.news_items (
+  id           text        primary key,
+  source       text        not null check (source in ('hacker-news', 'arxiv', 'github', 'huggingface')),
+  title        text        not null check (char_length(title) between 1 and 500),
+  url          text        not null check (char_length(url) between 1 and 2048),
+  summary      text        not null default '' check (char_length(summary) <= 4000),
+  author       text        check (author is null or char_length(author) <= 200),
+  published_at timestamptz not null,
+  score        integer     check (score is null or score >= 0),
+  tags         text[]      not null default '{}',
+  created_at   timestamptz not null default now()
+);
+
+create index if not exists news_items_published_at_idx
+  on public.news_items (published_at desc);
+
+create index if not exists news_items_source_published_at_idx
+  on public.news_items (source, published_at desc);
+
+alter table public.news_items enable row level security;
+alter table public.news_items force row level security;
+
+do $$
+begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='news_items' and policyname='News items readable by signed in users') then
+    create policy "News items readable by signed in users"
+      on public.news_items for select
+      to authenticated
+      using (true);
+  end if;
+end $$;
+
+-- -----------------------------------------------------------------------------
+-- vault_items (skills, prompts and plugin notes, private to the owner)
+-- -----------------------------------------------------------------------------
+create table if not exists public.vault_items (
+  id          uuid        primary key default gen_random_uuid(),
+  user_id     uuid        not null references auth.users(id) on delete cascade,
+  kind        text        not null check (kind in ('skill', 'prompt', 'plugin')),
+  title       text        not null check (char_length(title) between 1 and 200),
+  description text        not null default '' check (char_length(description) <= 2000),
+  content     text        not null default '' check (char_length(content) <= 20000),
+  category    text        not null default '' check (char_length(category) <= 100),
+  tags        text[]      not null default '{}',
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
+create index if not exists vault_items_user_id_created_at_idx
+  on public.vault_items (user_id, created_at desc);
+
+alter table public.vault_items enable row level security;
+alter table public.vault_items force row level security;
+
+do $$
+begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='vault_items' and policyname='Vault items select own') then
+    create policy "Vault items select own"
+      on public.vault_items for select
+      using (auth.uid() = user_id);
+  end if;
+
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='vault_items' and policyname='Vault items insert own') then
+    create policy "Vault items insert own"
+      on public.vault_items for insert
+      with check (auth.uid() = user_id);
+  end if;
+
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='vault_items' and policyname='Vault items update own') then
+    create policy "Vault items update own"
+      on public.vault_items for update
+      using (auth.uid() = user_id)
+      with check (auth.uid() = user_id);
+  end if;
+
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='vault_items' and policyname='Vault items delete own') then
+    create policy "Vault items delete own"
+      on public.vault_items for delete
+      using (auth.uid() = user_id);
+  end if;
+end $$;
+
+drop trigger if exists vault_items_updated_at on public.vault_items;
+create trigger vault_items_updated_at
+  before update on public.vault_items
+  for each row
+  execute function public.handle_updated_at();
+
+-- -----------------------------------------------------------------------------
+-- Privilege hardening
+-- Row level security is the primary control. These grants remove privileges
+-- from anonymous visitors as a second layer, then restore only what signed-in
+-- users need. The service role bypasses RLS and is used only by server routes.
+-- -----------------------------------------------------------------------------
+revoke all on public.snippets,
+  public.mockify_generations,
+  public.promptcraft_history,
+  public.tool_documents,
+  public.playground_runs,
+  public.vault_items
+  from anon;
+
+grant select, insert, update, delete on public.snippets,
+  public.mockify_generations,
+  public.promptcraft_history,
+  public.tool_documents,
+  public.playground_runs,
+  public.vault_items
+  to authenticated;
+
+revoke all on public.news_items from anon;
+grant select on public.news_items to authenticated;
+
+-- Note: snippets.visibility is reserved for a future public-sharing feature.
+-- There is intentionally no public select policy, so every snippet stays
+-- private even when that flag reads 'public'.

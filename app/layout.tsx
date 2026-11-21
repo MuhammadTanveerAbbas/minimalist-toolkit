@@ -1,19 +1,28 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Bebas_Neue, Noto_Sans } from "next/font/google"
+import { BBH_Bogle, Lato, Open_Sans } from "next/font/google"
 import { THEME_INIT_SCRIPT } from "@/lib/theme"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import "./globals.css"
 
-const bebasNeue = Bebas_Neue({
+const bbhBogle = BBH_Bogle({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-bogle",
+  fallback: ["Lato", "sans-serif"],
+  // Next has no metric table for this recent font, so skip fallback adjustment.
+  adjustFontFallback: false,
 })
 
-const notoSans = Noto_Sans({
+const lato = Lato({
+  weight: ["400", "700", "900"],
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-lato",
+})
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  variable: "--font-open-sans",
 })
 
 
@@ -46,9 +55,11 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    shortcut: ["/icon.svg"],
-    apple: ["/icon.svg"],
+    icon: [
+      { url: "/icon.png", type: "image/png" },
+    ],
+    shortcut: ["/icon.png"],
+    apple: ["/icon.png"],
   },
   manifest: "/manifest.webmanifest",
   openGraph: {
@@ -80,8 +91,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fdfbf8" },
-    { media: "(prefers-color-scheme: dark)", color: "#1c1a19" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -94,7 +105,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Applies the stored theme before the first paint so there is no flash. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className={`${bebasNeue.variable} ${notoSans.variable} font-sans antialiased`}>
+      <body className={`${bbhBogle.variable} ${lato.variable} ${openSans.variable} font-sans antialiased`}>
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

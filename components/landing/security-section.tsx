@@ -4,7 +4,7 @@ const CONTROLS = [
   {
     icon: Database,
     title: "Row-level ownership",
-    body: "Every saved snippet, quote and scoring project is bound to your account id in the database. The policy is enforced by Postgres, not by the interface.",
+    body: "Every saved snippet, prompt and generation is bound to your account id in the database. The policy is enforced by Postgres, not by the interface.",
   },
   {
     icon: Cookie,

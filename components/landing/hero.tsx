@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Gift, Lock, Rocket, ScanEye, Sparkles, Zap } from "lucide-react"
+import { HeroBrandIcons, ProviderStrip } from "@/components/landing/brand-icons"
 import { TOOLS } from "@/lib/navigation"
 
 const PROOF_POINTS = [
@@ -22,18 +23,18 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 -z-10 grid-lines opacity-[0.12] [mask-image:radial-gradient(120%_90%_at_50%_0%,black,transparent_72%)]"
         aria-hidden="true"
       />
-
+      <HeroBrandIcons />
       <div className="mx-auto w-full max-w-7xl px-4 pt-10 sm:px-6 sm:pt-14 lg:px-8 lg:pt-16">
         <div className="pb-10 lg:pb-14">
 
           {/* Text */}
-          <div className="min-w-0 text-center">
+          <div className="relative z-10 min-w-0 text-center">
             <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
               <Zap className="h-3 w-3 text-brand" aria-hidden="true" />
               A workspace for people who ship
             </p>
 
-            <h1 className="mt-5 text-[clamp(2.4rem,6.2vw,4rem)] font-semibold leading-[0.98] tracking-[-0.035em]">
+            <h1 className="mt-5 font-display text-[clamp(2.4rem,6.2vw,4rem)] font-normal leading-[0.98] tracking-[-0.035em]">
               {HEADLINE.map((line, index) => (
                 <span key={line.text} className="block overflow-hidden">
                   <span
@@ -84,6 +85,10 @@ export function Hero() {
                 </li>
               ))}
             </ul>
+
+            <div className="mt-6 md:hidden">
+              <ProviderStrip compact />
+            </div>
           </div>
 
           {/* Looping tool strip */}

@@ -3,6 +3,8 @@ import { SiteNav } from "@/components/landing/site-nav"
 import { Hero } from "@/components/landing/hero"
 import { BentoGrid } from "@/components/landing/bento-grid"
 import { WorkflowShowcase } from "@/components/landing/workflow-showcase"
+import { ProvidersSection } from "@/components/landing/providers-section"
+import { SecuritySection } from "@/components/landing/security-section"
 import { UseCases } from "@/components/landing/use-cases"
 import { FaqSection } from "@/components/landing/faq-section"
 import { FinalCta } from "@/components/landing/final-cta"
@@ -37,7 +39,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-background text-foreground">
+    <div id="top" className="min-h-dvh bg-background text-foreground">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -55,7 +57,9 @@ export default function LandingPage() {
           <Hero />
           <BentoGrid />
           <WorkflowShowcase />
+          <ProvidersSection />
           <UseCases />
+          <SecuritySection />
           <FaqSection />
           <FinalCta />
         </main>

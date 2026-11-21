@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react"
 import {
   Check,
+  Code2,
   Copy,
   Loader2,
   MessageSquareText,
@@ -143,10 +144,12 @@ export default function ChatPage() {
         .select("title, language, description, code")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
-        .limit(30)
+        .limit(200)
       if (data) setSnippets(data as Pick<Snippet, "title" | "language" | "description" | "code">[])
     }
     void loadSnippets()
+    window.addEventListener("toolkit-history-change", loadSnippets)
+    return () => window.removeEventListener("toolkit-history-change", loadSnippets)
   }, [])
 
   useEffect(() => {
@@ -276,9 +279,13 @@ export default function ChatPage() {
     <div className="mx-auto flex h-full w-full max-w-4xl flex-col px-4 pt-4 pb-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
         <div className="min-w-0">
-          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">AI Chat</h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
+          <h1 className="font-display text-2xl tracking-tight sm:text-3xl">AI Chat</h1>
+          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
             Short, clear answers on code, prompts and product decisions.
+            <span className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-1.5 py-0.5 font-mono text-[10px]">
+              <Code2 className="h-3 w-3" aria-hidden="true" />
+              {snippets.length} snippets in context
+            </span>
           </p>
         </div>
         {hasMessages ? (

@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useUserProfile } from "@/hooks/use-user-profile"
 import { UserAvatar } from "@/components/workspace/user-avatar"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const CONTAINER = "mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8"
 
@@ -85,6 +86,7 @@ export default function SettingsPage() {
   const { name, email, avatarUrl, initials, createdAt } = useUserProfile()
   const [userId, setUserId] = useState<string | null>(null)
   const [provider, setProvider] = useState("Email")
+  const [ready, setReady] = useState(false)
   const [cleared, setCleared] = useState(false)
 
   useEffect(() => {
@@ -95,6 +97,9 @@ export default function SettingsPage() {
         if (!active) return
         setUserId(data?.user?.id ?? null)
         setProvider(providerLabel(data?.user ?? null))
+        setReady(true)
+      }).catch(() => {
+        if (active) setReady(true)
       })
     return () => {
       active = false
@@ -135,28 +140,35 @@ export default function SettingsPage() {
               <p className="truncate text-xs text-muted-foreground">{email ?? "Not available"}</p>
             </div>
           </div>
-          <dl className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border border-border bg-surface-2 p-3">
-              <dt className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                Sign-in provider
-              </dt>
-                  <dd className="mt-1 text-sm font-medium">{provider}</dd>
+          {!ready ? (
+            <div className="mt-3 grid gap-3 sm:grid-cols-2" role="status" aria-label="Loading account details">
+              <Skeleton className="h-16 rounded-lg" />
+              <Skeleton className="h-16 rounded-lg" />
             </div>
-            <div className="rounded-lg border border-border bg-surface-2 p-3">
-              <dt className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                Account created
-              </dt>
-              <dd className="mt-1 text-sm font-medium">
-                {createdAt
-                  ? new Date(createdAt).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })
-                  : "Unavailable"}
-              </dd>
-            </div>
-          </dl>
+          ) : (
+            <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-lg border border-border bg-surface-2 p-3">
+                <dt className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                  Sign-in provider
+                </dt>
+                <dd className="mt-1 text-sm font-medium">{provider}</dd>
+              </div>
+              <div className="rounded-lg border border-border bg-surface-2 p-3">
+                <dt className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                  Account created
+                </dt>
+                <dd className="mt-1 text-sm font-medium">
+                  {createdAt
+                    ? new Date(createdAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    : "Unavailable"}
+                </dd>
+              </div>
+            </dl>
+          )}
           {userId ? (
             <p className="mt-3 truncate font-mono text-[11px] text-muted-foreground/70">
               Account id {userId}
