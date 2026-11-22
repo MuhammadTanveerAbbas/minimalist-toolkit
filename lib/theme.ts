@@ -25,7 +25,12 @@ export const DEFAULT_THEME: Theme = "light"
  */
 export const THEME_INIT_SCRIPT = `(function(){try{
 var k=${JSON.stringify(THEME_STORAGE_KEY)};
-var s=localStorage.getItem(k)||"light";
+var s=localStorage.getItem(k);
+if(s!=="light"&&s!=="dark"&&s!=="system"){
+var m=document.cookie.match(new RegExp("(?:^|; )"+k+"=([^;]*)"));
+if(m){var v=decodeURIComponent(m[1]);if(v==="light"||v==="dark"||v==="system")s=v;}
+}
+if(s!=="light"&&s!=="dark"&&s!=="system")s="light";
 var d=s==="dark"||(s==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);
 var e=document.documentElement;
 e.classList.toggle("dark",d);
@@ -33,15 +38,36 @@ e.style.colorScheme=d?"dark":"light";
 e.dataset.theme=s;
 }catch(e){}})();`
 
+const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
+
+function readThemeCookie(): Theme | null {
+  if (typeof document === "undefined") return null
+  try {
+    const match = document.cookie.match(new RegExp(`(?:^|; )${THEME_STORAGE_KEY}=([^;]*)`))
+    const value = match ? decodeURIComponent(match[1]) : ""
+    if (value === "light" || value === "dark" || value === "system") return value
+  } catch {
+    // Ignore unreadable cookies.
+  }
+  return null
+}
+
+/** Mirrors the choice into a cookie so it survives localStorage being cleared. */
+export function writeThemeCookie(theme: Theme): void {
+  if (typeof document === "undefined") return
+  const secure = typeof window !== "undefined" && window.location.protocol === "https:" ? "; Secure" : ""
+  document.cookie = `${THEME_STORAGE_KEY}=${encodeURIComponent(theme)}; Path=/; Max-Age=${THEME_COOKIE_MAX_AGE}; SameSite=Lax${secure}`
+}
+
 export function readStoredTheme(): Theme {
   if (typeof window === "undefined") return DEFAULT_THEME
   try {
     const value = window.localStorage.getItem(THEME_STORAGE_KEY)
     if (value === "light" || value === "dark" || value === "system") return value
   } catch {
-    // Storage may be unavailable. Fall back to light.
+    // Storage may be unavailable. Try the cookie instead.
   }
-  return DEFAULT_THEME
+  return readThemeCookie() ?? DEFAULT_THEME
 }
 
 export function resolveTheme(theme: Theme): boolean {

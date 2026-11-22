@@ -31,7 +31,7 @@ export default async function NewsPage() {
       .from("news_items")
       .select("id,source,title,url,summary,author,published_at,score,tags")
       .order("published_at", { ascending: false })
-      .limit(150)
+      .limit(300)
 
     if (error) {
       setupNote = "The news table is not available yet. Apply supabase/schema.sql and run the cron job."

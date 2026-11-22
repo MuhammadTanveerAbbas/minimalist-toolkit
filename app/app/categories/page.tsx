@@ -69,6 +69,7 @@ export default function VaultPage() {
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<VaultInput>(EMPTY_FORM)
+  const [tagsInput, setTagsInput] = useState("")
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -89,12 +90,14 @@ export default function VaultPage() {
   function openCreate() {
     setEditingId(null)
     setForm(EMPTY_FORM)
+    setTagsInput("")
     setError(null)
     setOpen(true)
   }
 
   function openEdit(item: VaultItem) {
     setEditingId(item.id)
+    setTagsInput(item.tags.join(", "))
     setForm({
       kind: item.kind,
       title: item.title,
@@ -115,8 +118,9 @@ export default function VaultPage() {
     setSaving(true)
     setError(null)
     try {
-      if (editingId) await updateItem(editingId, form)
-      else await createItem(form)
+      const payload = { ...form, tags: parseTags(tagsInput) }
+      if (editingId) await updateItem(editingId, payload)
+      else await createItem(payload)
       setOpen(false)
     } catch {
       setError("Could not save this item. Try again.")
@@ -222,7 +226,7 @@ export default function VaultPage() {
       </div>
 
       {error && !open ? (
-        <p className="mt-4 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-muted-foreground">
+        <p role="alert" className="mt-4 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-muted-foreground">
           {error}
         </p>
       ) : null}
@@ -295,7 +299,7 @@ export default function VaultPage() {
                   ) : null}
 
                   <div className="mt-auto flex items-center gap-1 border-t border-border pt-3">
-                    <Button variant="ghost" size="sm" onClick={() => copy(item)} aria-label="Copy content">
+                    <Button variant="ghost" size="sm" onClick={() => copy(item)} aria-label={`Copy ${item.title}`}>
                       {copiedId === item.id ? (
                         <Check className="h-3.5 w-3.5" aria-hidden="true" />
                       ) : (
@@ -303,7 +307,7 @@ export default function VaultPage() {
                       )}
                       {copiedId === item.id ? "Copied" : "Copy"}
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => openEdit(item)} aria-label="Edit item">
+                    <Button variant="ghost" size="sm" onClick={() => openEdit(item)} aria-label={`Edit ${item.title}`}>
                       <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
                       Edit
                     </Button>
@@ -311,7 +315,7 @@ export default function VaultPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => remove(item)}
-                      aria-label="Delete item"
+                      aria-label={`Delete ${item.title}`}
                       className="ml-auto text-muted-foreground hover:text-destructive"
                     >
                       <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
@@ -375,6 +379,8 @@ export default function VaultPage() {
                 onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
                 placeholder="Name this item"
                 maxLength={200}
+                aria-invalid={Boolean(error && !form.title.trim())}
+                aria-describedby={error && !form.title.trim() ? "vault-title-error" : undefined}
                 className="h-10"
               />
             </div>
@@ -407,16 +413,14 @@ export default function VaultPage() {
               <Label htmlFor="vault-tags">Tags (comma separated)</Label>
               <Input
                 id="vault-tags"
-                value={form.tags.join(", ")}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, tags: parseTags(event.target.value) }))
-                }
+                value={tagsInput}
+                onChange={(event) => setTagsInput(event.target.value)}
                 placeholder="react, sql, writing"
                 className="h-10"
               />
             </div>
 
-            {error ? <p className="text-sm text-muted-foreground">{error}</p> : null}
+            {error ? <p id="vault-title-error" role="alert" className="text-sm text-muted-foreground">{error}</p> : null}
           </div>
 
           <DialogFooter>

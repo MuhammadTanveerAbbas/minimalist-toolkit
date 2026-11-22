@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server"
 import { groqChatCompletion } from "@/lib/promptcraft/groq"
-import { requireUser } from "@/lib/security/api-guard"
+import { requireUserById } from "@/lib/security/api-guard"
 import { createClient } from "@/lib/supabase/server"
 
 export const maxDuration = 30
@@ -17,8 +17,8 @@ type SnippetSummary = {
 const MAX_SNIPPET_CONTEXT_CHARS = 24_000
 
 export async function POST(req: NextRequest) {
-  const guard = requireUser(req, { limit: 40, windowMs: 60_000 })
-  if (guard) return guard
+  const guard = await requireUserById(req, { limit: 40, windowMs: 60_000, scope: "chat" })
+  if (guard instanceof Response) return guard
 
   let body: unknown
   try {
@@ -31,9 +31,8 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Invalid request body" }, { status: 400 })
   }
 
-  const { messages, snippets } = body as {
+  const { messages } = body as {
     messages?: Array<{ role?: string; content?: string }>
-    snippets?: SnippetSummary[]
   }
 
   if (!Array.isArray(messages) || messages.length === 0) {
@@ -50,8 +49,8 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "At least one valid message is required" }, { status: 400 })
   }
 
-  // Load the user's full saved library on the server so chat always has the
-  // current snippets. The client payload is only a fallback for local use.
+  // Load the user's saved library on the server. Client-supplied snippets are
+  // never trusted, because they could inject instructions into the system prompt.
   let library: SnippetSummary[] = []
   try {
     const supabase = await createClient()
@@ -70,13 +69,6 @@ export async function POST(req: NextRequest) {
     library = []
   }
 
-  if (library.length === 0 && Array.isArray(snippets)) {
-    library = snippets.filter(
-      (s): s is SnippetSummary =>
-        Boolean(s) && typeof s.title === "string" && typeof s.code === "string"
-    )
-  }
-
   const included: string[] = []
   let used = 0
   for (const snippet of library) {
@@ -84,7 +76,7 @@ export async function POST(req: NextRequest) {
       `- ${snippet.title} (${snippet.language || "text"})` +
       `${snippet.description ? `: ${snippet.description}` : ""}` +
       `\n\`\`\`${snippet.language || "text"}\n${snippet.code.slice(0, 700)}\n\`\`\``
-    if (used + line.length > MAX_SNIPPET_CONTEXT_CHARS) break
+    if (used + line.length > MAX_SNIPPET_CONTEXT_CHARS) continue
     included.push(line)
     used += line.length
   }

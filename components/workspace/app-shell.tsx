@@ -39,7 +39,7 @@ import {
 import { cn } from "@/lib/utils"
 
 /** Both the sidebar header and the page bar use this exact height. */
-const BAR_HEIGHT = "h-[4.625rem]"
+const BAR_HEIGHT = "h-[4.25rem]"
 
 const PROFILE_NAV_ITEM: NavItem = {
   href: "/app/profile",
@@ -155,19 +155,27 @@ function AccountMenu() {
 
 function WorkspaceSidebar({ pathname }: { pathname: string }) {
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className={cn(BAR_HEIGHT, "shrink-0 justify-center border-b border-sidebar-border px-3 py-0")}>
+    <Sidebar
+      collapsible="icon"
+      className="after:pointer-events-none after:absolute after:inset-y-0 after:left-full after:ml-[3px] after:h-full after:w-px after:bg-sidebar-border after:content-['']"
+    >
+      <SidebarHeader
+        className={cn(
+          BAR_HEIGHT,
+          "relative shrink-0 justify-center border-b border-sidebar-border py-0 pl-2.5 pr-3 after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:mt-[3px] after:h-px after:bg-sidebar-border after:content-[''] group-data-[collapsible=icon]:px-2"
+        )}
+      >
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
               asChild
               tooltip="Minimalist Toolkit"
-              className="h-12 gap-2.5 px-1.5 data-[size=lg]:h-12"
+              className="h-12 gap-2.5 px-1.5 data-[size=lg]:h-12 group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
             >
               <Link href="/app/dashboard">
-                <BrandLogo size={32} />
-                <div className="grid min-w-0 flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
+                <BrandLogo size={28} />
+                <div className="grid min-w-0 flex-1 overflow-hidden text-left leading-tight transition-opacity duration-200 group-data-[collapsible=icon]:hidden">
                   <span className="truncate text-sm font-semibold tracking-tight">Minimalist Toolkit</span>
                   <span className="truncate text-xs text-muted-foreground">AI workspace</span>
                 </div>
@@ -179,11 +187,17 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
 
       <SidebarContent className="gap-0 py-2">
 
-        {SIDEBAR_GROUPS.map((group) => {
+        {SIDEBAR_GROUPS.map((group, index) => {
           const GroupIcon = group.icon
           return (
             <Fragment key={group.label}>
-              <SidebarGroup className="mt-3 px-2 py-0 first:mt-0">
+              {index > 0 && (
+                <div
+                  aria-hidden="true"
+                  className="ml-3 my-2 hidden h-px w-6 rounded-full bg-sidebar-border group-data-[collapsible=icon]:block"
+                />
+              )}
+              <SidebarGroup className="mt-3 px-2 py-0 first:mt-0 group-data-[collapsible=icon]:mt-0">
                 <SidebarGroupLabel className="h-7 gap-2 text-[11px] font-medium normal-case tracking-normal text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
                   <GroupIcon className="h-3 w-3" aria-hidden="true" />
                   <span>{group.label}</span>
@@ -296,7 +310,7 @@ export function AppShell({
     <SidebarProvider defaultOpen={defaultOpen} className="h-dvh overflow-hidden">
       <WorkspaceSidebar pathname={pathname} />
       <SidebarInset className="min-h-0 overflow-hidden">
-        <header className={cn(BAR_HEIGHT, "flex shrink-0 items-center gap-2 border-b border-border bg-background px-3 sm:px-4")}>
+        <header className={cn(BAR_HEIGHT, "relative flex shrink-0 items-center gap-2 border-b border-border bg-background px-3 sm:px-4 after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:mt-[3px] after:h-px after:bg-border after:content-['']")}>
           <SidebarTrigger className="h-8 w-8 rounded-md border border-border bg-card md:hidden" />
           <PageTitleIcon pathname={pathname} />
           <p className="truncate text-sm font-medium">{currentNavItem(pathname).label}</p>

@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
       summary: item.summary,
       author: item.author,
       published_at: item.publishedAt,
-      score: item.score,
+      score: item.score == null ? null : Math.max(0, Math.round(item.score)),
       tags: item.tags,
     }))
   )

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ExternalLink } from "lucide-react"
+import { siArxiv, siGithub, siHuggingface, siYcombinator, type SimpleIcon } from "simple-icons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -32,6 +33,32 @@ const SOURCE_LABELS: Record<string, string> = {
   arxiv: "arXiv",
   github: "GitHub",
   huggingface: "Hugging Face",
+}
+const SOURCE_ICONS: Record<string, SimpleIcon | undefined> = {
+  "hacker-news": siYcombinator,
+  arxiv: siArxiv,
+  github: siGithub,
+  huggingface: siHuggingface,
+}
+
+function SourceIcon({ source, className }: { source: string; className?: string }) {
+  if (source === "all") {
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+        <rect x="3" y="3" width="8" height="8" rx="2" />
+        <rect x="13" y="3" width="8" height="8" rx="2" />
+        <rect x="3" y="13" width="8" height="8" rx="2" />
+        <rect x="13" y="13" width="8" height="8" rx="2" />
+      </svg>
+    )
+  }
+  const icon = SOURCE_ICONS[source]
+  if (!icon) return null
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d={icon.path} />
+    </svg>
+  )
 }
 
 function dayKey(iso: string): string {
@@ -64,13 +91,18 @@ function relativeTime(iso: string): string {
   return new Date(iso).toLocaleDateString()
 }
 
-function metaLine(item: NewsItem): string {
-  const parts: string[] = []
-  if (item.source === "github" && item.score != null) parts.push(`${item.score.toLocaleString()} stars`)
-  else if (item.source === "huggingface" && item.score != null) parts.push(`${item.score.toLocaleString()} downloads`)
-  else if (item.score != null) parts.push(`${item.score} points`)
-  if (item.author) parts.push(`by ${item.author}`)
-  return parts.join(" · ")
+/** Only show a detail when it carries real information. Never show zero counts. */
+function detailLine(item: NewsItem): string | null {
+  if (item.source === "hacker-news" && item.score != null && item.score > 0) {
+    return `${item.score.toLocaleString()} points`
+  }
+  if (item.source === "github" && item.score != null && item.score > 0) {
+    return `${item.score.toLocaleString()} stars`
+  }
+  if (item.source === "arxiv" && item.tags.length > 0) {
+    return item.tags[0]
+  }
+  return null
 }
 
 export function NewsFeed({ items, lastUpdated, setupNote }: NewsFeedProps) {
@@ -100,7 +132,7 @@ export function NewsFeed({ items, lastUpdated, setupNote }: NewsFeedProps) {
           <p>{setupNote}</p>
           <p className="mt-2 text-xs text-muted-foreground">
             Fill the feed manually with:{" "}
-            <code className="rounded bg-surface-2 px-1 py-0.5 font-mono text-[11px]">
+            <code className="break-all rounded bg-surface-2 px-1 py-0.5 font-mono text-[11px]">
               curl -H &quot;Authorization: Bearer $CRON_SECRET&quot; https://your-domain.com/api/cron/news
             </code>
           </p>
@@ -109,26 +141,47 @@ export function NewsFeed({ items, lastUpdated, setupNote }: NewsFeedProps) {
     )
   }
 
+  if (items.length === 0) {
+    return (
+      <div className="mt-6 rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+        No news yet. Run the daily cron job to fill this page.
+        <div className="mt-3 overflow-x-auto">
+          <code className="block break-all rounded bg-surface-2 px-2 py-1 font-mono text-[11px]">
+            curl -H &quot;Authorization: Bearer $CRON_SECRET&quot; https://your-domain.com/api/cron/news
+          </code>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="mt-6">
       {lastUpdated ? (
         <p className="mb-4 text-xs text-muted-foreground">
-          Last updated {relativeTime(lastUpdated)}.
+          Last updated <span suppressHydrationWarning>{relativeTime(lastUpdated)}</span>.
         </p>
       ) : null}
 
       <Tabs value={source} onValueChange={setSource}>
-        <TabsList className="flex h-auto flex-wrap">
+        <TabsList className="grid h-auto w-full grid-cols-5 gap-1 rounded-xl border border-border bg-surface-2 p-1 sm:flex sm:h-10 sm:w-fit sm:justify-start">
           {SOURCE_ORDER.map((key) => (
-            <TabsTrigger key={key} value={key} className="gap-1.5">
-              {SOURCE_LABELS[key]}
-              <span className="text-xs tabular-nums text-muted-foreground">{counts[key] ?? 0}</span>
+            <TabsTrigger
+              key={key}
+              value={key}
+              aria-label={SOURCE_LABELS[key]}
+              className="group flex h-10 flex-row items-center justify-center gap-1 rounded-lg border border-transparent px-0.5 text-xs font-medium transition-colors hover:bg-accent data-[state=active]:border-foreground data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none sm:h-full sm:gap-2 sm:px-3"
+            >
+              <SourceIcon source={key} className="h-4 w-4 shrink-0 sm:h-3.5 sm:w-3.5" />
+              <span className="hidden whitespace-nowrap sm:inline">{SOURCE_LABELS[key]}</span>
+              <span className="min-w-5 rounded-md bg-muted px-0.5 py-0.5 text-center font-mono text-[10px] tabular-nums text-muted-foreground group-data-[state=active]:bg-background/15 group-data-[state=active]:text-background sm:min-w-6 sm:px-1 sm:py-0.5 sm:text-[11px]">
+                {counts[key] ?? 0}
+              </span>
             </TabsTrigger>
           ))}
         </TabsList>
 
         {SOURCE_ORDER.map((key) => (
-          <TabsContent key={key} value={key} className="mt-4">
+          <TabsContent key={key} value={key} className="mt-6">
             {visible.length === 0 ? (
               <div className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
                 No items for this source yet.
@@ -137,52 +190,50 @@ export function NewsFeed({ items, lastUpdated, setupNote }: NewsFeedProps) {
               <div className="flex flex-col gap-6">
                 {groupEntries.map(([key, group]) => (
                   <section key={key}>
-                    <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {dayLabel(key)}
-                    </h2>
-                    <ul className="flex flex-col gap-3">
-                      {group.map((item) => (
-                        <li key={item.id}>
-                          <article className="rounded-lg border border-border bg-card p-4 transition-colors hover:border-foreground/20">
-                            <div className="flex flex-col gap-1.5">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <Badge variant="secondary" className="text-[10px] font-medium">
-                                  {SOURCE_LABELS[item.source] ?? item.source}
+                    <h2 className="mb-3 font-mono text-xs text-muted-foreground">{dayLabel(key)}</h2>
+                    <ul className="grid grid-cols-2 gap-2 sm:gap-3">
+                      {group.map((item) => {
+                        const detail = detailLine(item)
+                        return (
+                          <li key={item.id}>
+                            <article className="flex h-full min-w-0 flex-col rounded-xl border border-border bg-card p-3 transition-colors hover:border-foreground/25 sm:p-4">
+                              <div className="flex items-center justify-between gap-1">
+                                <Badge variant="secondary" className="gap-1.5 text-[10px] font-medium">
+                                  <SourceIcon source={item.source} className="h-3 w-3" />
+                                  <span className="hidden sm:inline">{SOURCE_LABELS[item.source] ?? item.source}</span>
                                 </Badge>
-                                <span className="text-xs text-muted-foreground">{relativeTime(item.publishedAt)}</span>
+                                <span
+                                  suppressHydrationWarning
+                                  className="hidden shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground sm:inline"
+                                >
+                                  {relativeTime(item.publishedAt)}
+                                </span>
                               </div>
+
+                              <h3 className="mt-3 line-clamp-3 break-words text-xs font-medium leading-snug sm:mt-4 sm:min-h-10 sm:text-sm">
+                                {item.title}
+                              </h3>
+
+                              {detail ? (
+                                <p className="mt-2 truncate font-mono text-[10px] tabular-nums text-muted-foreground sm:text-[11px]">
+                                  {detail}
+                                </p>
+                              ) : null}
+
                               <a
                                 href={item.url}
                                 target="_blank"
                                 rel="noreferrer noopener"
-                                title={`Opens ${item.url} in a new tab`}
-                                className="inline-flex items-start gap-1.5 text-sm font-medium leading-5 hover:underline"
+                                className="mt-auto inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-card text-[11px] font-medium transition-colors hover:bg-accent sm:h-10 sm:gap-2 sm:text-sm"
                               >
-                                {item.title}
-                                <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                                <span className="sm:hidden">View source</span>
+                                <span className="hidden sm:inline">View Original Source</span>
+                                <ExternalLink className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden="true" />
                               </a>
-                              {item.summary ? (
-                                <p className="line-clamp-3 text-xs leading-5 text-muted-foreground">{item.summary}</p>
-                              ) : null}
-                              {metaLine(item) ? (
-                                <p className="text-xs text-muted-foreground">{metaLine(item)}</p>
-                              ) : null}
-                              {item.tags.length ? (
-                                <ul className="flex flex-wrap gap-1.5">
-                                  {item.tags.slice(0, 3).map((tag) => (
-                                    <li
-                                      key={tag}
-                                      className="rounded bg-surface-2 px-1.5 py-0.5 text-[10px] text-muted-foreground"
-                                    >
-                                      {tag}
-                                    </li>
-                                  ))}
-                                </ul>
-                              ) : null}
-                            </div>
-                          </article>
-                        </li>
-                      ))}
+                            </article>
+                          </li>
+                        )
+                      })}
                     </ul>
                   </section>
                 ))}
@@ -191,17 +242,6 @@ export function NewsFeed({ items, lastUpdated, setupNote }: NewsFeedProps) {
           </TabsContent>
         ))}
       </Tabs>
-
-      {items.length === 0 && !setupNote ? (
-        <div className="mt-6 rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-          No news yet. Run the daily cron job to fill this page.
-          <div className="mt-3">
-            <code className="rounded bg-surface-2 px-2 py-1 font-mono text-[11px]">
-              curl -H &quot;Authorization: Bearer $CRON_SECRET&quot; https://your-domain.com/api/cron/news
-            </code>
-          </div>
-        </div>
-      ) : null}
     </div>
   )
 }

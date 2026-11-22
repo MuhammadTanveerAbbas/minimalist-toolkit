@@ -165,7 +165,8 @@ export default function ChatPage() {
       const text = (override ?? input).trim()
       if (!text || isLoading) return
 
-      const nextMessages: Msg[] = [...messages, { role: "user", content: text }]
+      // Read the store directly so regenerate and rapid sends cannot use a stale closure.
+      const nextMessages: Msg[] = [...chatHistory.getSnapshot(), { role: "user", content: text }]
       setMessages(nextMessages)
       setInput("")
       if (textareaRef.current) {
@@ -182,7 +183,7 @@ export default function ChatPage() {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: nextMessages, snippets }),
+          body: JSON.stringify({ messages: nextMessages }),
           signal: controller.signal,
         })
 
@@ -230,6 +231,26 @@ export default function ChatPage() {
           }
         }
 
+        // A final chunk may arrive without a trailing newline.
+        if (buffer.trim()) {
+          const i = buffer.indexOf(":")
+          if (i !== -1 && buffer.slice(0, i) === "0") {
+            try {
+              const chunk = JSON.parse(buffer.slice(i + 1))
+              if (typeof chunk === "string") {
+                assistant += chunk
+                setMessages((prev) => {
+                  const copy = [...prev]
+                  copy[copy.length - 1] = { role: "assistant", content: assistant }
+                  return copy
+                })
+              }
+            } catch {
+              // Skip a malformed final chunk
+            }
+          }
+        }
+
         if (!assistant) throw new Error("No response was returned.")
       } catch (e) {
         if (e instanceof DOMException && e.name === "AbortError") {
@@ -243,7 +264,7 @@ export default function ChatPage() {
         setIsLoading(false)
       }
     },
-    [input, isLoading, messages, setMessages, snippets]
+    [input, isLoading, setMessages]
   )
 
   const regenerate = useCallback(() => {
@@ -284,7 +305,7 @@ export default function ChatPage() {
             Short, clear answers on code, prompts and product decisions.
             <span className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-1.5 py-0.5 font-mono text-[10px]">
               <Code2 className="h-3 w-3" aria-hidden="true" />
-              {snippets.length} snippets in context
+              {snippets.length} snippets saved
             </span>
           </p>
         </div>

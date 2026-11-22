@@ -8,6 +8,7 @@ import {
   resolveTheme,
   THEME_STORAGE_KEY,
   withThemeTransition,
+  writeThemeCookie,
   type Theme,
 } from "@/lib/theme"
 
@@ -70,8 +71,9 @@ export function useTheme(): {
       try {
         window.localStorage.setItem(THEME_STORAGE_KEY, next)
       } catch {
-        // Storage may be unavailable. The theme still applies for this session.
+        // Storage may be unavailable. The cookie still keeps the choice.
       }
+      writeThemeCookie(next)
       window.dispatchEvent(new Event(EVENT))
     })
   }, [])

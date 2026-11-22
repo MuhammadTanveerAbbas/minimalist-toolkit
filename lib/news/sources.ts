@@ -7,8 +7,13 @@ const HN_SEARCH_URL = "https://hn.algolia.com/api/v1/search_by_date"
 const ARXIV_API_URL = "https://export.arxiv.org/api/query"
 const GITHUB_SEARCH_URL = "https://api.github.com/search/repositories"
 const HF_MODELS_URL = "https://huggingface.co/api/models"
+const HF_PAPERS_URL = "https://huggingface.co/api/daily_papers"
 
-export type NewsSourceId = "hacker-news" | "arxiv" | "github" | "huggingface"
+export type NewsSourceId =
+  | "hacker-news"
+  | "arxiv"
+  | "github"
+  | "huggingface"
 
 export interface NewsItem {
   id: string
@@ -162,7 +167,7 @@ async function fetchArxiv(): Promise<NewsSourceResult> {
       const authorsRaw = entry?.author
       const authorObjects = Array.isArray(authorsRaw) ? authorsRaw : authorsRaw ? [authorsRaw] : []
       const authors = authorObjects.map((value: any) => (typeof value === "string" ? value : value?.name))
-      const author = authors.map((value) => cleanText(value, 200)).filter(Boolean).join(", ") || null
+      const author = cleanText(authors.filter(Boolean).join(", "), 200) || null
 
       const links = Array.isArray(entry?.link) ? entry.link : entry?.link ? [entry.link] : []
       const alternate = links.find((link: any) => link?.["@_rel"] === "alternate") ?? links[0]
@@ -239,6 +244,36 @@ async function fetchGitHub(): Promise<NewsSourceResult> {
   }
 }
 
+async function fetchHfPapers(): Promise<NewsItem[]> {
+  try {
+    const json = await fetchJson(`${HF_PAPERS_URL}?limit=20`, {}, 12_000)
+    const papers = Array.isArray(json) ? json : []
+    const items: NewsItem[] = []
+    for (const entry of papers) {
+      const paper = entry?.paper ?? {}
+      const id = cleanText(paper?.id, 100)
+      const title = cleanText(paper?.title, 500)
+      const urlValue = validUrl(`https://huggingface.co/papers/${id}`)
+      const publishedAt = validDate(entry?.publishedAt ?? paper?.publishedAt)
+      if (!id || !title || !urlValue || !publishedAt) continue
+      items.push({
+        id: `hf-paper:${id}`,
+        source: "huggingface",
+        title,
+        url: urlValue,
+        summary: "",
+        author: null,
+        publishedAt,
+        score: null,
+        tags: [],
+      })
+    }
+    return dedupe(items)
+  } catch {
+    return []
+  }
+}
+
 async function fetchHuggingFace(): Promise<NewsSourceResult> {
   const source: NewsSourceId = "huggingface"
   const sourceLabel = "Hugging Face"
@@ -249,32 +284,24 @@ async function fetchHuggingFace(): Promise<NewsSourceResult> {
     const items: NewsItem[] = []
     for (const model of models) {
       const id = cleanText(model?.id, 200)
-      if (!id) continue
       const urlValue = validUrl(`https://huggingface.co/${id}`)
-      if (!urlValue) continue
       const publishedAt = validDate(model?.createdAt)
-      if (!publishedAt) continue
-      const downloads = typeof model?.downloads === "number" ? model.downloads : null
-      const likes = typeof model?.likes === "number" ? model.likes : null
-      const pipeline = cleanText(model?.pipeline_tag, 100)
-      const tags = Array.isArray(model?.tags) ? model.tags.filter((t: unknown) => typeof t === "string").slice(0, 8) : []
-      const summaryParts: string[] = []
-      if (pipeline) summaryParts.push(pipeline)
-      if (downloads != null) summaryParts.push(`${downloads.toLocaleString()} downloads`)
-      if (likes != null) summaryParts.push(`${likes.toLocaleString()} likes`)
+      if (!id || !urlValue || !publishedAt) continue
       items.push({
         id: `hf:${id}`,
         source,
         title: id,
         url: urlValue,
-        summary: summaryParts.join(" · "),
+        summary: "",
         author: null,
         publishedAt,
-        score: downloads,
-        tags,
+        score: null,
+        tags: [],
       })
     }
-    return { source, items: dedupe(items).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), error: null }
+    const papers = await fetchHfPapers()
+    const all = dedupe([...items, ...papers]).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+    return { source, items: all, error: null }
   } catch (error) {
     return { source, items: [], error: humanizeError(sourceLabel, error) }
   }

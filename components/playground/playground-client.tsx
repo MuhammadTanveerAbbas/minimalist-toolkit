@@ -187,8 +187,6 @@ export function PlaygroundClient() {
       if (!response.ok) {
         const message = typeof json?.error === "string" ? json.error : "The comparison failed."
         setRunError(message)
-        setLeftResult({ ok: false, error: message, latencyMs: null })
-        setRightResult({ ok: false, error: message, latencyMs: null })
         return
       }
       setLeftResult(json.left ?? null)
@@ -197,8 +195,6 @@ export function PlaygroundClient() {
     } catch {
       const message = "Network error. Try again."
       setRunError(message)
-      setLeftResult({ ok: false, error: message, latencyMs: null })
-      setRightResult({ ok: false, error: message, latencyMs: null })
     } finally {
       setRunning(false)
     }
@@ -329,7 +325,7 @@ export function PlaygroundClient() {
       </div>
 
       {runError ? (
-        <Alert className="mt-4">
+        <Alert role="alert" className="mt-4">
           <AlertDescription>{runError}</AlertDescription>
         </Alert>
       ) : null}
@@ -546,7 +542,7 @@ function SidePanel({
             <div className="flex flex-col gap-3">
               {result.ok ? (
                 <>
-                  <div className="relative rounded-md border border-border bg-surface-2 p-3">
+                  <div className="relative rounded-md border border-border bg-surface-2 p-3 pr-20">
                     <pre className="whitespace-pre-wrap break-words font-mono text-xs leading-6">
                       {result.text}
                     </pre>
@@ -583,7 +579,7 @@ function SidePanel({
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md border border-border bg-card p-2">
-      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-0.5 font-mono text-xs tabular-nums">{value}</p>
     </div>
   )

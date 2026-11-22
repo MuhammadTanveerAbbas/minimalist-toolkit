@@ -34,8 +34,16 @@ function createStub() {
   return { auth, from } as any
 }
 
+// Reuse one browser client for the whole tab. Spawning a fresh client on every
+// call starts multiple auto-refresh loops that race on the same refresh token
+// and surface as "Invalid Refresh Token: Refresh Token Not Found".
+let browserClient: ReturnType<typeof createBrowserClient> | null = null
+
 export function createClient() {
   const config = getSupabaseConfig()
   if (!config) return createStub()
-  return createBrowserClient(config.url, config.key)
+  if (!browserClient) {
+    browserClient = createBrowserClient(config.url, config.key)
+  }
+  return browserClient
 }

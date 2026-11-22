@@ -65,7 +65,7 @@
   --radius: 0.75rem;
 
   /* The sidebar header and the page bar share this exact height. */
-  --workspace-header-height: 4.625rem;
+  --workspace-header-height: 4.25rem;
 
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0 0 0);

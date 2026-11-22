@@ -34,6 +34,10 @@ create table if not exists public.snippets (
 create index if not exists snippets_user_id_created_at_idx
   on public.snippets (user_id, created_at desc);
 
+-- The chat route loads the most recently edited snippets for prompt context.
+create index if not exists snippets_user_id_updated_at_idx
+  on public.snippets (user_id, updated_at desc);
+
 alter table public.snippets enable row level security;
 alter table public.snippets force row level security;
 
@@ -418,3 +422,28 @@ grant select on public.news_items to authenticated;
 -- Note: snippets.visibility is reserved for a future public-sharing feature.
 -- There is intentionally no public select policy, so every snippet stays
 -- private even when that flag reads 'public'.
+
+-- Consolidate to four sources. Hugging Face papers become Hugging Face items.
+-- npm, Stack Overflow and DEV rows are removed because those sources are gone.
+do $$
+begin
+  if to_regclass('public.news_items') is not null then
+    update public.news_items
+       set source = 'huggingface'
+     where source = 'hf-papers';
+
+    delete from public.news_items
+     where source in ('npm', 'stackoverflow', 'devto');
+
+    if exists (
+      select 1 from pg_constraint
+      where conname = 'news_items_source_check'
+        and conrelid = to_regclass('public.news_items')
+    ) then
+      alter table public.news_items drop constraint news_items_source_check;
+    end if;
+    alter table public.news_items
+      add constraint news_items_source_check
+      check (source in ('hacker-news', 'arxiv', 'github', 'huggingface'));
+  end if;
+end $$;
