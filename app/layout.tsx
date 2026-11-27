@@ -2,6 +2,14 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { BBH_Bogle, Lato, Open_Sans } from "next/font/google"
 import { THEME_INIT_SCRIPT } from "@/lib/theme"
+import {
+  siteDescription,
+  siteLogo,
+  siteName,
+  siteTitle,
+  siteUrl,
+  twitterHandle,
+} from "@/lib/site-metadata"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import "./globals.css"
 
@@ -26,15 +34,10 @@ const openSans = Open_Sans({
 })
 
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://minimalist-toolkit.vercel.app"
-const siteName = "Minimalist Toolkit"
-const siteDescription =
-  "Minimalist Toolkit brings Snippet Manager, Mockify, PromptCraft, and AI chat into one clean workspace."
-
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${siteName} - Snippets, Mockify, PromptCraft`,
+    default: siteTitle,
     template: `%s | ${siteName}`,
   },
   description: siteDescription,
@@ -55,24 +58,21 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [
-      { url: "/icon.png", type: "image/png" },
-    ],
-    shortcut: ["/icon.png"],
-    apple: ["/icon.png"],
+    icon: [{ url: "/logo-light.png", type: "image/png" }],
   },
   manifest: "/manifest.webmanifest",
   openGraph: {
     type: "website",
     url: siteUrl,
     siteName,
-    title: `${siteName} - Snippets, Mockify, PromptCraft`,
+    title: siteTitle,
     description: siteDescription,
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteName} - Snippets, Mockify, PromptCraft`,
+    site: twitterHandle,
+    title: siteTitle,
     description: siteDescription,
   },
   robots: {
@@ -102,6 +102,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Next's OpenGraph type has no logo field, and metadata.other emits name=, so add the property tag directly. */}
+        <meta property="og:logo" content={siteLogo} />
         {/* Applies the stored theme before the first paint so there is no flash. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>

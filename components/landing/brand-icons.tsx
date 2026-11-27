@@ -9,7 +9,7 @@ import {
   Ollama,
   OpenRouter,
   OpenAI,
-} from "@lobehub/icons"
+} from "@/components/landing/provider-icons"
 
 import { cn } from "@/lib/utils"
 

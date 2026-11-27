@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Minimalist Toolkit - Snippets, Mockify, PromptCraft'
+export const alt = 'Minimalist Toolkit: snippets, mockups, prompts and AI chat. Try it free.'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -127,6 +127,37 @@ export default function Image() {
               </span>
             )
           )}
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginTop: '34px',
+          }}
+        >
+          <div
+            style={{
+              padding: '18px 44px',
+              background: palette.ink,
+              color: palette.canvas,
+              borderRadius: '12px',
+              fontSize: '24px',
+              fontWeight: 700,
+            }}
+          >
+            Try it free at minimalist-toolkit.vercel.app
+          </div>
+          <span
+            style={{
+              marginTop: '14px',
+              fontSize: '15px',
+              color: palette.subtitle,
+            }}
+          >
+            Free to start. Your data stays yours.
+          </span>
         </div>
 
         <div

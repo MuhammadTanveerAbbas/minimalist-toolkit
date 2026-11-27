@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { siteDescription, siteTitle, siteUrl } from "@/lib/site-metadata"
 import { SiteNav } from "@/components/landing/site-nav"
 import { Hero } from "@/components/landing/hero"
 import { BentoGrid } from "@/components/landing/bento-grid"
@@ -11,15 +12,12 @@ import { FinalCta } from "@/components/landing/final-cta"
 import { SiteFooter } from "@/components/landing/site-footer"
 
 export const metadata: Metadata = {
-  title: "Minimalist Toolkit - Focused tools for code, visuals, prompts and AI",
-  description:
-    "Save and organise code snippets, generate mockups, write better prompts, and chat with an AI workspace. One account, your data stays yours.",
+  title: { absolute: siteTitle },
+  description: siteDescription,
   alternates: { canonical: "/" },
 }
 
 export default function LandingPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://minimalist-toolkit.vercel.app"
-
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
