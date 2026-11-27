@@ -35,7 +35,13 @@ import {
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
 /** Both the sidebar header and the page bar use this exact height. */
@@ -154,6 +160,9 @@ function AccountMenu() {
 }
 
 function WorkspaceSidebar({ pathname }: { pathname: string }) {
+  const { state } = useSidebar()
+  const iconOnly = state === "collapsed"
+
   return (
     <Sidebar
       collapsible="icon"
@@ -174,7 +183,7 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
               className="h-12 gap-2.5 px-1.5 data-[size=lg]:h-12 group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
             >
               <Link href="/app/dashboard">
-                <BrandLogo size={32} />
+                <BrandLogo size={iconOnly ? 24 : 32} />
                 <div className="grid min-w-0 flex-1 overflow-hidden text-left leading-tight transition-opacity duration-200 group-data-[collapsible=icon]:hidden">
                   <span className="truncate text-sm font-medium">Minimalist Toolkit</span>
                   <span className="truncate text-xs text-muted-foreground">One account for every tool</span>
@@ -201,19 +210,39 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
                       const active = isActivePath(pathname, item.href, item.exact)
                       return (
                         <SidebarMenuItem key={item.href}>
-                          <Link
-                            href={item.href}
-                            aria-current={active ? "page" : undefined}
-                            className={cn(
-                              "flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0",
-                              active
-                                ? "bg-sidebar-foreground text-sidebar font-medium"
-                                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                            )}
-                          >
-                            <Icon className="h-5.5 w-5.5 shrink-0" aria-hidden="true" strokeWidth={2.5} />
-                            <span className="truncate group-data-[collapsible=icon]:hidden">{item.label}</span>
-                          </Link>
+                          {(() => {
+                            const link = (
+                              <Link
+                                href={item.href}
+                                aria-label={item.label}
+                                aria-current={active ? "page" : undefined}
+                                className={cn(
+                                  "flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0",
+                                  active
+                                    ? "bg-sidebar-foreground text-sidebar font-medium"
+                                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                                )}
+                              >
+                                <Icon
+                                  className="size-4.5 shrink-0 group-data-[collapsible=icon]:size-4"
+                                  aria-hidden="true"
+                                  strokeWidth={2}
+                                />
+                                <span className="truncate group-data-[collapsible=icon]:hidden">{item.label}</span>
+                              </Link>
+                            )
+
+                            return iconOnly ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>{link}</TooltipTrigger>
+                                <TooltipContent side="right" sideOffset={8}>
+                                  {item.label}
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              link
+                            )
+                          })()}
                         </SidebarMenuItem>
                       )
                     })}
