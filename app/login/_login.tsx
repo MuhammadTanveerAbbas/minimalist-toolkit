@@ -223,7 +223,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="min-h-11 w-full rounded-lg border-0 bg-surface-2 px-3 py-2.5 text-sm transition-colors placeholder:text-muted-foreground outline-none focus-visible:ring-0 focus-visible:ring-offset-0 auth-field"
+                    className="min-h-11 w-full rounded-lg border border-border bg-surface-2 px-3 py-2.5 focus:border-ring text-sm transition-colors placeholder:text-muted-foreground outline-none focus-visible:ring-0 focus-visible:ring-offset-0 auth-field"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -240,7 +240,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
                       minLength={isSignup ? 8 : 6}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="min-h-11 w-full rounded-lg border-0 bg-surface-2 px-3 py-2.5 pr-10 text-sm transition-colors placeholder:text-muted-foreground outline-none focus-visible:ring-0 focus-visible:ring-offset-0 auth-field"
+                      className="min-h-11 w-full rounded-lg border border-border bg-surface-2 px-3 py-2.5 focus:border-ring pr-10 text-sm transition-colors placeholder:text-muted-foreground outline-none focus-visible:ring-0 focus-visible:ring-offset-0 auth-field"
                       placeholder={isSignup ? "At least 8 characters" : "Your password"}
                     />
                     <button

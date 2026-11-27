@@ -36,7 +36,7 @@ export function SiteFooter() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)] lg:gap-20">
           {/* Brand statement */}
           <div className="flex flex-col items-start">
-            <Link href="/" className="inline-flex items-center gap-3" aria-label="Minimalist Toolkit home">
+            <Link href="/" className="inline-flex items-center gap-2" aria-label="Minimalist Toolkit home">
               <BrandLogo size={40} />
               <span className="font-display text-xl tracking-tight">Minimalist Toolkit</span>
             </Link>

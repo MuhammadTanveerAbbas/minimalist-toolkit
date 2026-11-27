@@ -7,7 +7,6 @@ import {
   readStoredTheme,
   resolveTheme,
   THEME_STORAGE_KEY,
-  withThemeTransition,
   writeThemeCookie,
   type Theme,
 } from "@/lib/theme"
@@ -20,7 +19,7 @@ function subscribe(onChange: () => void) {
   const onMediaChange = () => {
     // Only a "system" theme follows the operating system.
     if (readStoredTheme() === "system") {
-      withThemeTransition(() => applyTheme("system"))
+      applyTheme("system")
       onChange()
     }
   }
@@ -66,16 +65,14 @@ export function useTheme(): {
   )
 
   const setTheme = useCallback((next: Theme) => {
-    withThemeTransition(() => {
-      applyTheme(next)
-      try {
-        window.localStorage.setItem(THEME_STORAGE_KEY, next)
-      } catch {
-        // Storage may be unavailable. The cookie still keeps the choice.
-      }
-      writeThemeCookie(next)
-      window.dispatchEvent(new Event(EVENT))
-    })
+    applyTheme(next)
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, next)
+    } catch {
+      // Storage may be unavailable. The cookie still keeps the choice.
+    }
+    writeThemeCookie(next)
+    window.dispatchEvent(new Event(EVENT))
   }, [])
 
   const toggle = useCallback(() => {

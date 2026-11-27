@@ -162,7 +162,7 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
       <SidebarHeader
         className={cn(
           BAR_HEIGHT,
-          "relative shrink-0 justify-center border-b border-sidebar-border py-0 pl-2.5 pr-3 after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:mt-[3px] after:h-px after:bg-sidebar-border after:content-[''] group-data-[collapsible=icon]:px-2"
+          "relative shrink-0 justify-center border-b border-sidebar-border py-0 pl-2.5 pr-3 after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:mt-[3px] after:h-px after:bg-sidebar-border after:content-[''] group-data-[collapsible=icon]:pl-3 group-data-[collapsible=icon]:pr-1"
         )}
       >
         <SidebarMenu>
@@ -174,7 +174,7 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
               className="h-12 gap-2.5 px-1.5 data-[size=lg]:h-12 group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
             >
               <Link href="/app/dashboard">
-                <BrandLogo size={28} />
+                <BrandLogo size={32} />
                 <div className="grid min-w-0 flex-1 overflow-hidden text-left leading-tight transition-opacity duration-200 group-data-[collapsible=icon]:hidden">
                   <span className="truncate text-sm font-medium">Minimalist Toolkit</span>
                   <span className="truncate text-xs text-muted-foreground">One account for every tool</span>
@@ -190,7 +190,7 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
         {SIDEBAR_GROUPS.map((group) => {
           return (
             <Fragment key={group.label}>
-              <SidebarGroup className="mt-5 px-3 py-0 first:mt-2 group-data-[collapsible=icon]:mt-0">
+              <SidebarGroup className="mt-5 px-3 py-0 first:mt-2 group-data-[collapsible=icon]:mt-0 group-data-[collapsible=icon]:pl-3 group-data-[collapsible=icon]:pr-1">
                 <SidebarGroupLabel className="h-6 px-1 text-xs font-medium text-muted-foreground group-data-[collapsible=icon]:hidden">
                   <span>{group.label}</span>
                 </SidebarGroupLabel>
@@ -211,7 +211,7 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
                                 : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
                             )}
                           >
-                            <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                            <Icon className="h-5.5 w-5.5 shrink-0" aria-hidden="true" strokeWidth={2.5} />
                             <span className="truncate group-data-[collapsible=icon]:hidden">{item.label}</span>
                           </Link>
                         </SidebarMenuItem>
@@ -226,7 +226,7 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
       </SidebarContent>
 
       <SidebarFooter className="gap-0 p-0">
-        <div className="border-t border-sidebar-border p-2 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+        <div className="border-t border-sidebar-border p-2 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:pl-3 group-data-[collapsible=icon]:pr-1">
           <SidebarTrigger
             title="Collapse sidebar (Ctrl+B or Command+B)"
             className="flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"

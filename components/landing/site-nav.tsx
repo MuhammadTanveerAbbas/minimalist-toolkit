@@ -27,7 +27,7 @@ export function SiteNav() {
       )}
     >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="Minimalist Toolkit home">
+        <Link href="/" className="flex shrink-0 items-center gap-1.5" aria-label="Minimalist Toolkit home">
           <BrandLogo size={32} />
           <span className="text-sm font-semibold tracking-tight">Minimalist Toolkit</span>
         </Link>

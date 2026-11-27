@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils"
 
 /**
  * Theme-adaptive brand mark. The light variant has a white field with a black
- * mark; the dark variant is the inverse. Both are generated from Logo.png.
  */
 export function BrandLogo({
   size = 32,

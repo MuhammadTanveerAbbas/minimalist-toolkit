@@ -120,7 +120,7 @@ export default function UpdatePasswordPage() {
                   minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="min-h-11 w-full rounded-lg border-0 bg-surface-2 px-3 py-2.5 pr-10 text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0 auth-field"
+                  className="min-h-11 w-full rounded-lg border border-border bg-surface-2 px-3 py-2.5 focus:border-ring pr-10 text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0 auth-field"
                   placeholder="At least 8 characters"
                 />
                 <button
@@ -145,7 +145,7 @@ export default function UpdatePasswordPage() {
                 minLength={8}
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
-                className="min-h-11 w-full rounded-lg border-0 bg-surface-2 px-3 py-2.5 text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0 auth-field"
+                className="min-h-11 w-full rounded-lg border border-border bg-surface-2 px-3 py-2.5 focus:border-ring text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0 auth-field"
                 placeholder="Repeat password"
               />
             </div>

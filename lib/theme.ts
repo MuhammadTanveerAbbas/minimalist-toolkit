@@ -81,29 +81,13 @@ export function applyTheme(theme: Theme): void {
   if (typeof document === "undefined") return
   const dark = resolveTheme(theme)
   const root = document.documentElement
+  root.classList.add("theme-changing")
   root.classList.toggle("dark", dark)
   root.style.colorScheme = dark ? "dark" : "light"
   root.dataset.theme = theme
-}
-
-/**
- * Runs a theme change inside a View Transition when the browser supports it.
- * Browsers without the API, and visitors who prefer reduced motion, get an
- * instant change with no flash.
- */
-export function withThemeTransition(change: () => void): void {
-  if (typeof window === "undefined" || typeof document === "undefined") {
-    change()
-    return
-  }
-
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  const start = (document as Document & { startViewTransition?: (cb: () => void) => void })
-    .startViewTransition
-
-  if (typeof start === "function" && !reduced) {
-    start.call(document, change)
-  } else {
-    change()
-  }
+  // Release the guard once the new palette has painted. hover transitions stay
+  // active, but the theme switch itself has no fade or reveal effect.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    root.classList.remove("theme-changing")
+  }))
 }
