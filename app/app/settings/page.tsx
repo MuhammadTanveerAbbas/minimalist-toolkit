@@ -148,13 +148,13 @@ export default function SettingsPage() {
           ) : (
             <dl className="mt-3 grid gap-3 sm:grid-cols-2">
               <div className="rounded-lg border border-border bg-surface-2 p-3">
-                <dt className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                <dt className="text-xs font-medium text-muted-foreground">
                   Sign-in provider
                 </dt>
                 <dd className="mt-1 text-sm font-medium">{provider}</dd>
               </div>
               <div className="rounded-lg border border-border bg-surface-2 p-3">
-                <dt className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                <dt className="text-xs font-medium text-muted-foreground">
                   Account created
                 </dt>
                 <dd className="mt-1 text-sm font-medium">
@@ -170,7 +170,7 @@ export default function SettingsPage() {
             </dl>
           )}
           {userId ? (
-            <p className="mt-3 truncate font-mono text-[11px] text-muted-foreground/70">
+            <p className="mt-3 truncate text-xs text-muted-foreground/70">
               Account id {userId}
             </p>
           ) : null}

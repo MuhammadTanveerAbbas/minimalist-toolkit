@@ -51,7 +51,7 @@ function HistoryCard({
         }
       }}
       aria-label={`Open generation: ${item.prompt}`}
-      className="group flex w-full cursor-pointer items-start gap-3 rounded-xl border border-border/80 bg-card p-4 text-left transition-all hover:border-ring/40 hover:bg-accent outline-none"
+      className="group flex w-full cursor-pointer items-start gap-3 rounded-xl border border-border/80 bg-card p-4 text-left transition-[color,background-color,border-color,opacity,box-shadow,transform] hover:border-ring/40 hover:bg-accent outline-none"
     >
       {hasImage ? (
         /* eslint-disable-next-line @next/next/no-img-element -- generated/remote preview URLs */
@@ -92,7 +92,7 @@ function HistoryCard({
           title="Copy prompt"
           aria-label="Copy prompt to clipboard"
           type="button"
-          className="min-h-11 min-w-11 rounded-lg p-2 text-muted-foreground opacity-100 sm:opacity-0 transition-all sm:group-hover:opacity-100 hover:bg-secondary hover:text-foreground"
+          className="min-h-11 min-w-11 rounded-lg p-2 text-muted-foreground opacity-100 sm:opacity-0 transition-[color,background-color,border-color,opacity,box-shadow,transform] sm:group-hover:opacity-100 hover:bg-secondary hover:text-foreground"
         >
           {copied ? <Check className="h-3 w-3 text-muted-foreground" aria-hidden="true" /> : <Copy className="h-3 w-3" aria-hidden="true" />}
         </button>
@@ -101,11 +101,11 @@ function HistoryCard({
           title="Delete"
           aria-label="Delete this generation"
           type="button"
-          className="min-h-11 min-w-11 rounded-lg p-2 text-muted-foreground opacity-100 sm:opacity-0 transition-all sm:group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+          className="min-h-11 min-w-11 rounded-lg p-2 text-muted-foreground opacity-100 sm:opacity-0 transition-[color,background-color,border-color,opacity,box-shadow,transform] sm:group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
         >
           <Trash2 className="h-3 w-3" aria-hidden="true" />
         </button>
-        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/30 opacity-0 transition-all group-hover:opacity-100" aria-hidden="true" />
+        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/30 opacity-0 transition-[color,background-color,border-color,opacity,box-shadow,transform] group-hover:opacity-100" aria-hidden="true" />
       </div>
     </div>
   )
@@ -153,7 +153,7 @@ export function PromptHistory({ items, onSelect, onDelete, onClearAll }: PromptH
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search history..."
             aria-label="Search generation history"
-            className="w-full min-h-11 rounded-lg border border-border bg-background/60 py-2 pl-8 pr-8 text-xs text-foreground placeholder:text-muted-foreground/35 outline-none transition-all"
+            className="w-full min-h-11 rounded-lg border border-border bg-background/60 py-2 pl-8 pr-8 text-xs text-foreground placeholder:text-muted-foreground/35 outline-none transition-[color,background-color,border-color,opacity,box-shadow,transform]"
           />
           {search && (
             <button
@@ -168,7 +168,7 @@ export function PromptHistory({ items, onSelect, onDelete, onClearAll }: PromptH
         <button
           type="button"
           onClick={onClearAll}
-          className="shrink-0 min-h-11 rounded-lg border border-border/60 bg-secondary/40 px-3 py-2 text-xs font-medium text-muted-foreground transition-all hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+          className="shrink-0 min-h-11 rounded-lg border border-border/60 bg-secondary/40 px-3 py-2 text-xs font-medium text-muted-foreground transition-[color,background-color,border-color,opacity,box-shadow,transform] hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
         >
           Clear all
         </button>

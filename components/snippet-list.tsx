@@ -43,7 +43,7 @@ export function SnippetList({
           <button
             type="button"
             onClick={onCreate}
-            className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-lg bg-foreground px-4 text-sm font-medium text-background transition-opacity hover:opacity-90"
+            className="mt-5 inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-lg bg-foreground px-4 text-sm font-medium text-background transition-opacity hover:opacity-90"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
             Create your first snippet

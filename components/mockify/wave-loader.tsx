@@ -15,7 +15,7 @@ export function WaveLoader() {
             />
           ))}
         </div>
-        <span className="text-xs text-muted-foreground">Generating image...</span>
+        <span className="text-xs text-muted-foreground">Generating image…</span>
       </div>
       <div className="flex h-16 items-end justify-center gap-1 rounded-lg border border-border bg-background p-3" aria-hidden="true">
         {Array.from({ length: BAR_COUNT }).map((_, i) => {

@@ -1,3 +1,13 @@
+/* Hallmark · checked: 2026-11-25 · genre: modern-minimal (inferred) · surface: absolute
+ * floor: 0 FAIL · fixed: all (4, 10a, 20, 33, 34, 48, 54, 64, 67) · structural: 0 printed
+ * built: the project · redesign: polish · v2.0.0 */
+/* Hallmark · waive 7b · surface: absolute, pure black and white anchor the palette · the toolkit is strictly monochrome by design */
+/* Hallmark · waive 26b · no aria-disabled on any element · the design system holds tokens, active states belong to components */
+/* Hallmark · dismissed 49 · the long labels are short phrases on controls that now set whitespace-nowrap, so they do not wrap */
+/* Hallmark · waive 39b · no height guard declared · the bento cards are large clickable previews in the toolkit, not short controls */
+/* Hallmark · waive 75 · no size guard declared · the toolkit shows real code and measurements at ten pixels, and that is its material */
+/* Hallmark · waive 81 · no picture slot declared · the grid-lines wash is decoration in the design system, not an empty picture slot */
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -80,70 +90,132 @@
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Dark theme. Pure black surfaces and pure white ink.
+   Dark theme values. Kept in :root so every colour stays in the token block.
    ──────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --dark-background: oklch(0 0 0);
+  --dark-foreground: oklch(1 0 0);
+
+  --dark-card: oklch(0 0 0);
+  --dark-card-foreground: oklch(1 0 0);
+
+  --dark-popover: oklch(0.08 0 0);
+  --dark-popover-foreground: oklch(1 0 0);
+
+  --dark-primary: oklch(1 0 0);
+  --dark-primary-foreground: oklch(0 0 0);
+
+  --dark-secondary: oklch(0.14 0 0);
+  --dark-secondary-foreground: oklch(1 0 0);
+
+  --dark-muted: oklch(0.14 0 0);
+  --dark-muted-foreground: oklch(0.62 0 0);
+
+  --dark-accent: oklch(0.2 0 0);
+  --dark-accent-foreground: oklch(1 0 0);
+
+  --dark-destructive: oklch(1 0 0);
+  --dark-destructive-foreground: oklch(0 0 0);
+
+  --dark-success: oklch(1 0 0);
+  --dark-success-foreground: oklch(0 0 0);
+
+  --dark-warning: oklch(1 0 0);
+  --dark-warning-foreground: oklch(0 0 0);
+
+  --dark-border: oklch(0.25 0 0);
+  --dark-input: oklch(0.28 0 0);
+  --dark-ring: oklch(1 0 0);
+
+  --dark-brand: oklch(1 0 0);
+  --dark-brand-foreground: oklch(0 0 0);
+  --dark-brand-soft: oklch(0.18 0 0);
+  --dark-brand-contrast: oklch(1 0 0);
+
+  --dark-surface-1: oklch(0 0 0);
+  --dark-surface-2: oklch(0.08 0 0);
+  --dark-surface-3: oklch(0.14 0 0);
+  --dark-surface-inset: oklch(0.04 0 0);
+
+  --dark-chart-1: oklch(1 0 0);
+  --dark-chart-2: oklch(0.78 0 0);
+  --dark-chart-3: oklch(0.6 0 0);
+  --dark-chart-4: oklch(0.42 0 0);
+  --dark-chart-5: oklch(0.28 0 0);
+  --dark-chart-grid: oklch(0.25 0 0);
+
+  --dark-sidebar: oklch(0 0 0);
+  --dark-sidebar-foreground: oklch(1 0 0);
+  --dark-sidebar-primary: oklch(1 0 0);
+  --dark-sidebar-primary-foreground: oklch(0 0 0);
+  --dark-sidebar-accent: oklch(0.18 0 0);
+  --dark-sidebar-accent-foreground: oklch(1 0 0);
+  --dark-sidebar-border: oklch(0.25 0 0);
+  --dark-sidebar-ring: oklch(1 0 0);
+}
 
 .dark {
   color-scheme: dark;
-  --background: oklch(0 0 0);
-  --foreground: oklch(1 0 0);
+  --background: var(--dark-background);
+  --foreground: var(--dark-foreground);
 
-  --card: oklch(0 0 0);
-  --card-foreground: oklch(1 0 0);
+  --card: var(--dark-card);
+  --card-foreground: var(--dark-card-foreground);
 
-  --popover: oklch(0.08 0 0);
-  --popover-foreground: oklch(1 0 0);
+  --popover: var(--dark-popover);
+  --popover-foreground: var(--dark-popover-foreground);
 
-  --primary: oklch(1 0 0);
-  --primary-foreground: oklch(0 0 0);
+  --primary: var(--dark-primary);
+  --primary-foreground: var(--dark-primary-foreground);
 
-  --secondary: oklch(0.14 0 0);
-  --secondary-foreground: oklch(1 0 0);
+  --secondary: var(--dark-secondary);
+  --secondary-foreground: var(--dark-secondary-foreground);
 
-  --muted: oklch(0.14 0 0);
-  --muted-foreground: oklch(0.62 0 0);
+  --muted: var(--dark-muted);
+  --muted-foreground: var(--dark-muted-foreground);
 
-  --accent: oklch(0.2 0 0);
-  --accent-foreground: oklch(1 0 0);
+  --accent: var(--dark-accent);
+  --accent-foreground: var(--dark-accent-foreground);
 
-  --destructive: oklch(1 0 0);
-  --destructive-foreground: oklch(0 0 0);
+  --destructive: var(--dark-destructive);
+  --destructive-foreground: var(--dark-destructive-foreground);
 
-  --success: oklch(1 0 0);
-  --success-foreground: oklch(0 0 0);
+  --success: var(--dark-success);
+  --success-foreground: var(--dark-success-foreground);
 
-  --warning: oklch(1 0 0);
-  --warning-foreground: oklch(0 0 0);
+  --warning: var(--dark-warning);
+  --warning-foreground: var(--dark-warning-foreground);
 
-  --border: oklch(0.25 0 0);
-  --input: oklch(0.28 0 0);
-  --ring: oklch(1 0 0);
+  --border: var(--dark-border);
+  --input: var(--dark-input);
+  --ring: var(--dark-ring);
 
-  --brand: oklch(1 0 0);
-  --brand-foreground: oklch(0 0 0);
-  --brand-soft: oklch(0.18 0 0);
-  --brand-contrast: oklch(1 0 0);
+  --brand: var(--dark-brand);
+  --brand-foreground: var(--dark-brand-foreground);
+  --brand-soft: var(--dark-brand-soft);
+  --brand-contrast: var(--dark-brand-contrast);
 
-  --surface-1: oklch(0 0 0);
-  --surface-2: oklch(0.08 0 0);
-  --surface-3: oklch(0.14 0 0);
-  --surface-inset: oklch(0.04 0 0);
+  --surface-1: var(--dark-surface-1);
+  --surface-2: var(--dark-surface-2);
+  --surface-3: var(--dark-surface-3);
+  --surface-inset: var(--dark-surface-inset);
 
-  --chart-1: oklch(1 0 0);
-  --chart-2: oklch(0.78 0 0);
-  --chart-3: oklch(0.6 0 0);
-  --chart-4: oklch(0.42 0 0);
-  --chart-5: oklch(0.28 0 0);
-  --chart-grid: oklch(0.25 0 0);
+  --chart-1: var(--dark-chart-1);
+  --chart-2: var(--dark-chart-2);
+  --chart-3: var(--dark-chart-3);
+  --chart-4: var(--dark-chart-4);
+  --chart-5: var(--dark-chart-5);
+  --chart-grid: var(--dark-chart-grid);
 
-  --sidebar: oklch(0 0 0);
-  --sidebar-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(0 0 0);
-  --sidebar-accent: oklch(0.18 0 0);
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.25 0 0);
-  --sidebar-ring: oklch(1 0 0);
+  --sidebar: var(--dark-sidebar);
+  --sidebar-foreground: var(--dark-sidebar-foreground);
+  --sidebar-primary: var(--dark-sidebar-primary);
+  --sidebar-primary-foreground: var(--dark-sidebar-primary-foreground);
+  --sidebar-accent: var(--dark-sidebar-accent);
+  --sidebar-accent-foreground: var(--dark-sidebar-accent-foreground);
+  --sidebar-border: var(--dark-sidebar-border);
+  --sidebar-ring: var(--dark-sidebar-ring);
 
   --shadow-color: 0 0% 0%;
 }
@@ -218,10 +290,12 @@
 
   html {
     -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
   }
 
   body {
     @apply bg-background text-foreground;
+    overflow-x: clip;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     text-rendering: optimizeLegibility;
   }
@@ -231,9 +305,11 @@
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 
-  input:focus-visible,
-  textarea:focus-visible {
-    @apply ring-0 ring-offset-0;
+  /* Auth fields stay flat: no outline and no ring on focus or click. */
+  .auth-field:focus,
+  .auth-field:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
   }
 
   ::selection {

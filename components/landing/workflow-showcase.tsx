@@ -61,7 +61,7 @@ export function WorkflowShowcase() {
       <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         {/* Header */}
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-wider text-brand">Workflow</p>
+          <p className="text-xs font-semibold text-brand">Workflow</p>
           <h2 className="mt-3 text-balance-tight text-3xl font-semibold tracking-tight sm:text-4xl">
             Follow one job across the whole toolkit
           </h2>
@@ -84,7 +84,7 @@ export function WorkflowShowcase() {
                 onClick={() => setActive(index)}
                 aria-current={isActive ? "step" : undefined}
                 className={cn(
-                  "group flex flex-col gap-3 rounded-xl border p-4 text-left transition-all duration-200",
+                  "group flex flex-col gap-3 rounded-xl border p-4 text-left transition-[color,background-color,border-color,opacity,box-shadow,transform] duration-200",
                   isActive
                     ? "border-foreground bg-card shadow-sm"
                     : "border-border bg-card/60 hover:border-foreground/30 hover:bg-card"
@@ -201,7 +201,7 @@ function CaptureVisual() {
       {/* Search bar */}
       <div className="flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-2.5">
         <Terminal className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
-        <span className="font-mono text-[11px] text-muted-foreground">
+        <span className="text-[11px] text-muted-foreground">
           search:{" "}
           <span className="text-foreground">auth middleware</span>
         </span>
@@ -315,7 +315,7 @@ function DecisionVisual() {
   return (
     <div className="space-y-3">
       <div className="rounded-xl border border-border bg-surface-2 p-3.5">
-        <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <p className="mb-3 text-[10px] font-semibold text-muted-foreground">
           Rank stability
         </p>
         <BarChart
@@ -328,7 +328,7 @@ function DecisionVisual() {
         />
       </div>
       <div className="rounded-xl border border-border bg-surface-2 p-3.5">
-        <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <p className="mb-3 text-[10px] font-semibold text-muted-foreground">
           Range if inputs move 20%
         </p>
         <ComparisonBar

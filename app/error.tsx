@@ -32,7 +32,7 @@ export default function Error({
               : "An unexpected error interrupted this page. Your saved data is unaffected."}
           </p>
           {error.digest ? (
-            <p className="mt-2 font-mono text-[11px] text-muted-foreground/70">
+            <p className="mt-2 text-xs text-muted-foreground/70">
               Reference {error.digest}
             </p>
           ) : null}

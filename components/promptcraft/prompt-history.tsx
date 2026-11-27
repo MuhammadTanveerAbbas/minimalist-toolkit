@@ -82,7 +82,7 @@ function HistoryCard({
           onClick={handleCopy}
           title="Copy prompt"
           aria-label="Copy prompt to clipboard"
-          className="rounded-lg p-2.5 text-muted-foreground opacity-100 transition-all sm:opacity-0 sm:group-hover:opacity-100 hover:bg-secondary hover:text-foreground min-h-11 min-w-11 flex items-center justify-center"
+          className="rounded-lg p-2.5 text-muted-foreground opacity-100 transition-[color,background-color,border-color,opacity,box-shadow,transform] sm:opacity-0 sm:group-hover:opacity-100 hover:bg-secondary hover:text-foreground min-h-11 min-w-11 flex items-center justify-center"
         >
           {copied ? (
             <Check className="h-3 w-3 text-emerald-400" aria-hidden="true" />
@@ -94,12 +94,12 @@ function HistoryCard({
           onClick={handleDelete}
           title="Delete"
           aria-label="Delete this history item"
-          className="rounded-lg p-2.5 text-muted-foreground opacity-100 transition-all sm:opacity-0 sm:group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive min-h-11 min-w-11 flex items-center justify-center"
+          className="rounded-lg p-2.5 text-muted-foreground opacity-100 transition-[color,background-color,border-color,opacity,box-shadow,transform] sm:opacity-0 sm:group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive min-h-11 min-w-11 flex items-center justify-center"
         >
           <Trash2 className="h-3 w-3" aria-hidden="true" />
         </button>
         <ChevronRight
-          className="h-3.5 w-3.5 text-muted-foreground/30 opacity-0 transition-all group-hover:opacity-100"
+          className="h-3.5 w-3.5 text-muted-foreground/30 opacity-0 transition-[color,background-color,border-color,opacity,box-shadow,transform] group-hover:opacity-100"
           aria-hidden="true"
         />
       </div>

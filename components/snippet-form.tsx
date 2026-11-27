@@ -84,7 +84,7 @@ export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
               placeholder="Snippet title..."
               aria-label="Snippet title"
               aria-invalid={!!titleError}
-              className="w-full min-w-0 bg-transparent text-xl font-semibold placeholder:text-muted-foreground/30 outline-none border-none focus:ring-0 py-1"
+              className="w-full min-w-0 bg-transparent text-xl font-semibold placeholder:text-muted-foreground/30 outline-none border-none py-1"
               autoFocus
             />
             {!snippet ? (
@@ -110,7 +110,7 @@ export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
             placeholder="Add a short description..."
             aria-label="Snippet description"
             rows={1}
-            className="mt-1.5 resize-none bg-transparent border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-0 text-sm text-muted-foreground placeholder:text-muted-foreground/30"
+            className="mt-1.5 resize-none bg-transparent border-none shadow-none px-0 text-sm text-muted-foreground placeholder:text-muted-foreground/30"
           />
         </div>
 
@@ -122,7 +122,7 @@ export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
 
             {/* Language */}
             <div className="space-y-1.5">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Language</p>
+              <p className="text-[10px] font-bold text-muted-foreground ">Language</p>
               <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
                 <SelectTrigger className="h-9 text-sm bg-muted/40 border-border/70">
                   <SelectValue />
@@ -137,13 +137,13 @@ export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
 
             {/* Visibility toggle */}
             <div className="space-y-1.5">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Visibility</p>
+              <p className="text-[10px] font-bold text-muted-foreground ">Visibility</p>
               <div className="flex rounded-lg overflow-hidden border border-border bg-muted/20">
                 <button
                   type="button"
                   onClick={() => setVisibility("private")}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 py-2 text-xs transition-all duration-150",
+                    "flex-1 flex items-center justify-center gap-1.5 py-2 text-xs transition-[color,background-color,border-color,opacity,box-shadow,transform] duration-150",
                     visibility === "private"
                       ? "bg-foreground text-background font-medium"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
@@ -156,7 +156,7 @@ export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
                   type="button"
                   onClick={() => setVisibility("public")}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 py-2 text-xs transition-all duration-150 border-l border-border",
+                    "flex-1 flex items-center justify-center gap-1.5 py-2 text-xs transition-[color,background-color,border-color,opacity,box-shadow,transform] duration-150 border-l border-border",
                     visibility === "public"
                       ? "bg-foreground text-background font-medium"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
@@ -170,7 +170,7 @@ export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
 
             {/* Category */}
             <div className="space-y-1.5">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Category</p>
+              <p className="text-[10px] font-bold text-muted-foreground ">Category</p>
               <div className="relative">
                 <Folder className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                 <Input
@@ -184,7 +184,7 @@ export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
 
             {/* Tags */}
             <div className="space-y-1.5">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Tags</p>
+              <p className="text-[10px] font-bold text-muted-foreground ">Tags</p>
               <div className="relative">
                 <Hash className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                 <Input
@@ -225,7 +225,7 @@ export function SnippetForm({ snippet, onSave, onCancel }: SnippetFormProps) {
           {/* Right: code editor */}
           <div className="flex-1 sm:pl-5 flex flex-col gap-2 min-w-0">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <p className="text-xs font-medium text-muted-foreground ">
                 Code <span className="text-destructive normal-case">*</span>
               </p>
               <Badge variant="outline" className="text-xs h-5">{LANGUAGE_NAMES[language]}</Badge>

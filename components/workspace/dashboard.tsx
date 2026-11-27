@@ -16,7 +16,7 @@ const CONTAINER = "mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8"
 function Stat({ label, value, meta }: { label: string; value: number; meta: string }) {
   return (
     <div className="rounded-xl border border-border bg-card p-5">
-      <p className="font-mono text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">{label}</p>
+      <p className="font-mono text-[10px] font-semibold text-muted-foreground/60">{label}</p>
       <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight">{value}</p>
       <p className="mt-1.5 text-xs text-muted-foreground">{meta}</p>
     </div>
@@ -61,8 +61,8 @@ function ActivityChart({ activity }: { activity: { label: string; value: number 
   return (
     <div>
       <div className="mt-5 flex items-end justify-between gap-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Snippet activity</h2>
-        <span className="font-mono text-[11px] text-muted-foreground">Last 7 days</span>
+        <h2 className="text-sm font-semibold text-muted-foreground">Snippet activity</h2>
+        <span className="text-[11px] text-muted-foreground">Last 7 days</span>
       </div>
 
       <svg
@@ -236,7 +236,7 @@ export function Dashboard() {
         </section>
 
         <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Library makeup</h2>
+          <h2 className="text-sm font-semibold text-muted-foreground">Library makeup</h2>
           {!isLoaded ? (
             <div className="mt-5 space-y-2">
               <Skeleton className="h-3 w-full" />
@@ -249,12 +249,12 @@ export function Dashboard() {
             </p>
           ) : (
             <>
-              <p className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">Visibility</p>
+              <p className="mt-5 text-[10px] font-semibold text-muted-foreground/60">Visibility</p>
               <ul className="mt-2">
                 <MakeupBar label="Public" value={counts.public} total={counts.total} />
                 <MakeupBar label="Private" value={counts.private} total={counts.total} />
               </ul>
-              <p className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">Top languages</p>
+              <p className="mt-5 text-[10px] font-semibold text-muted-foreground/60">Top languages</p>
               {topLanguages.length === 0 ? (
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">No language data yet.</p>
               ) : (
@@ -276,7 +276,7 @@ export function Dashboard() {
 
       <section className="mt-4 rounded-xl border border-border bg-card p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Recently updated</h2>
+          <h2 className="text-sm font-semibold text-muted-foreground">Recently updated</h2>
           <Link
             href="/app/categories"
             className="inline-flex min-h-9 items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -325,7 +325,7 @@ export function Dashboard() {
       </section>
 
       <section className="mt-4 rounded-xl border border-border bg-card p-5 sm:p-6">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Jump to a tool</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground">Jump to a tool</h2>
         <ul className="mt-3 divide-y divide-border border-t border-border">
           {TOOLS.map((tool) => {
             const Icon = tool.icon

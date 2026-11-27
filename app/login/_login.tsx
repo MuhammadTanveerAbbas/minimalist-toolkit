@@ -168,7 +168,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8">
             {/* Logo */}
             <div className="mb-4 flex flex-col items-center gap-0.5 text-center">
-              <Link href="/" className="flex h-10 w-10 items-center justify-center rounded-xl focus-visible:outline-none focus-visible:ring-0">
+              <Link href="/" className="flex h-10 w-10 items-center justify-center rounded-xl ">
                 <BrandLogo size={40} />
               </Link>
               <span className="text-sm font-semibold tracking-tight">Minimalist Toolkit</span>
@@ -223,7 +223,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="min-h-11 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm transition-colors placeholder:text-muted-foreground outline-none focus:outline-none focus:ring-0 focus:border-border focus-visible:outline-none focus-visible:ring-0"
+                    className="min-h-11 w-full rounded-lg border-0 bg-surface-2 px-3 py-2.5 text-sm transition-colors placeholder:text-muted-foreground outline-none focus-visible:ring-0 focus-visible:ring-offset-0 auth-field"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -240,13 +240,13 @@ export default function AuthPage({ mode }: AuthPageProps) {
                       minLength={isSignup ? 8 : 6}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="min-h-11 w-full rounded-lg border border-border bg-background px-3 py-2.5 pr-10 text-sm transition-colors placeholder:text-muted-foreground outline-none focus:outline-none focus:ring-0 focus:border-border focus-visible:outline-none focus-visible:ring-0"
+                      className="min-h-11 w-full rounded-lg border-0 bg-surface-2 px-3 py-2.5 pr-10 text-sm transition-colors placeholder:text-muted-foreground outline-none focus-visible:ring-0 focus-visible:ring-offset-0 auth-field"
                       placeholder={isSignup ? "At least 8 characters" : "Your password"}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
-                      className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+                      className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground "
                       aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                       {showPassword ? (
@@ -260,7 +260,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-60 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+                  className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-60 "
                 >
                   {isEmailLoading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
                   {isSignup ? "Create account" : "Sign in"}
@@ -270,23 +270,24 @@ export default function AuthPage({ mode }: AuthPageProps) {
                     type="button"
                     onClick={sendPasswordReset}
                     disabled={isLoading}
-                    className="w-full text-center text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+                    className="min-h-11 w-full text-center text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline "
                   >
                     Forgot password?
                   </button>
                 ) : null}
               </form>
 
-              <div className="relative py-1 text-center text-xs text-muted-foreground">
-                <span className="bg-card px-2">or</span>
-                <div className="absolute inset-x-0 top-1/2 -z-10 h-px bg-border" aria-hidden="true" />
+              <div className="flex items-center gap-3 py-1 text-xs text-muted-foreground">
+                <span className="h-px flex-1 bg-border" aria-hidden="true" />
+                <span>or</span>
+                <span className="h-px flex-1 bg-border" aria-hidden="true" />
               </div>
 
               <button
                 type="button"
                 onClick={signInWithGoogle}
                 disabled={isLoading}
-                className="flex min-h-11 w-full items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-60 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+                className="flex min-h-11 w-full items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-60 "
               >
                 {isGoogleLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -305,14 +306,14 @@ export default function AuthPage({ mode }: AuthPageProps) {
                 {isSignup ? (
                   <>
                     Already have an account?{" "}
-                    <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0">
+                    <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline ">
                       Log in
                     </Link>
                   </>
                 ) : (
                   <>
                     New here?{" "}
-                    <Link href="/signup" className="font-medium text-foreground underline-offset-4 hover:underline focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0">
+                    <Link href="/signup" className="font-medium text-foreground underline-offset-4 hover:underline ">
                       Create an account
                     </Link>
                   </>

@@ -71,7 +71,7 @@ export function UseCases() {
               Choose a workflow, see the outcome, and review the data controls in the same place.
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-6 self-start rounded-xl border border-border bg-surface-2 px-5 py-3.5">
+          <div className="hidden shrink-0 items-center gap-6 self-start rounded-xl border border-border bg-surface-2 px-5 py-3.5 sm:flex">
             <div>
               <p className="text-xl font-semibold tabular-nums tracking-tight">3</p>
               <p className="text-xs text-muted-foreground">workflows</p>
@@ -103,8 +103,8 @@ export function UseCases() {
                       className={cn(
                         "group rounded-xl border px-4 py-3.5 text-left transition-colors outline-none",
                         selected
-                          ? "border-brand/40 bg-card shadow-sm"
-                          : "border-transparent bg-transparent hover:border-border hover:bg-card"
+                          ? "border-brand/40 bg-background shadow-sm"
+                          : "border-transparent bg-transparent hover:border-border hover:bg-background"
                       )}
                     >
                       <p className={cn("text-sm font-semibold", selected ? "text-foreground" : "text-muted-foreground group-hover:text-foreground")}>
@@ -127,7 +127,7 @@ export function UseCases() {
 
                 {/* Pain / outcome */}
                 <div className="mt-5 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
-                  <figure className="bg-card p-4 sm:p-5">
+                  <figure className="bg-background p-4 sm:p-5">
                     <p className="text-xs font-medium text-muted-foreground">Reported challenge</p>
                     <blockquote className="mt-2 text-sm font-semibold leading-6 sm:text-base">
                       {persona.painStat}
@@ -180,7 +180,7 @@ export function UseCases() {
                 return (
                   <div
                     key={control.title}
-                    className="flex flex-col rounded-xl border border-border bg-card p-4"
+                    className="flex flex-col rounded-xl border border-border bg-background p-4"
                   >
                     <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-surface-2">
                       <Icon className="h-4 w-4 text-foreground" aria-hidden="true" />
@@ -202,7 +202,7 @@ function PersonaVisual({ kind }: { kind: Persona["chart"] }) {
   if (kind === "inflow") {
     return (
       <div className="flex h-full flex-col rounded-xl border border-border bg-card p-4">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Quote to cash</p>
+        <p className="text-[10px] font-semibold text-muted-foreground">Quote to cash</p>
         <div className="mt-3 space-y-2">
           {[
             { label: "Quote sent", value: 100, color: "var(--chart-2)" },
@@ -214,7 +214,7 @@ function PersonaVisual({ kind }: { kind: Persona["chart"] }) {
               <span className="w-20 shrink-0 text-[10px] text-muted-foreground">{row.label}</span>
               <div className="h-6 flex-1 overflow-hidden rounded-lg bg-muted">
                 <div
-                  className="flex h-full items-center justify-end rounded-lg px-2 text-[9px] font-medium text-background transition-[width] duration-700"
+                  className="flex h-full items-center justify-end rounded-lg px-2 text-[9px] font-medium text-background duration-700"
                   style={{
                     width: `${row.value}%`,
                     backgroundColor: row.color,
@@ -238,7 +238,7 @@ function PersonaVisual({ kind }: { kind: Persona["chart"] }) {
     return (
       <div className="grid h-full gap-3">
         <div className="rounded-xl border border-border bg-card p-4">
-          <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="mb-3 text-[10px] font-semibold text-muted-foreground">
             Rank stability
           </p>
           <BarChart
@@ -251,7 +251,7 @@ function PersonaVisual({ kind }: { kind: Persona["chart"] }) {
           />
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
-          <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="mb-3 text-[10px] font-semibold text-muted-foreground">
             Range if inputs move 20%
           </p>
           <ComparisonBar
@@ -272,7 +272,7 @@ function PersonaVisual({ kind }: { kind: Persona["chart"] }) {
     <div className="grid h-full gap-3">
       <div className="rounded-xl border border-border bg-card p-4">
         <div className="flex items-baseline justify-between">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-[10px] font-semibold text-muted-foreground">
             Snippets reused
           </p>
           <p className="text-lg font-semibold tabular-nums tracking-tight">3.4x</p>
@@ -283,7 +283,7 @@ function PersonaVisual({ kind }: { kind: Persona["chart"] }) {
         </p>
       </div>
       <div className="rounded-xl border border-border bg-card p-4">
-        <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <p className="mb-3 text-[10px] font-semibold text-muted-foreground">
           Where time goes
         </p>
         <ul className="space-y-2">
@@ -296,7 +296,7 @@ function PersonaVisual({ kind }: { kind: Persona["chart"] }) {
               <span className="w-28 shrink-0 text-[10px] text-muted-foreground sm:w-32">{row.label}</span>
               <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full bg-chart-2 transition-[width] duration-700"
+                  className="h-full rounded-full bg-chart-2 duration-700"
                   style={{ width: `${row.width}%` }}
                 />
               </div>

@@ -75,7 +75,7 @@ export function SnippetViewer({
             <button
               onClick={() => onOpenChange(false)}
               aria-label="Close"
-              className="flex items-center justify-center h-7 w-7 rounded-lg text-muted-foreground transition-all duration-150 hover:bg-accent hover:text-foreground border border-transparent hover:border-border"
+              className="flex items-center justify-center h-7 w-7 rounded-lg text-muted-foreground transition-[color,background-color,border-color,opacity,box-shadow,transform] duration-150 hover:bg-accent hover:text-foreground border border-transparent hover:border-border"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -122,7 +122,7 @@ export function SnippetViewer({
           {/* ── Right panel (desktop only) ── */}
           <div className="w-56 shrink-0 border-l border-border overflow-y-auto hidden lg:flex flex-col">
             <div className="px-4 py-3 border-b border-border">
-              <p className={cn("text-[10px] font-bold uppercase tracking-[0.15em]", textMuted)}>Details</p>
+              <p className={cn("text-[10px] font-bold ", textMuted)}>Details</p>
             </div>
 
             <div className="p-4 space-y-5">
@@ -164,7 +164,7 @@ export function SnippetViewer({
                   ].map(({ label, value }) => (
                     <div key={label} className="rounded-xl px-3 py-2.5 text-center border border-border bg-surface-2">
                       <p className={cn("text-base font-bold tabular-nums", textPrimary)}>{value}</p>
-                      <p className={cn("text-[10px] mt-0.5 uppercase tracking-wider", textMuted)}>{label}</p>
+                      <p className={cn("text-[10px] mt-0.5 ", textMuted)}>{label}</p>
                     </div>
                   ))}
                 </div>
@@ -187,7 +187,7 @@ export function SnippetViewer({
               {/* Tags */}
               {snippet.tags.length > 0 && (
                 <div className="border-t border-border pt-4 space-y-2.5">
-                  <div className={cn("flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em]", textMuted)}>
+                  <div className={cn("flex items-center gap-1.5 text-[10px] font-bold ", textMuted)}>
                     <Tag className="h-3 w-3" />Tags
                   </div>
                   <div className="flex flex-wrap gap-1.5">
@@ -257,7 +257,7 @@ function TitleBtn({
     <button
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 outline-none",
+        "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-[color,background-color,border-color,opacity,box-shadow,transform] duration-150 outline-none",
         danger
           ? "text-destructive/70 hover:text-destructive hover:bg-destructive/10"
           : "text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -276,7 +276,7 @@ function Detail({
 }) {
   return (
     <div className="space-y-1.5">
-      <div className={cn("flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em]", textMuted)}>
+      <div className={cn("flex items-center gap-1.5 text-[10px] font-bold ", textMuted)}>
         <Icon className="h-3 w-3" />{label}
       </div>
       <div>{children}</div>

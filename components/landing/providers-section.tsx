@@ -12,6 +12,7 @@ import {
 } from "@lobehub/icons"
 
 import { ProviderTile } from "@/components/landing/brand-icons"
+import { cn } from "@/lib/utils"
 
 const PROVIDERS = [
   { name: "Groq", Icon: Groq, note: "Fast inference" },
@@ -32,7 +33,7 @@ export function ProvidersSection() {
       <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-16">
           <div>
-            <p className="font-mono text-[11px] text-muted-foreground">01 / Providers</p>
+            <p className="text-[11px] text-muted-foreground">01 / Providers</p>
             <h2 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
               Model choice stays with you
             </h2>
@@ -47,10 +48,13 @@ export function ProvidersSection() {
           </div>
 
           <ul className="grid grid-cols-3 gap-3 sm:grid-cols-5">
-            {PROVIDERS.map(({ name, Icon, note }) => (
+            {PROVIDERS.map(({ name, Icon, note }, index) => (
               <li
                 key={name}
-                className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-card px-2 py-4 text-center"
+                className={cn(
+                  "flex flex-col items-center gap-2 rounded-2xl border border-border bg-card px-2 py-4 text-center",
+                  index === PROVIDERS.length - 1 && "hidden sm:flex"
+                )}
               >
                 <ProviderTile name={name} Icon={Icon} size={48} />
                 <span className="text-xs font-medium">{name}</span>

@@ -47,7 +47,7 @@ function NavItem({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "group flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-all duration-150",
+        "group flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-[color,background-color,border-color,opacity,box-shadow,transform] duration-150",
         active
           ? "bg-foreground font-medium text-background shadow-sm"
           : "text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -72,7 +72,7 @@ function NavItem({
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 px-3 pb-1.5 pt-4">
-      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">{children}</p>
+      <p className="text-[10px] font-bold text-muted-foreground/60">{children}</p>
       <div className="h-px flex-1 bg-border/60" aria-hidden="true" />
     </div>
   )
@@ -97,7 +97,7 @@ function FilterChip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "group flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs transition-all duration-150",
+        "group flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs transition-[color,background-color,border-color,opacity,box-shadow,transform] duration-150",
         active
           ? "bg-secondary font-medium text-secondary-foreground"
           : "text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -144,7 +144,7 @@ function SidebarInner({ allTags, allCategories, filters, onFiltersChange, snippe
       <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Filters</p>
+          <p className="text-[10px] font-bold text-muted-foreground">Filters</p>
         </div>
         {hasActiveFilter ? (
           <button
@@ -282,7 +282,7 @@ function SidebarInner({ allTags, allCategories, filters, onFiltersChange, snippe
                           }}
                           aria-pressed={isSelected}
                           className={cn(
-                            "inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-medium transition-all duration-150",
+                            "inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-medium transition-[color,background-color,border-color,opacity,box-shadow,transform] duration-150",
                             isSelected
                               ? "border-foreground bg-foreground text-background"
                               : "border-border bg-muted/50 text-muted-foreground hover:border-foreground/30 hover:bg-muted hover:text-foreground"

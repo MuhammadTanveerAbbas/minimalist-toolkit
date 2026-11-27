@@ -93,7 +93,7 @@ export function SaveAsSnippetButton({
         onClick={handleSave}
         disabled={state === "saving" || state === "saved"}
         className={cn(
-          "flex min-h-11 items-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-medium transition-all",
+          "flex min-h-11 items-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-medium transition-[color,background-color,border-color,opacity,box-shadow,transform]",
           "border-border/70 bg-secondary/40 text-muted-foreground hover:border-border hover:bg-secondary hover:text-foreground",
           "disabled:cursor-not-allowed disabled:opacity-50"
         )}

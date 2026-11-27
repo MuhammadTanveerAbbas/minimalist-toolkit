@@ -8,7 +8,7 @@ export function BentoGrid() {
       <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         {/* Header */}
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-wider text-brand">The toolkit</p>
+          <p className="text-xs font-semibold text-brand">The toolkit</p>
           <h2 className="mt-3 text-balance-tight text-3xl font-semibold tracking-tight sm:text-4xl">
             Every tool has one job, and does it properly
           </h2>
@@ -45,7 +45,7 @@ function BentoCard({
   const Icon = tool.icon
   return (
     <article
-      className={`group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-200 hover:border-foreground/20 hover:shadow-md ${className ?? ""}`}
+      className={`group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-[color,background-color,border-color,opacity,box-shadow,transform] duration-200 hover:border-foreground/20 hover:shadow-md ${className ?? ""}`}
     >
       <div className={`flex flex-col gap-5 p-5 sm:p-6 ${wide ? "lg:flex-row lg:items-start lg:gap-10" : ""}`}>
         {/* Text */}
@@ -156,7 +156,7 @@ function PromptCraftVisual() {
         ))}
       </div>
       <div className="rounded-lg border border-border bg-surface-2 p-3">
-        <p className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">instructions</p>
+        <p className="text-[9px] text-muted-foreground">instructions</p>
         <p className="mt-1.5 text-[10px] leading-relaxed text-foreground/80">
           You are a senior product marketer. Write a launch announcement for a developer tool that turns
           prompts into mockups. Keep it under 120 words.

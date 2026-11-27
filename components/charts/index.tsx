@@ -52,7 +52,7 @@ export function BarChart({
             ) : null}
             <div className="col-span-2 h-2 w-full overflow-hidden rounded-full bg-muted">
               <div
-                className="h-full rounded-full origin-left transition-[width] duration-700 ease-out"
+                className="h-full rounded-full origin-left duration-700 ease-out"
                 style={{
                   width: `${Math.max(pct, item.value > 0 ? 2 : 0)}%`,
                   backgroundColor: item.color ?? CHART_COLORS[index % CHART_COLORS.length],
@@ -212,7 +212,7 @@ export function DonutChart({
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
           <span className="text-2xl font-semibold tabular-nums tracking-tight">{centerValue}</span>
           {centerLabel ? (
-            <span className="mt-0.5 text-[11px] uppercase tracking-wider text-muted-foreground">{centerLabel}</span>
+            <span className="mt-0.5 text-[11px] text-muted-foreground">{centerLabel}</span>
           ) : null}
         </div>
       ) : null}
@@ -353,7 +353,7 @@ export function ComparisonBar({
           </div>
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full rounded-full transition-[width] duration-700 ease-out"
+              className="h-full rounded-full duration-700 ease-out"
               style={{
                 width: `${(option.value / max) * 100}%`,
                 backgroundColor: option.color ?? CHART_COLORS[i % CHART_COLORS.length],

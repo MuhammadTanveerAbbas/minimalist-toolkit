@@ -82,14 +82,14 @@ export function SiteFooter() {
         <div className="mt-16 overflow-hidden border-t border-border pt-8">
           <p
             className="font-display font-normal leading-[0.88] tracking-[-0.04em] text-foreground/10 select-none whitespace-nowrap"
-            style={{ fontSize: "clamp(2.5rem, 13.5vw, 13.5vw)", letterSpacing: "-0.02em", wordSpacing: "0.15em" }}
+            style={{ fontSize: "clamp(2rem, 12vw, 10.5rem)", letterSpacing: "-0.02em", wordSpacing: "0.15em" }}
           >
             Minimalist Toolkit
           </p>
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col gap-4 border-t border-border py-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col items-center gap-4 border-t border-border py-6 text-center sm:flex-row sm:justify-between sm:text-left">
           <p className="text-xs text-muted-foreground">
             Built by{" "}
             <a
@@ -102,7 +102,7 @@ export function SiteFooter() {
             </a>
             . No tracking, no per-seat pricing.
           </p>
-          <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-2 sm:flex">
             <ThemeIconButton className="h-9 w-9 rounded-lg border border-border bg-card" />
             <a
               href="#top"

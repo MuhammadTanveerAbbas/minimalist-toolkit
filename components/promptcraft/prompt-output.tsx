@@ -176,7 +176,7 @@ function StructuredOutput({
                 className="h-1 w-1 rounded-full bg-muted-foreground/40"
                 aria-hidden="true"
               />
-              <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/50">
+              <span className="text-[10px] font-semibold text-muted-foreground/50">
                 {block.tag}
               </span>
             </div>
@@ -309,7 +309,7 @@ export function PromptOutput({
             {canRegenerate && (
               <button
                 onClick={onRegenerate}
-                className="flex items-center gap-1.5 rounded-lg border border-border/70 bg-secondary/40 px-3.5 py-2 text-xs font-medium text-muted-foreground transition-all hover:border-border hover:bg-secondary hover:text-foreground"
+                className="flex items-center gap-1.5 rounded-lg border border-border/70 bg-secondary/40 px-3.5 py-2 text-xs font-medium text-muted-foreground transition-[color,background-color,border-color,opacity,box-shadow,transform] hover:border-border hover:bg-secondary hover:text-foreground"
               >
                 <RefreshCw className="h-3 w-3" />
                 Try again
@@ -377,7 +377,7 @@ function ActionButton({
       onClick={onClick}
       disabled={disabled}
       title={title}
-      className="flex items-center gap-1.5 rounded-lg border border-border/70 bg-secondary/40 px-2.5 py-2 text-xs font-medium text-muted-foreground transition-all hover:border-border hover:bg-secondary hover:text-foreground disabled:cursor-not-allowed disabled:opacity-35 min-h-11 min-w-11 sm:min-w-0 sm:px-2.5"
+      className="flex items-center gap-1.5 rounded-lg border border-border/70 bg-secondary/40 px-2.5 py-2 text-xs font-medium text-muted-foreground transition-[color,background-color,border-color,opacity,box-shadow,transform] hover:border-border hover:bg-secondary hover:text-foreground disabled:cursor-not-allowed disabled:opacity-35 min-h-11 min-w-11 sm:min-w-0 sm:px-2.5"
     >
       {children}
     </button>
@@ -405,7 +405,7 @@ function EmptyState() {
           el?.focus();
           el?.scrollIntoView({ behavior: "smooth", block: "center" });
         }}
-        className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border/70 bg-secondary/40 px-3.5 py-2 text-xs font-medium text-muted-foreground transition-all hover:border-border hover:bg-secondary hover:text-foreground"
+        className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border/70 bg-secondary/40 px-3.5 py-2 text-xs font-medium text-muted-foreground transition-[color,background-color,border-color,opacity,box-shadow,transform] hover:border-border hover:bg-secondary hover:text-foreground"
       >
         <WandIcon />
         Describe your goal

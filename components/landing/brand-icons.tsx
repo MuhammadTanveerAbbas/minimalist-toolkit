@@ -74,10 +74,10 @@ export function HeroBrandIcons() {
     { name: "Hugging Face", Icon: HuggingFace, angle: 30,  delay: "4s",   slow: true  },
   ]
 
-  // md: smaller ellipse + icons; lg: full size
+  // Wider ellipse keeps the icon columns outside the headline on every breakpoint.
   const configs = {
-    md: { rx: 260, ry: 140, size: 36, cx: 50, cy: 38 },
-    lg: { rx: 400, ry: 200, size: 48, cx: 50, cy: 35 },
+    md: { rx: 600, ry: 140, size: 36, cx: 50, cy: 38 },
+    lg: { rx: 520, ry: 200, size: 48, cx: 50, cy: 35 },
   }
 
   return (

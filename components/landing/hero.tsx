@@ -29,7 +29,7 @@ export function Hero() {
 
           {/* Text */}
           <div className="relative z-10 min-w-0 text-center">
-            <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-muted-foreground">
               <Zap className="h-3 w-3 text-brand" aria-hidden="true" />
               A workspace for people who ship
             </p>

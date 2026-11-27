@@ -118,7 +118,7 @@ export function PromptForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       {/* Prompt presets */}
       <div className="flex flex-col gap-2">
-        <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
+        <span className="text-xs text-muted-foreground ">
           Prompt presets
         </span>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Prompt presets">
@@ -179,7 +179,7 @@ export function PromptForm({
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <label
             htmlFor="mockify-model"
-            className="text-xs font-mono text-muted-foreground uppercase tracking-widest"
+            className="text-xs text-muted-foreground "
           >
             Model
           </label>
@@ -210,7 +210,7 @@ export function PromptForm({
           <div className="flex min-w-0 flex-col gap-1">
             <label
               htmlFor="mockify-quality"
-              className="text-xs font-mono text-muted-foreground uppercase tracking-widest"
+              className="text-xs text-muted-foreground "
             >
               Quality
             </label>
@@ -239,7 +239,7 @@ export function PromptForm({
         <div className="flex flex-col gap-2">
           <span
             id="mockify-size-label"
-            className="text-xs font-mono text-muted-foreground uppercase tracking-widest"
+            className="text-xs text-muted-foreground "
           >
             Size & Aspect Ratio
           </span>
@@ -257,7 +257,7 @@ export function PromptForm({
                   onClick={() => onSizeChange(opt.value)}
                   aria-pressed={size === opt.value}
                   className={cn(
-                    "flex min-h-11 flex-col items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 transition-all",
+                    "flex min-h-11 flex-col items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 transition-[color,background-color,border-color,opacity,box-shadow,transform]",
                     size === opt.value
                       ? "border-ring bg-accent/10 text-foreground"
                       : "border-border bg-muted text-muted-foreground hover:border-ring/50 hover:text-foreground"
@@ -270,7 +270,7 @@ export function PromptForm({
               )
             })}
           </div>
-          <p className="text-xs text-muted-foreground/70 font-mono">
+          <p className="text-xs text-muted-foreground/70 ">
             Selected: {size}, full frame, no cropping
           </p>
         </div>
@@ -281,7 +281,7 @@ export function PromptForm({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span
             id="mockify-seed-label"
-            className="text-xs font-mono text-muted-foreground uppercase tracking-widest"
+            className="text-xs text-muted-foreground "
           >
             Seed
           </span>
@@ -347,8 +347,8 @@ export function PromptForm({
         type="submit"
         disabled={isLoading}
         className={cn(
-          "flex min-h-12 w-full items-center justify-center gap-2 rounded-lg px-8 py-3.5",
-          "bg-foreground text-background font-sans text-sm font-semibold tracking-wide",
+          "flex min-h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-lg px-8 py-3.5",
+          "bg-foreground text-background font-sans text-sm font-semibold ",
           "transition-opacity duration-150 hover:opacity-90 active:opacity-80",
           "disabled:cursor-not-allowed disabled:opacity-40"
         )}
@@ -356,7 +356,7 @@ export function PromptForm({
         {isLoading ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-            Generating...
+            Generating…
           </>
         ) : (
           <>

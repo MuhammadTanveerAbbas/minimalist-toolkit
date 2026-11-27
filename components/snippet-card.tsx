@@ -37,7 +37,7 @@ export function SnippetCard({
       role="button"
       tabIndex={0}
       aria-label={`Open snippet ${snippet.title}`}
-      className="group relative flex cursor-pointer flex-col gap-3 rounded-xl border border-border bg-card p-4 transition-all hover:border-foreground/25 hover:shadow-sm outline-none"
+      className="group relative flex cursor-pointer flex-col gap-3 rounded-xl border border-border bg-card p-4 transition-[color,background-color,border-color,opacity,box-shadow,transform] hover:border-foreground/25 hover:shadow-sm outline-none"
     >
       {/* Action toolbar */}
       <div

@@ -176,8 +176,8 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
               <Link href="/app/dashboard">
                 <BrandLogo size={28} />
                 <div className="grid min-w-0 flex-1 overflow-hidden text-left leading-tight transition-opacity duration-200 group-data-[collapsible=icon]:hidden">
-                  <span className="truncate text-sm font-semibold tracking-tight">Minimalist Toolkit</span>
-                  <span className="truncate text-xs text-muted-foreground">AI workspace</span>
+                  <span className="truncate text-sm font-medium">Minimalist Toolkit</span>
+                  <span className="truncate text-xs text-muted-foreground">One account for every tool</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -187,23 +187,15 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
 
       <SidebarContent className="gap-0 py-2">
 
-        {SIDEBAR_GROUPS.map((group, index) => {
-          const GroupIcon = group.icon
+        {SIDEBAR_GROUPS.map((group) => {
           return (
             <Fragment key={group.label}>
-              {index > 0 && (
-                <div
-                  aria-hidden="true"
-                  className="ml-3 my-2 hidden h-px w-6 rounded-full bg-sidebar-border group-data-[collapsible=icon]:block"
-                />
-              )}
-              <SidebarGroup className="mt-3 px-2 py-0 first:mt-0 group-data-[collapsible=icon]:mt-0">
-                <SidebarGroupLabel className="h-7 gap-2 text-[11px] font-medium normal-case tracking-normal text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
-                  <GroupIcon className="h-3 w-3" aria-hidden="true" />
+              <SidebarGroup className="mt-5 px-3 py-0 first:mt-2 group-data-[collapsible=icon]:mt-0">
+                <SidebarGroupLabel className="h-6 px-1 text-xs font-medium text-muted-foreground group-data-[collapsible=icon]:hidden">
                   <span>{group.label}</span>
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
-                  <SidebarMenu>
+                  <SidebarMenu className="space-y-0.5">
                     {group.items.map((item) => {
                       const Icon = item.icon
                       const active = isActivePath(pathname, item.href, item.exact)
@@ -213,7 +205,7 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
                             href={item.href}
                             aria-current={active ? "page" : undefined}
                             className={cn(
-                              "flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm transition-colors group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0",
+                              "flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0",
                               active
                                 ? "bg-sidebar-foreground text-sidebar font-medium"
                                 : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
@@ -234,12 +226,15 @@ function WorkspaceSidebar({ pathname }: { pathname: string }) {
       </SidebarContent>
 
       <SidebarFooter className="gap-0 p-0">
-        <div className="p-2 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+        <div className="border-t border-sidebar-border p-2 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
           <SidebarTrigger
-            title="Collapse sidebar"
-            className="flex h-9 w-full items-center gap-2 rounded-lg border border-border bg-card px-2 text-xs font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+            title="Collapse sidebar (Ctrl+B or Command+B)"
+            className="flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
           >
-            <span className="truncate group-data-[collapsible=icon]:hidden">Collapse sidebar</span>
+            <span className="truncate group-data-[collapsible=icon]:hidden">Collapse</span>
+            <kbd className="ml-auto rounded border border-sidebar-border px-1.5 text-xs leading-4 text-muted-foreground group-data-[collapsible=icon]:hidden">
+              B
+            </kbd>
           </SidebarTrigger>
         </div>
       </SidebarFooter>

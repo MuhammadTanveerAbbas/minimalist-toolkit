@@ -19,7 +19,7 @@ function Progress({ value, max = 100, className, indicatorClassName, ...props }:
       {...props}
     >
       <div
-        className={cn("h-full rounded-full bg-foreground transition-[width] duration-500", indicatorClassName)}
+        className={cn("h-full rounded-full bg-foreground duration-500", indicatorClassName)}
         style={{ width: `${pct}%` }}
       />
     </div>

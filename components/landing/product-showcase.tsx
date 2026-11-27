@@ -38,7 +38,7 @@ export function ProductShowcase() {
             <span className="h-2.5 w-2.5 rounded-full bg-border" />
             <span className="h-2.5 w-2.5 rounded-full bg-border" />
           </div>
-          <span className="truncate rounded-md bg-background px-2 py-1 font-mono text-[10px] text-muted-foreground">
+          <span className="truncate rounded-md bg-background px-2 py-1 text-[10px] text-muted-foreground">
             app.minimalist-toolkit.app/snippets
           </span>
           <span className="ml-auto hidden rounded-md border border-border bg-background px-2 py-1 text-[10px] text-muted-foreground sm:inline">
@@ -95,7 +95,7 @@ export function ProductShowcase() {
             </div>
 
             <div className="min-h-0 flex-1 space-y-3 overflow-hidden p-2.5 sm:p-3">
-              <div className="flex items-center gap-2 rounded-md border border-border bg-card px-2.5 py-1.5">
+              <div className="flex items-center gap-2 rounded-md border border-border bg-background px-2.5 py-1.5">
                 <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
                 <span className="truncate text-[11px] text-muted-foreground">Search snippets</span>
               </div>
@@ -106,10 +106,10 @@ export function ProductShowcase() {
                     key={row.title}
                     className={
                       index === 2
-                        ? "hidden rounded-lg border border-border bg-card p-2.5 sm:block"
+                        ? "hidden rounded-lg border border-border bg-background p-2.5 sm:block"
                         : index === 0
-                          ? "rounded-lg border border-foreground/20 bg-card p-2.5"
-                          : "rounded-lg border border-border bg-card p-2.5"
+                          ? "rounded-lg border border-foreground/20 bg-background p-2.5"
+                          : "rounded-lg border border-border bg-background p-2.5"
                     }
                   >
                     <div className="flex items-start justify-between gap-2">

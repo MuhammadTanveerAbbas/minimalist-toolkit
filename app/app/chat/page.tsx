@@ -303,7 +303,7 @@ export default function ChatPage() {
           <h1 className="font-display text-2xl tracking-tight sm:text-3xl">AI Chat</h1>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
             Short, clear answers on code, prompts and product decisions.
-            <span className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-1.5 py-0.5 font-mono text-[10px]">
+            <span className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px]">
               <Code2 className="h-3 w-3" aria-hidden="true" />
               {snippets.length} snippets saved
             </span>
@@ -339,7 +339,7 @@ export default function ChatPage() {
                   key={starter}
                   type="button"
                   onClick={() => void send(starter)}
-                  className="rounded-lg border border-border bg-surface-2 p-3 text-left text-sm leading-6 text-muted-foreground transition-colors hover:border-foreground/25 hover:bg-card hover:text-foreground"
+                  className="rounded-lg p-3 text-left text-sm leading-6 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
                 >
                   {starter}
                 </button>
@@ -368,7 +368,7 @@ export default function ChatPage() {
                     (isLoading && i === messages.length - 1 ? (
                       <span className="inline-flex items-center gap-2 text-muted-foreground">
                         <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
-                        Thinking...
+                        Thinking…
                       </span>
                     ) : null)}
                 </div>

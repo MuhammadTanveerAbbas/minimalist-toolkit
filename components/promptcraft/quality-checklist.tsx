@@ -74,10 +74,10 @@ export function PromptQualityChecklist({ text }: { text: string }) {
       className="rounded-lg border border-border/60 bg-secondary/20 px-3 py-3"
     >
       <div className="mb-2 flex items-center justify-between gap-2">
-        <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/70">
+        <h3 className="text-[11px] font-semibold text-muted-foreground/70">
           Quality checklist
         </h3>
-        <span className="font-mono text-[10px] text-muted-foreground/50">
+        <span className="text-[10px] text-muted-foreground/50">
           {met}/{entries.length} detected
         </span>
       </div>

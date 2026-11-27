@@ -43,7 +43,6 @@ export function FaqSection() {
       <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-brand">Questions</p>
             <h2 className="mt-3 text-balance-tight text-3xl font-semibold tracking-tight sm:text-4xl">
               The things worth asking
             </h2>
@@ -76,18 +75,11 @@ export function FaqSection() {
                       </span>
                     </button>
                   </h3>
-                  <div
-                    className={cn(
-                      "grid transition-[grid-template-rows] duration-300",
-                      isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                    )}
-                  >
-                    <div className="overflow-hidden">
-                      <p className="max-w-2xl pb-5 pr-10 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
-                        {item.a}
-                      </p>
-                    </div>
-                  </div>
+                  {isOpen ? (
+                    <p className="animate-fade-in max-w-2xl pb-5 pr-10 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+                      {item.a}
+                    </p>
+                  ) : null}
                 </li>
               )
             })}

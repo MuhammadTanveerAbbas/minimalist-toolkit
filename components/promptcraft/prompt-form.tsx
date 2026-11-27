@@ -199,11 +199,11 @@ export function PromptForm({ onGenerate, isLoading }: PromptFormProps) {
   }
 
   const inputClass =
-    "w-full rounded-lg border border-border bg-background/60 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/35 outline-none transition-all"
+    "w-full rounded-lg border border-border bg-background/60 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/35 outline-none transition-[color,background-color,border-color,opacity,box-shadow,transform]"
 
   const chipClass = (active: boolean) =>
     cn(
-      "rounded-lg border px-3 py-2 text-xs font-medium transition-all cursor-pointer select-none min-h-11",
+      "rounded-lg border px-3 py-2 text-xs font-medium transition-[color,background-color,border-color,opacity,box-shadow,transform] cursor-pointer select-none min-h-11",
       active
         ? "border-foreground/20 bg-foreground text-background"
         : "border-border/70 bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground hover:border-border"
@@ -234,7 +234,7 @@ export function PromptForm({ onGenerate, isLoading }: PromptFormProps) {
                 key={template.label}
                 type="button"
                 onClick={() => applyTemplate(template)}
-                className="rounded-lg border border-border/70 bg-secondary/40 px-3 py-2 text-xs font-medium text-muted-foreground transition-all hover:border-border hover:bg-secondary hover:text-foreground min-h-11"
+                className="rounded-lg border border-border/70 bg-secondary/40 px-3 py-2 text-xs font-medium text-muted-foreground transition-[color,background-color,border-color,opacity,box-shadow,transform] hover:border-border hover:bg-secondary hover:text-foreground min-h-11"
               >
                 {template.label}
               </button>
@@ -276,7 +276,7 @@ export function PromptForm({ onGenerate, isLoading }: PromptFormProps) {
                   onClick={() => setPlatform(active ? "" : p.id)}
                   aria-pressed={active}
                   className={cn(
-                    "relative flex flex-col items-center gap-1.5 rounded-lg border px-2 py-3 text-[11px] font-medium transition-all cursor-pointer select-none min-h-11",
+                    "relative flex flex-col items-center gap-1.5 rounded-lg border px-2 py-3 text-[11px] font-medium transition-[color,background-color,border-color,opacity,box-shadow,transform] cursor-pointer select-none min-h-11",
                     active
                       ? "border-foreground/20 bg-foreground text-background"
                       : "border-border/70 bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground hover:border-border"
@@ -377,7 +377,7 @@ export function PromptForm({ onGenerate, isLoading }: PromptFormProps) {
               type="button"
               onClick={handleScrape}
               disabled={scrapeStatus === "loading" || !urlInput.trim()}
-              className="flex shrink-0 items-center gap-1.5 rounded-lg border border-border bg-secondary px-3 py-2.5 text-xs font-medium text-foreground transition-all hover:bg-accent hover:border-foreground/20 disabled:cursor-not-allowed disabled:opacity-40 min-h-11 min-w-11 sm:min-w-0"
+              className="flex shrink-0 items-center gap-1.5 rounded-lg border border-border bg-secondary px-3 py-2.5 text-xs font-medium text-foreground transition-[color,background-color,border-color,opacity,box-shadow,transform] hover:bg-accent hover:border-foreground/20 disabled:cursor-not-allowed disabled:opacity-40 min-h-11 min-w-11 sm:min-w-0"
             >
               {scrapeStatus === "loading" ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
@@ -422,12 +422,12 @@ export function PromptForm({ onGenerate, isLoading }: PromptFormProps) {
         <button
           type="submit"
           disabled={isLoading || !topic.trim()}
-          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-opacity duration-150 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex min-h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-opacity duration-150 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-              Generating...
+              Generating…
             </>
           ) : (
             <>

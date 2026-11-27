@@ -111,7 +111,7 @@ export function MockupResult({
               type="button"
               onClick={onNewVariation}
               disabled={isGenerating}
-              className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors font-mono disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isGenerating ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
@@ -125,7 +125,7 @@ export function MockupResult({
           <button
             type="button"
             onClick={handleCopyPrompt}
-            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors font-mono"
+            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors"
           >
             {copied ? <Check className="h-3.5 w-3.5 text-accent" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
             <span className="hidden sm:inline">{copied ? "Copied" : "Copy prompt"}</span>
@@ -134,7 +134,7 @@ export function MockupResult({
           <button
             type="button"
             onClick={() => setFullscreen(true)}
-            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors font-mono"
+            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors"
           >
             <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
             <span className="hidden sm:inline">Fullscreen</span>
@@ -159,7 +159,7 @@ export function MockupResult({
             {prompt}
           </p>
           {seed != null && (
-            <p className="text-[10px] font-mono text-muted-foreground/60">
+            <p className="text-[10px] text-muted-foreground/60">
               seed {seed}
             </p>
           )}
@@ -177,7 +177,7 @@ export function MockupResult({
             <button
               type="button"
               onClick={() => setZoomed((z) => !z)}
-              className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors font-mono"
+              className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-ring transition-colors"
             >
               {zoomed ? <ZoomOut className="h-3.5 w-3.5" aria-hidden="true" /> : <ZoomIn className="h-3.5 w-3.5" aria-hidden="true" />}
               {zoomed ? "Zoom out" : "Zoom in"}

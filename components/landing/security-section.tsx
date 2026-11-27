@@ -39,7 +39,7 @@ export function SecuritySection() {
       <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-brand">Security</p>
+            <p className="text-xs font-semibold text-brand">Security</p>
             <h2 className="mt-3 text-balance-tight text-3xl font-semibold tracking-tight sm:text-4xl">
               Your work is private by default, not by policy
             </h2>

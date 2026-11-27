@@ -126,14 +126,14 @@ export function ExportImportDialog({ onExportJSON, onImportJSON, onExportGist }:
                 Import snippets from a JSON file. Duplicates are automatically assigned new IDs.
               </p>
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Upload File</Label>
+                <Label className="text-xs font-semibold text-muted-foreground ">Upload File</Label>
                 <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="w-full gap-2 bg-muted/30 hover:bg-muted/60">
                   <Upload className="h-4 w-4" />
                   Choose JSON File
                 </Button>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="import-text" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Or Paste JSON</Label>
+                <Label htmlFor="import-text" className="text-xs font-semibold text-muted-foreground ">Or Paste JSON</Label>
                 <Textarea
                   id="import-text"
                   value={importText}

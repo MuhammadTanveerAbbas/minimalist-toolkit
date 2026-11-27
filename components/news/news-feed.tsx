@@ -224,7 +224,7 @@ export function NewsFeed({ items, lastUpdated, setupNote }: NewsFeedProps) {
                                 href={item.url}
                                 target="_blank"
                                 rel="noreferrer noopener"
-                                className="mt-auto inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-card text-[11px] font-medium transition-colors hover:bg-accent sm:h-10 sm:gap-2 sm:text-sm"
+                                className="mt-auto inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-background text-[11px] font-medium transition-colors hover:bg-accent sm:h-10 sm:gap-2 sm:text-sm"
                               >
                                 <span className="sm:hidden">View source</span>
                                 <span className="hidden sm:inline">View Original Source</span>

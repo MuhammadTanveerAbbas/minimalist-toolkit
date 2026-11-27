@@ -132,7 +132,7 @@ export function SearchBar({
             </div>
             <div className="max-h-[60vh] space-y-4 overflow-y-auto p-4">
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <Label className="text-[11px] font-semibold text-muted-foreground">
                   Language
                 </Label>
                 <Select
@@ -157,7 +157,7 @@ export function SearchBar({
 
               {allCategories.length > 0 ? (
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <Label className="text-[11px] font-semibold text-muted-foreground">
                     Category
                   </Label>
                   <Select
@@ -182,7 +182,7 @@ export function SearchBar({
               ) : null}
 
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <Label className="text-[11px] font-semibold text-muted-foreground">
                   Visibility
                 </Label>
                 <Select
@@ -207,7 +207,7 @@ export function SearchBar({
 
               {allTags.length > 0 ? (
                 <div className="space-y-2">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <Label className="text-[11px] font-semibold text-muted-foreground">
                     Tags
                   </Label>
                   <div className="max-h-32 space-y-1 overflow-y-auto rounded-lg border border-border bg-surface-2 p-2">
