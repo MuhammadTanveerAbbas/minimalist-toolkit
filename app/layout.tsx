@@ -4,6 +4,7 @@ import { BBH_Bogle, Lato, Open_Sans } from "next/font/google"
 import { THEME_INIT_SCRIPT } from "@/lib/theme"
 import {
   siteDescription,
+  siteDescriptionShort,
   siteLogo,
   siteName,
   siteTitle,
@@ -58,7 +59,12 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: "/logo-light.png", type: "image/png" }],
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/logo-light.png", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   manifest: "/manifest.webmanifest",
   openGraph: {
@@ -66,14 +72,30 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName,
     title: siteTitle,
-    description: siteDescription,
+    description: siteDescriptionShort,
     locale: "en_US",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: siteTitle,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     site: twitterHandle,
     title: siteTitle,
-    description: siteDescription,
+    description: siteDescriptionShort,
+    images: [
+      {
+        url: "/twitter-image.png",
+        width: 1200,
+        height: 600,
+        alt: siteTitle,
+      },
+    ],
   },
   robots: {
     index: true,

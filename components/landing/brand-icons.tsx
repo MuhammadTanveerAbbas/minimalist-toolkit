@@ -117,14 +117,20 @@ export function HeroBrandIcons() {
 
 /** A quiet row of the same marks, used outside the hero and on small screens. */
 export function ProviderStrip({ compact = false }: { compact?: boolean }) {
+  // Fixed rows keep the small-screen layout at five on top and four below.
+  const rows = [PROVIDERS.slice(0, 5), PROVIDERS.slice(5)]
   return (
-    <ul className="flex flex-wrap items-center justify-center gap-3">
-      {PROVIDERS.map(({ name, Icon }) => (
-        <li key={name} className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
-          <Icon size={18} aria-hidden={true} />
-          <span className={cn("text-xs font-medium", compact && "hidden sm:inline")}>{name}</span>
-        </li>
+    <div className="flex flex-col items-center gap-3">
+      {rows.map((row, rowIndex) => (
+        <ul key={rowIndex} className="flex flex-wrap items-center justify-center gap-3">
+          {row.map(({ name, Icon }) => (
+            <li key={name} className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
+              <Icon size={18} aria-hidden={true} />
+              <span className={cn("text-xs font-medium", compact && "hidden sm:inline")}>{name}</span>
+            </li>
+          ))}
+        </ul>
       ))}
-    </ul>
+    </div>
   )
 }

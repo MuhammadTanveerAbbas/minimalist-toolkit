@@ -1,3 +1,5 @@
+"use client"
+
 import { Cookie, Database, KeyRound, Lock, ShieldCheck, Users } from "lucide-react"
 
 const CONTROLS = [

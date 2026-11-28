@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Gift, Lock, Rocket, ScanEye, Sparkles, Zap } from "lucide-react"
 import { HeroBrandIcons, ProviderStrip } from "@/components/landing/brand-icons"
@@ -102,9 +104,9 @@ export function Hero() {
                 const Icon = tool.icon
                 return (
                   <div key={i} className="flex shrink-0 items-center">
-                    <div className="flex items-center gap-2.5 px-6 py-3">
-                      <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" style={{ color: tool.accent }} aria-hidden="true" />
-                      <span className="text-sm font-medium">{tool.name}</span>
+                    <div className="flex items-center gap-2.5 px-5 py-4 sm:px-6 sm:py-3">
+                      <Icon className="h-4 w-4 shrink-0 text-muted-foreground sm:h-3.5 sm:w-3.5" style={{ color: tool.accent }} aria-hidden="true" />
+                      <span className="text-[15px] font-medium sm:text-sm">{tool.name}</span>
                       <span className="text-xs text-muted-foreground">{tool.tagline}</span>
                     </div>
                     <span className="h-1 w-1 shrink-0 rounded-full bg-border" aria-hidden="true" />

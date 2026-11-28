@@ -498,8 +498,15 @@
 
 /* Moving text strip: duplicated track, seamless loop, pauses on hover */
 .marquee-track {
-  animation: marquee 38s linear infinite;
+  animation: marquee 12s linear infinite;
   will-change: transform;
+}
+
+/* Small screens show fewer items at once, so the strip moves faster there. */
+@media (max-width: 640px) {
+  .marquee-track {
+    animation-duration: 8s;
+  }
 }
 
 .marquee-track-slow {

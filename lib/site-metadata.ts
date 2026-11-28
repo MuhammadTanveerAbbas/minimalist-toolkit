@@ -13,3 +13,7 @@ export const siteTitle =
 
 export const siteDescription =
   "Save and organise code snippets, generate mockups, write better prompts, and chat with AI in one clean workspace. Your data stays yours. Free to start."
+
+/** Short copy for social cards, which truncate around 125 characters. */
+export const siteDescriptionShort =
+  "Save code snippets, generate mockups, write better prompts, and chat with AI in one clean workspace. Your data stays yours."

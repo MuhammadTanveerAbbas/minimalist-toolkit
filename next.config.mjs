@@ -58,6 +58,15 @@ const nextConfig = {
         headers: securityHeaders,
       },
       {
+        // Social crawlers and preview tools render these images from their own
+        // origin, so a same-origin resource policy makes the preview fail.
+        source:
+          "/(og-image.png|twitter-image.png|opengraph-image|twitter-image|favicon.ico|favicon.svg|favicon-32x32.png|apple-touch-icon.png|icon.png|icon|logo-light.png|logo-dark.png|minimalist-toolkit-preview.png)",
+        headers: [
+          { key: "Cross-Origin-Resource-Policy", value: "cross-origin" },
+        ],
+      },
+      {
         // API responses are never cacheable and must not be embedded.
         source: "/api/:path*",
         headers: [

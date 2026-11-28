@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { TOOLS } from "@/lib/navigation"
 import { MessageSquareText, Sparkles } from "lucide-react"

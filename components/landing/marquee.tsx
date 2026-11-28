@@ -1,3 +1,5 @@
+"use client"
+
 import { TOOLS } from "@/lib/navigation"
 
 /** Static tool strip under the hero. Names come from the real tool list. */

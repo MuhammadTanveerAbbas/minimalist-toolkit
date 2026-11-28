@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { ArrowUpRight, Github, Globe } from "lucide-react"
 import { BrandLogo } from "@/components/brand-logo"
